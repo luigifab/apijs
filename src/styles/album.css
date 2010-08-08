@@ -1,0 +1,45 @@
+/**
+ * Created S/06/02/2010
+ * Updated S/07/08/2010
+ * Version 3
+ *
+ * Copyright 2008-2010 | Fabrice Creuzot <contact@luigifab.info>
+ * http://www.luigifab.info/apijs/
+ *
+ * This program is free software, you can redistribute it or modify
+ * it under the terms of the GNU General Public License (GPL) as published
+ * by the free software foundation, either version 2 of the license, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but without any warranty, without even the implied warranty of
+ * merchantability or fitness for a particular purpose. See the
+ * GNU General Public License (GPL) for more details.
+ */
+
+/* ########################################################## Conteneurs ### */
+div.album {
+	width:660px; margin:1.2em auto 1.8em; padding:0.3em; overflow:hidden;
+	background-color:#EEE; border-radius:10px; -khtml-border-radius:10px; -moz-border-radius:10px; -webkit-border-radius:10px;
+}
+
+div.album dl.vignette {
+	float:left; margin:4px; padding:5px; width:200px; min-height:168px;
+	font-size:0.8em; color:#777; text-align:center;
+	border:1px solid #CCC; background-color:#CCC;
+	border-radius:6px; -khtml-border-radius:6px; -moz-border-radius:6px; -webkit-border-radius:6px;
+}
+
+div.album dl.vignette:hover { border-color:#888; }
+
+
+/* ############################################################### Texte ### */
+div.album dl.vignette dt { margin-bottom:0.4em; }
+div.album dl.vignette dt a { text-decoration:none; }
+
+div.album dl.vignette dd { }
+div.album dl.vignette dd span.datenum { color:#999; }
+
+div.album dl.vignette:hover dd { color:#444; }
+div.album dl.vignette:hover dd span.datenum { color:#666; }
+
