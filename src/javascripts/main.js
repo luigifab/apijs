@@ -1,7 +1,7 @@
 /**
  * Created J/03/12/2009
- * Updated V/06/08/2010
- * Version 21
+ * Updated J/12/08/2010
+ * Version 23
  *
  * Copyright 2008-2010 | Fabrice Creuzot <contact@luigifab.info>
  * http://www.luigifab.info/apijs/
@@ -21,13 +21,13 @@
 // = révision : 10
 // » Définie les variables globales et la config
 // » Lance l'application JavaScript
-var i18n = null, TheButton = null, TheDialogue = null, TheSlideshow = null, TheUpload = null;
+var i18n = null, TheButton = null, TheDialogue = null, TheSlideshow = null, TheUpload = null, TheMap = null;
 var config = {
 	lang: 'fr',
-	autolang: true,
 	debug: true,
 	debugkey: false,
 	navigator: true,
+	autolang: true,
 	dialogue: {
 		blocks: [],
 		hiddenPage: false,
@@ -46,6 +46,16 @@ var config = {
 	slideshow: {
 		ids: 'diaporama',
 		hoverload: false
+	},
+	map: {
+		width: 580,
+		height: 400,
+		initLatitude: 1.9,
+		initLongitude: 46.3,
+		imageMarker: './images/map/marker.png',
+		zoomInitial: 5,
+		zoomCenter: 14,
+		zoomSynchro: 15
 	}
 };
 
@@ -61,7 +71,7 @@ else {
 
 
 // ### Lancement de l'application ################################# //
-// = révision : 12
+// = révision : 13
 // » Recherche les liens ayant la class popup
 // » Charge les modules disponibles
 function start() {
@@ -75,17 +85,19 @@ function start() {
 			tag[i].setAttribute('onclick', 'window.open(this.href); return false;');
 	}
 
-	try {
+	if ((typeof Internationalization === 'function') && (typeof Dialogue === 'function')) {
+
 		i18n = new Internationalization();
 		i18n.init();
 
 		TheDialogue = new Dialogue();
 
-		TheSlideshow = new Slideshow();
-		TheSlideshow.init();
-		config.dialogue.hiddenPage = true;
+		if (typeof Slideshow === 'function') {
+			config.dialogue.hiddenPage = true;
+			TheSlideshow = new Slideshow();
+			TheSlideshow.init();
+		}
 	}
-	catch (e) { }
 }
 
 

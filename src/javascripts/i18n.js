@@ -1,7 +1,7 @@
 /**
  * Created S/05/06/2010
- * Updated D/08/08/2010
- * Version 6
+ * Updated V/13/08/2010
+ * Version 7
  *
  * Copyright 2008-2010 | Fabrice Creuzot <contact@luigifab.info>
  * http://www.luigifab.info/apijs/
@@ -101,7 +101,7 @@ function Internationalization() {
 
 
 	// #### Autodétection de la langue ############################################## public ### //
-	// = révision : 4
+	// = révision : 5
 	// » Essaye de récupérer la langue utilisée par le navigateur
 	// » Vérifie si la langue existe dans les traductions disponibles
 	this.init = function () {
@@ -109,7 +109,7 @@ function Internationalization() {
 		if ((typeof navigator.language === 'string') && config.autolang && (navigator.language.slice(0, 2) in this.i18n))
 			config.lang = navigator.language.slice(0, 2);
 
-		if ((typeof config.lang !== 'string') || !(config.lang in this.i18n))
+		else if ((typeof config.lang !== 'string') || !(config.lang in this.i18n))
 			config.lang = 'en';
 	};
 
