@@ -1,6 +1,6 @@
 /**
  * Created J/03/12/2009
- * Updated J/12/08/2010
+ * Updated D/15/08/2010
  * Version 23
  *
  * Copyright 2008-2010 | Fabrice Creuzot <contact@luigifab.info>
@@ -71,9 +71,9 @@ else {
 
 
 // ### Lancement de l'application ################################# //
-// = révision : 13
+// = révision : 14
 // » Recherche les liens ayant la class popup
-// » Charge les modules disponibles
+// » Charge tous les modules disponibles
 function start() {
 
 	for (var tag = document.getElementsByTagName('a'), i = 0; i < tag.length; i++) {

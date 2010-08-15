@@ -1,7 +1,7 @@
 /**
  * Created D/12/04/2009
- * Updated D/08/08/2010
- * Version 94
+ * Updated D/15/08/2010
+ * Version 95
  *
  * Copyright 2008-2010 | Fabrice Creuzot <contact@luigifab.info>
  * http://www.luigifab.info/apijs/
@@ -406,7 +406,7 @@ function Dialogue() {
 	// GESTION DE L'AFFICHAGE DES CONTENEURS PARENTS (4)
 
 	// #### Prépare le terrain ##################################################### private ### //
-	// = révision : 48
+	// = révision : 49
 	// » Supprime l'ancienne boite de dialogue ou cache le site internet si nécessaire (config.dialogue.hiddenPage)
 	// » Met en place l'écoute des touches du clavier (eventListener:keydown)
 	// » Définie le type de dialogue
@@ -422,8 +422,13 @@ function Dialogue() {
 			if (window.pageYOffset !== 0)
 				this.offset = window.pageYOffset;
 
-			for (var id in config.dialogue.blocks) if (config.dialogue.blocks.hasOwnProperty(id))
-				document.getElementById(config.dialogue.blocks[id]).style.display = 'none';
+			for (var id in config.dialogue.blocks) if (config.dialogue.blocks.hasOwnProperty(id)) {
+
+				if (config.navigator)
+					document.getElementById(config.dialogue.blocks[id]).setAttribute('class', 'nodisplay');
+				else
+					document.getElementById(config.dialogue.blocks[id]).className = 'nodisplay';
+			}
 		}
 
 		// active l'écoute des touches
@@ -470,7 +475,7 @@ function Dialogue() {
 
 
 	// #### Affiche le site ######################################################## private ### //
-	// = révision : 65
+	// = révision : 66
 	// » Supprime l'iframe du formulaire d'upload si nécessaire
 	// » Affiche le site au bon endroit après la suppression de la boite de dialogue si nécessaire (config.dialogue.hiddenPage)
 	this.showPage = function () {
@@ -480,8 +485,13 @@ function Dialogue() {
 
 		if (config.dialogue.hiddenPage) {
 
-			for (var id in config.dialogue.blocks) if (config.dialogue.blocks.hasOwnProperty(id))
-				document.getElementById(config.dialogue.blocks[id]).style.display = 'block';
+			for (var id in config.dialogue.blocks) if (config.dialogue.blocks.hasOwnProperty(id)) {
+
+				if (config.navigator)
+					document.getElementById(config.dialogue.blocks[id]).removeAttribute('class');
+				else
+					document.getElementById(config.dialogue.blocks[id]).className = '';
+			}
 
 			window.scrollBy(0, this.offset);
 		}
@@ -531,9 +541,8 @@ function Dialogue() {
 
 
 	// #### Titre ################################################################## private ### //
-	// = révision : 49
+	// = révision : 50
 	// » Crée le titre du dialogue
-	// » Inutile pour les dialogues photo et vidéo
 	// # <h1>{title}</h1>
 	this.htmlTitle = function (title) {
 
@@ -546,9 +555,9 @@ function Dialogue() {
 
 
 	// #### Paragraphe ############################################################# private ### //
-	// = révision : 55
-	// » Crée le paragraphe du dialogue, sur une ou plusieurs lignes
-	// » Inutile pour les dialogues photo et vidéo
+	// = révision : 56
+	// » Crée le paragraphe du dialogue
+	// » Sur une ou plusieurs lignes
 	// # <p>{text}
 	// # [<br />{text}]</p>
 	this.htmlParagraph = function (text) {
@@ -557,9 +566,9 @@ function Dialogue() {
 		this.elemA = document.createElement('p');
 
 		// Nœud texte multi-lignes
-		if (text.search(/\n/) > 0) {
+		if (text.search(/[br]/) > 0) {
 
-			text = text.split('\n');
+			text = text.split('[br]');
 			this.elemA.appendChild(document.createTextNode(text[0]));
 
 			for (var i = 1; i < text.length; i++) {
