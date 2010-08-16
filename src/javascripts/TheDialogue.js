@@ -1,7 +1,7 @@
 /**
  * Created D/12/04/2009
- * Updated D/15/08/2010
- * Version 95
+ * Updated L/16/08/2010
+ * Version 96
  *
  * Copyright 2008-2010 | Fabrice Creuzot <contact@luigifab.info>
  * http://www.luigifab.info/apijs/
@@ -35,7 +35,7 @@ function Dialogue() {
 	// DÉFINITION DES BOITES DE DIALOGUE (8)
 
 	// #### Dialogue d'Information ################################# i18n ## debug ## public ### //
-	// = révision : 60
+	// = révision : 61
 	// » Permet d'afficher un message d'information à l'intention de l'utilisateur
 	// » Composé d'un titre, d'un paragraphe, et d'un bouton de dialogue (Ok)
 	// » Fermeture par bouton Ok ou touches Échap/F11
@@ -59,13 +59,13 @@ function Dialogue() {
 		// *** Message de debug ********************************* //
 		else if (config.debug) {
 
-			this.dialogInformation(i18n.translate('debugInvalidCall'), 'TheDialogue » dialogInformation\n➩ (string) title : ' + title + '\n➩ (string) text : ' + text + '\n➩ (string) icon : ' + icon);
+			this.dialogInformation(i18n.translate('debugInvalidCall'), 'TheDialogue » dialogInformation[br]➩ (string) title : ' + title + '[br]➩ (string) text : ' + text + '[br]➩ (string) icon : ' + icon);
 		}
 	};
 
 
 	// #### Dialogue de Confirmation ############################### i18n ## debug ## public ### //
-	// = révision : 59
+	// = révision : 60
 	// » Permet de demander une confirmation à l'utilisateur
 	// » Composé d'un titre, d'un paragraphe, et de deux boutons de dialogue (Annuler et Valider)
 	// » Fermeture par bouton Annuler ou touche Échap
@@ -89,13 +89,13 @@ function Dialogue() {
 		// *** Message de debug ********************************* //
 		else if (config.debug) {
 
-			this.dialogInformation(i18n.translate('debugInvalidCall'), 'TheDialogue » dialogConfirmation\n➩ (string) title : ' + title + '\n➩ (string) text : ' + text + '\n➩ (string) action : ' + action + '\n➩ (string) icon : ' + icon);
+			this.dialogInformation(i18n.translate('debugInvalidCall'), 'TheDialogue » dialogConfirmation[br]➩ (string) title : ' + title + '[br]➩ (string) text : ' + text + '[br]➩ (string) action : ' + action + '[br]➩ (string) icon : ' + icon);
 		}
 	};
 
 
 	// #### Dialogue d'Upload ###################################### i18n ## debug ## public ### //
-	// = révision : 63
+	// = révision : 64
 	// » Permet à l'utilisateur l'envoi de fichier sans avoir à recharger la page
 	// » Composé d'un titre, d'un paragraphe, d'un champ fichier, et de deux boutons de dialogue (Annuler et Valider)
 	// » Fermeture par bouton Annuler ou touche Échap
@@ -117,13 +117,13 @@ function Dialogue() {
 		// *** Message de debug ********************************* //
 		else if (config.debug) {
 
-			this.dialogInformation(i18n.translate('debugInvalidCall'), 'TheDialogue » dialogUpload\n➩ (string) title : ' + title + '\n➩ (string) text : ' + text + '\n➩ (string) data : ' + data + '\n➩ (string) key : ' + key);
+			this.dialogInformation(i18n.translate('debugInvalidCall'), 'TheDialogue » dialogUpload[br]➩ (string) title : ' + title + '[br]➩ (string) text : ' + text + '[br]➩ (string) data : ' + data + '[br]➩ (string) key : ' + key);
 		}
 	};
 
 
 	// #### Dialogue de Progression ################################ i18n ## debug ## public ### //
-	// = révision : 72
+	// = révision : 73
 	// » Permet de faire patienter l'utilisateur en affichant une barre de progression
 	// » Composé d'un titre, d'un paragraphe, d'une barre de progression, et d'un lien différé (10 secondes)
 	// » Fermeture automatique, touche Échap désactivée
@@ -146,13 +146,13 @@ function Dialogue() {
 		// *** Message de debug ********************************* //
 		else if (config.debug) {
 
-			this.dialogInformation(i18n.translate('debugInvalidCall'), 'TheDialogue » dialogProgress\n➩ (string) title : ' + title + '\n➩ (string) text : ' + text);
+			this.dialogInformation(i18n.translate('debugInvalidCall'), 'TheDialogue » dialogProgress[br]➩ (string) title : ' + title + '[br]➩ (string) text : ' + text);
 		}
 	};
 
 
 	// #### Dialogue d'Attente ##################################### i18n ## debug ## public ### //
-	// = révision : 59
+	// = révision : 60
 	// » Permet de faire patienter l'utilisateur en affichant un message d'attente
 	// » Composé d'un titre, d'un paragraphe, et d'un lien différé (4 secondes)
 	// » Fermeture automatique ou pas, touche Échap désactivée
@@ -174,13 +174,13 @@ function Dialogue() {
 		// *** Message de debug ********************************* //
 		else if (config.debug) {
 
-			this.dialogInformation(i18n.translate('debugInvalidCall'), 'TheDialogue » dialogPleaseWait\n➩ (string) title : ' + title + '\n➩ (string) text : ' + text);
+			this.dialogInformation(i18n.translate('debugInvalidCall'), 'TheDialogue » dialogPleaseWait[br]➩ (string) title : ' + title + '[br]➩ (string) text : ' + text);
 		}
 	};
 
 
 	// #### Dialogue Photo ######################################### i18n ## debug ## public ### //
-	// = révision : 98
+	// = révision : 99
 	// » Permet d'afficher une photo en plein écran
 	// » Composé d'une photo, d'une définition, et de trois boutons de dialogue (Précédent Suivant et Fermer)
 	// » Fermeture par bouton Fermer ou touche Échap
@@ -207,13 +207,13 @@ function Dialogue() {
 		// *** Message de debug ********************************* //
 		else if (config.debug) {
 
-			this.dialogInformation(i18n.translate('debugInvalidCall'), 'TheDialogue » dialogPhoto\n➩ (string) date : ' + date + '\n➩ (string) legend : ' + legend + '\n➩ (string) url : ' + url + '\n➩ (number) width : ' + width + '\n➩ (number) height : ' + height);
+			this.dialogInformation(i18n.translate('debugInvalidCall'), 'TheDialogue » dialogPhoto[br]➩ (string) date : ' + date + '[br]➩ (string) legend : ' + legend + '[br]➩ (string) url : ' + url + '[br]➩ (number) width : ' + width + '[br]➩ (number) height : ' + height);
 		}
 	};
 
 
 	// #### Dialogue Vidéo ######################################### i18n ## debug ## public ### //
-	// = révision : 56
+	// = révision : 57
 	// » Permet d'afficher une vidéo en plein écran
 	// » Composé d'une vidéo, d'une définition, et de trois boutons de dialogue (Précédent Suivant et Fermer)
 	// » Fermeture par bouton Fermer ou touche Échap
@@ -234,13 +234,13 @@ function Dialogue() {
 		// *** Message de debug ********************************* //
 		else if (config.debug) {
 
-			this.dialogInformation(i18n.translate('debugInvalidCall'), 'TheDialogue » dialogVideo\n➩ (string) date : ' + date + '\n➩ (string) legend : ' + legend + '\n➩ (string) url : ' + url);
+			this.dialogInformation(i18n.translate('debugInvalidCall'), 'TheDialogue » dialogVideo[br]➩ (string) date : ' + date + '[br]➩ (string) legend : ' + legend + '[br]➩ (string) url : ' + url);
 		}
 	};
 
 
 	// #### Dialogue Automatique ################################### i18n ## debug ## public ### //
-	// = révision : 3
+	// = révision : 4
 	// » Permet d'afficher le contenu d'un élément sous forme d'une boite de dialogue
 	// » Composé des sous éléments qui compose l'élément en question
 	// » Fermeture par touche Échap
@@ -258,7 +258,7 @@ function Dialogue() {
 		// *** Message de debug ********************************* //
 		else if (config.debug) {
 
-			this.dialogInformation(i18n.translate('debugInvalidCall'), 'TheDialogue » dialogAuto\n➩ (string) id : ' + id);
+			this.dialogInformation(i18n.translate('debugInvalidCall'), 'TheDialogue » dialogAuto[br]➩ (string) id : ' + id);
 		}
 	};
 
@@ -318,7 +318,7 @@ function Dialogue() {
 
 
 	// #### Action du bouton Valider ##################### i18n ## debug ## event ## private ### //
-	// = révision : 81
+	// = révision : 82
 	// » Retour à l'expéditeur qui se démerde pour la suite de la gestion du dialogue
 	// » En provenance des dialogues de confirmation ou d'upload
 	// » Fait appel à [TheButton] ou à [TheUpload]
@@ -331,7 +331,7 @@ function Dialogue() {
 				TheButton.actionConfirm(action);
 
 			else if (config.debug)
-				this.dialogInformation(i18n.translate('debugInvalidUse'), 'TheDialogue » actionConfirm\n➩ TheButton ' + i18n.translate('debugNotExist'));
+				this.dialogInformation(i18n.translate('debugInvalidUse'), 'TheDialogue » actionConfirm[br]➩ TheButton ' + i18n.translate('debugNotExist'));
 		}
 
 		// *** Retour sur TheUpload (upload) ******************** //
@@ -341,18 +341,18 @@ function Dialogue() {
 				TheUpload.actionConfirm();
 
 			else if (config.debug)
-				this.dialogInformation(i18n.translate('debugInvalidUse'), 'TheDialogue » actionConfirm\n➩ TheUpload ' + i18n.translate('debugNotExist'));
+				this.dialogInformation(i18n.translate('debugInvalidUse'), 'TheDialogue » actionConfirm[br]➩ TheUpload ' + i18n.translate('debugNotExist'));
 		}
 
 		// *** Message de debug ********************************* //
 		else if (config.debug) {
-			this.dialogInformation(i18n.translate('debugUnknownAction'), 'TheDialogue » actionConfirm\n➩ (string) action : ' + action);
+			this.dialogInformation(i18n.translate('debugUnknownAction'), 'TheDialogue » actionConfirm[br]➩ (string) action : ' + action);
 		}
 	};
 
 
 	// #### Action des touches du clavier ############# i18n ## debugkey ## event ## private ### //
-	// = révision : 68
+	// = révision : 69
 	// » Désactive l'action de la touche Échap pour les dialogues d'attente et de progression
 	// » Ferme tous autres dialogues lors de l'appui sur la touche Échap
 	// » Ferme le dialogue d'information fenêtre lors de l'appui sur la touche F11
@@ -362,7 +362,7 @@ function Dialogue() {
 
 		if (config.debugkey) {
 			ev.preventDefault();
-			TheDialogue.dialogInformation(i18n.translate('debugKeyDetected'), 'TheDialogue » actionKey\n' + i18n.translate('debugKeyCode') + ev.keyCode);
+			TheDialogue.dialogInformation(i18n.translate('debugKeyDetected'), 'TheDialogue » actionKey[br]' + i18n.translate('debugKeyCode') + ev.keyCode);
 		}
 
 		else if ((ev.keyCode === 27) && ((TheDialogue.dialogue === 'pleasewait') || (TheDialogue.dialogue === 'progress')) ) {
@@ -514,7 +514,7 @@ function Dialogue() {
 
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// DÉFINITION DU CONTENU PRIMAIRE DES BOITES DE DIALOGUE (3)
+	// DÉFINITION DU CONTENU PRIMAIRE DES BOITES DE DIALOGUE (4)
 
 	// #### Éléments parents ####################################################### private ### //
 	// = révision : 51
@@ -584,6 +584,15 @@ function Dialogue() {
 
 		// Attache tous les éléments à la div boite
 		document.getElementById('boite').appendChild(this.elemA);
+	};
+
+
+	// #### Interpréteur BB code #################################################### private ### //
+	// = révision : 0
+	// » Recherche si la chaine de caractère contient du BB code
+	// » Transforme le BB code en code HTML
+	this.htmlBBcode = function (data) {
+		// todo
 	};
 
 
@@ -1031,14 +1040,15 @@ function Dialogue() {
 
 
 	// #### Vidéo et légende ############################################### i18n ## private ### //
-	// = révision : 55
+	// = révision : 56
 	// » Met en place la vidéo et la légende du dialogue vidéo
 	// » Dans le cas où la balise vidéo du standard HTML 5 n'est pas gérée par le navigateur rien ne s'affichera
 	// » Affiche un lien pour télécharger la vidéo originale si nécessaire (config.dialogue.saveVideo)
 	// » Par défaut la taille de la vidéo est fixée à 640x480
 	// # <dl>
 	// #  <dt>
-	// #    <video src="{url}" width="{config.dialogue.videoWidth}" height="{config.dialogue.videoHeight}" controls="controls" [autoplay="autoplay"] />
+	// #    <video src="{url}" width="{config.dialogue.videoWidth}" height="{config.dialogue.videoHeight}"
+	// #     controls="controls" [autoplay="autoplay"] />
 	// #  </dt>
 	// #  <dd>
 	// #    [<span>({date})</span>]

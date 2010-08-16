@@ -1,7 +1,7 @@
 /**
  * Created J/13/05/2010
- * Updated D/08/08/2010
- * Version 9
+ * Updated L/16/08/2010
+ * Version 10
  *
  * Copyright 2008-2010 | Fabrice Creuzot <contact@luigifab.info>
  * http://www.luigifab.info/apijs/
@@ -123,7 +123,7 @@ function Slideshow() {
 
 
 	// #### Prépare l'affichage du dialogue photo ou vidéo ######## i18n ## debug ## private ### //
-	// = révision : 25
+	// = révision : 26
 	// » Recherche les informations de la photo ou de la vidéo à afficher
 	// » Annule l'action par défaut lors d'un événement
 	// » En mode diaporama, déduit s'il faut mettre à jour l'image principale de l'album, s'il faut afficher un dialogue photo
@@ -192,12 +192,12 @@ function Slideshow() {
 
 		// *** Message de debug ********************************* //
 		else if (config.debug)
-			TheDialogue.dialogInformation(i18n.translate('debugInvalidUse'), 'TheSlideshow » showMedia\n' + i18n.translate('debugNotRecognizedAltAttribute'));
+			TheDialogue.dialogInformation(i18n.translate('debugInvalidUse'), 'TheSlideshow » showMedia[br]' + i18n.translate('debugNotRecognizedAltAttribute'));
 	};
 
 
 	// #### Gestion du mode présentation ########################## i18n ## debug ## private ### //
-	// = révision : 3
+	// = révision : 4
 	// » Extrait et vérifie les données nécessaires à la modification des attributs de l'image principale de l'album
 	// » Se base sur le lien de l'image qui vient d'être cliqué ou survolé
 	// » Ajoute l'attribut class actif sur l'image du lien en question
@@ -233,7 +233,7 @@ function Slideshow() {
 		// *** Message de debug ********************************* //
 		else if (config.debug && (currentMedia.alt.length === 5)) {
 
-			TheDialogue.dialogInformation(i18n.translate('debugInvalidAltAttribute'), 'TheSlideshow » changePhoto\n➩ (string) url : ' + currentMedia.alt[0] + '\n➩ (number) width : ' + currentMedia.alt[1] + '\n➩ (number) height : ' + currentMedia.alt[2] + '\n➩ (string) date : ' + currentMedia.alt[3] + '\n➩ (string) legend : ' + currentMedia.alt[4]);
+			TheDialogue.dialogInformation(i18n.translate('debugInvalidAltAttribute'), 'TheSlideshow » changePhoto[br]➩ (string) url : ' + currentMedia.alt[0] + '[br]➩ (number) width : ' + currentMedia.alt[1] + '[br]➩ (number) height : ' + currentMedia.alt[2] + '[br]➩ (string) date : ' + currentMedia.alt[3] + '[br]➩ (string) legend : ' + currentMedia.alt[4]);
 		}
 
 		// *** Image principale (vidéo) ************************* //
@@ -262,13 +262,13 @@ function Slideshow() {
 		// *** Message de debug ********************************* //
 		else if (config.debug && (currentMedia.alt.length === 3)) {
 
-			TheDialogue.dialogInformation(i18n.translate('debugInvalidAltAttribute'), 'TheSlideshow » changePhoto\n➩ (string) url : ' + currentMedia.alt[0] + '\n➩ (string) date : ' + currentMedia.alt[1] + '\n➩ (string) legend : ' + currentMedia.alt[2]);
+			TheDialogue.dialogInformation(i18n.translate('debugInvalidAltAttribute'), 'TheSlideshow » changePhoto[br]➩ (string) url : ' + currentMedia.alt[0] + '[br]➩ (string) date : ' + currentMedia.alt[1] + '[br]➩ (string) legend : ' + currentMedia.alt[2]);
 		}
 	};
 
 
 	// #### Affichage de la photo ou vidéo ######################## i18n ## debug ## private ### //
-	// = révision : 4
+	// = révision : 5
 	// » Extrait et vérifie les données nécessaires à l'affichage de la photo ou vidéo
 	// » Affiche une photo ou une vidéo grâce au dialogue photo ou vidéo de [TheDialogue]
 	// » Dans tout les cas remplace l'ancien dialogue par un nouveau dialogue
@@ -305,7 +305,7 @@ function Slideshow() {
 		// *** Message de debug ********************************* //
 		else if (config.debug && (currentMedia.alt.length === 4)) {
 
-			TheDialogue.dialogInformation(i18n.translate('debugInvalidAltAttribute'), 'TheSlideshow » showMedia\n➩ (number) width : ' + currentMedia.alt[0] + '\n➩ (number) height : ' + currentMedia.alt[1] + '\n➩ (string) date : ' + currentMedia.alt[2] + '\n➩ (string) legend : ' + currentMedia.alt[3]);
+			TheDialogue.dialogInformation(i18n.translate('debugInvalidAltAttribute'), 'TheSlideshow » showMedia[br]➩ (number) width : ' + currentMedia.alt[0] + '[br]➩ (number) height : ' + currentMedia.alt[1] + '[br]➩ (string) date : ' + currentMedia.alt[2] + '[br]➩ (string) legend : ' + currentMedia.alt[3]);
 		}
 
 		// *** Dialogue vidéo *********************************** //
@@ -336,7 +336,7 @@ function Slideshow() {
 		// *** Message de debug ********************************* //
 		else if (config.debug && (currentMedia.alt.length === 2)) {
 
-			TheDialogue.dialogInformation(i18n.translate('debugInvalidAltAttribute'), 'TheSlideshow » showMedia\n➩ (string) date : ' + currentMedia.alt[0] + '\n➩ (string) legend : ' + currentMedia.alt[1]);
+			TheDialogue.dialogInformation(i18n.translate('debugInvalidAltAttribute'), 'TheSlideshow » showMedia[br]➩ (string) date : ' + currentMedia.alt[0] + '[br]➩ (string) legend : ' + currentMedia.alt[1]);
 		}
 	};
 

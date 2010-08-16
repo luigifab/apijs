@@ -1,6 +1,6 @@
 /**
  * Created J/03/12/2009
- * Updated D/15/08/2010
+ * Updated L/16/08/2010
  * Version 23
  *
  * Copyright 2008-2010 | Fabrice Creuzot <contact@luigifab.info>
