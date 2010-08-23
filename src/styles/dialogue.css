@@ -1,7 +1,7 @@
 /**
  * Created V/08/05/2009
- * Updated Ma/10/08/2010
- * Version 10
+ * Updated L/23/08/2010
+ * Version 11
  *
  * Copyright 2008-2010 | Fabrice Creuzot <contact@luigifab.info>
  * http://www.luigifab.info/apijs/
@@ -27,9 +27,9 @@
 
 #boite {
 	position:relative; top:28%; margin:auto; padding:0.6em 0.8em 2.4em; width:33em; min-height:9em; overflow:hidden;
-	background-color:white; background-repeat:no-repeat; background-position:0.7em 0.7em; opacity:0.85;
+	background-color:white; background-repeat:no-repeat; background-position:0.7em 0.8em; opacity:0.85;
 	border-radius:10px; -khtml-border-radius:10px; -moz-border-radius:10px; -webkit-border-radius:10px;
-	box-shadow:6px 6px 10px #222; -moz-box-shadow:6px 6px 10px #222; -webkit-box-shadow:6px 6px 10px #222;
+	box-shadow:0 0 30px black; -moz-box-shadow:0 0 30px black; -webkit-box-shadow:0 0 30px black;
 }
 
 #boite.information  { background-image:url("../images/icons/32/gnome-dialog-information.png"); }
@@ -53,7 +53,7 @@
 }
 
 #boite.video {
-	top:50%; margin-top:-275px; padding:10px 10px 5px; width:640px; min-height:inherit; overflow:visible;
+	top:50%; left:50%; margin:0; padding:10px 10px 5px; width:auto; min-height:inherit; overflow:visible;
 	border:2px solid #888; opacity:1;
 	box-shadow:none; -moz-box-shadow:none; -webkit-box-shadow:none;
 }
@@ -61,12 +61,12 @@
 
 /* ############################################################### Texte ### */
 #boite h1 {
-	margin:0.2em 0.2em 0.8em 40px;
+	margin:0.35em 0.2em 1em 40px;
 	font-size:1.6em; font-weight:bold; color:black;
 }
 
 #boite p {
-	margin:0.8em auto 1em;
+	margin:1em auto;
 	font-size:1em; line-height:1.4em;
 }
 
@@ -88,14 +88,14 @@
 #boite div.control button {
 	margin-left:0.45em; padding:0.2em 0.7em 0.2em 25px;
 	font-size:0.85em; cursor:pointer; color:black;
-	border:1px solid #BBB; background-color:#DBDBDB; background-repeat:no-repeat; background-position:4px center;
+	border:1px solid #BBB; background-color:#E2E2E2; background-repeat:no-repeat; background-position:4px center;
 	border-radius:4px; -khtml-border-radius:4px; -moz-border-radius:4px; -webkit-border-radius:4px;
 }
 
 #boite div.control button.cancel  { background-image:url("../images/icons/16/silk-cancel.png"); }
 #boite div.control button.confirm { background-image:url("../images/icons/16/silk-accept.png"); }
 
-#boite div.control button:focus, #boite div.control button:hover, #boite div.control button:active { border:1px solid #AAA; background-color:#EFEFEF; }
+#boite div.control button:focus, #boite div.control button:hover, #boite div.control button:active { border:1px solid #AAA; background-color:#EDEDED; }
 
 
 /* ############################################### Boutons de navigation ### */
@@ -125,7 +125,7 @@
 
 
 /* ############################################ Dialogues photo et vidéo ### */
-#boite.photo dt a { display:inline-block; }
+#boite.photo dt a { display:block; }
 
 #boite.photo dt a span {
 	display:none; position:absolute; bottom:35px; right:15px; width:24px; height:24px;
@@ -134,16 +134,14 @@
 
 #boite.photo dt a:hover span, #boite.photo dt a:active span, #boite.photo dt a:focus span { display:inline-block; }
 
-#boite.photo dt img { display:inline-block; }
+#boite.photo dt img { display:block; }
 #boite.photo dt img.loading { background:white url("../images/dialogue/loading.gif") no-repeat center; }
 
 #boite.photo dt img.onerror_de { background:white url("../images/dialogue/error/de.png") no-repeat center; }
 #boite.photo dt img.onerror_en { background:white url("../images/dialogue/error/en.png") no-repeat center; }
 #boite.photo dt img.onerror_fr { background:white url("../images/dialogue/error/fr.png") no-repeat center; }
 
-#boite.video dt video { display:inline-block; color:white; background-color:black; }
-
-#boite dd span { margin-right:0.2em; font-size:0.85em; color:#777; }
+#boite.video dt video { display:block; color:white; background-color:black; }
 
 #boite dd a.download {
 	float:right; margin:0.4em 0.5em 0;
@@ -151,6 +149,7 @@
 }
 
 #boite dd a.download:hover, #boite dd a.download:active, #boite dd a.download:focus { color:#777; }
+#boite dd span { margin-right:0.2em; font-size:0.85em; color:#777; }
 
 
 /* ########################################################## Spécifique ### */

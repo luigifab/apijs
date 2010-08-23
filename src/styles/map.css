@@ -1,0 +1,72 @@
+/**
+ * Created S/06/02/2009
+ * Updated L/09/08/2010
+ * Version 4
+ *
+ * Copyright 2008-2010 | Fabrice Creuzot <contact@luigifab.info>
+ * http://www.luigifab.info/apijs/
+ *
+ * This program is free software, you can redistribute it or modify
+ * it under the terms of the GNU General Public License (GPL) as published
+ * by the free software foundation, either version 2 of the license, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but without any warranty, without even the implied warranty of
+ * merchantability or fitness for a particular purpose. See the
+ * GNU General Public License (GPL) for more details.
+ */
+
+/* ########################################################## Conteneurs ### */
+#carteInteractive {
+	position:relative; display:none; margin:20px auto 15px; padding:21px 0 0; width:580px; height:400px; overflow:hidden;
+	border:1px solid #DDD; background:white url("../images/map/background.png") no-repeat left bottom;
+	box-shadow:2px 2px 12px #DDD; -moz-box-shadow:2px 2px 12px #DDD; -webkit-box-shadow:2px 2px 12px #DDD;
+}
+
+#carteControl {
+	position:absolute; top:0; right:0; margin:0; padding:3px 6px 0 0; width:100%; height:17px; overflow:hidden;
+	font-size:0.8em; text-align:right;
+	border-bottom:1px solid #AEAEAE; background-color:#DEDEDE;
+}
+
+#mapGeoportail, #mapGoogle {
+	position:relative; display:none; overflow:hidden;
+	border:none; background-color:white;
+}
+
+#carteIntro, #carteFatal {
+	position:relative; top:50%; margin-top:-4.4em; padding:1px;
+	background-color:rgb(240, 240, 240); background-color:rgba(240, 240, 240, 0.7);
+}
+
+#carteIntro p, #carteFatal p {
+	margin:5px auto; padding:0; width:26em;
+	text-align:center; color:#888;
+}
+
+#mapGeoportailInfoCell, #carteFatal { display:none; }
+#mapGeoportailMapCell { border:none; }
+div.gpControlLabelClass { padding:1px 1px 0 !important; }
+
+
+/* ############################################################# Boutons ### */
+#carteControl button {
+	margin:0 5px; padding:0;
+	font-size:1em; font-weight:bold; cursor:pointer;
+	border:none; color:#36648B; background:none;
+}
+
+#carteControl button.bis { font-weight:normal; color:#824681; }
+
+#carteControl button:focus, #carteControl button:hover, #carteControl button:active { color:black; }
+
+#carteControl button[disabled], #carteControl button[disabled]:focus,
+#carteControl button[disabled]:hover, #carteControl button[disabled]:active { color:#8D8D8D; cursor:default; }
+
+#carteControl button[disabled].bis, #carteControl button[disabled].bis:focus,
+#carteControl button[disabled].bis:hover, #carteControl button[disabled].bis:active { color:#ADADAD; }
+
+#carteControl button[disabled].actif, #carteControl button[disabled].actif:focus,
+#carteControl button[disabled].actif:hover, #carteControl button[disabled].actif:active { color:black; }
+

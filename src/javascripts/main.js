@@ -1,7 +1,7 @@
 /**
  * Created J/03/12/2009
- * Updated L/16/08/2010
- * Version 23
+ * Updated D/22/08/2010
+ * Version 24
  *
  * Copyright 2008-2010 | Fabrice Creuzot <contact@luigifab.info>
  * http://www.luigifab.info/apijs/
@@ -18,11 +18,12 @@
  */
 
 // ### Paramètres de configuration ################################ //
-// = révision : 10
+// = révision : 12
 // » Définie les variables globales et la config
 // » Lance l'application JavaScript
 var i18n = null, TheButton = null, TheDialogue = null, TheSlideshow = null, TheUpload = null, TheMap = null;
 var config = {
+	version: '1.1.0',
 	lang: 'fr',
 	debug: true,
 	debugkey: false,
@@ -45,6 +46,7 @@ var config = {
 	},
 	slideshow: {
 		ids: 'diaporama',
+		hiddenPage: true,
 		hoverload: false
 	},
 	map: {
@@ -71,9 +73,9 @@ else {
 
 
 // ### Lancement de l'application ################################# //
-// = révision : 14
+// = révision : 16
 // » Recherche les liens ayant la class popup
-// » Charge tous les modules disponibles
+// » Charge les modules disponibles
 function start() {
 
 	for (var tag = document.getElementsByTagName('a'), i = 0; i < tag.length; i++) {
@@ -85,7 +87,7 @@ function start() {
 			tag[i].setAttribute('onclick', 'window.open(this.href); return false;');
 	}
 
-	if ((typeof Internationalization === 'function') && (typeof Dialogue === 'function')) {
+	if ((typeof Internationalization === 'function') && (typeof BBcode === 'function') && (typeof Dialogue === 'function')) {
 
 		i18n = new Internationalization();
 		i18n.init();
@@ -93,9 +95,13 @@ function start() {
 		TheDialogue = new Dialogue();
 
 		if (typeof Slideshow === 'function') {
-			config.dialogue.hiddenPage = true;
 			TheSlideshow = new Slideshow();
 			TheSlideshow.init();
+		}
+
+		if ((typeof Map === 'function') && document.getElementById('carteInteractive')) {
+			TheMap = new Map();
+			TheMap.init();
 		}
 	}
 }
@@ -108,5 +114,160 @@ function start() {
 function openTab(ev) {
     ev.preventDefault();
     window.open(this.href);
+}
+
+
+// ### Vérification des modules ################################### //
+// = révision : 7
+// » Vérifie les modules
+// » Vérifie les données de configuration
+// » Ne vérifie pas les dépendances
+function checkAll() {
+
+	var error = 0, warning = 0, defaultConf = null, report = [];
+	defaultConf = {
+		version: 'string',
+		lang: 'string',
+		debug: 'boolean',
+		debugkey: 'boolean',
+		navigator: 'boolean',
+		autolang: 'boolean',
+		dialogue: {
+			blocks: 'object',
+			hiddenPage: 'boolean',
+			resize: 'boolean',
+			autoplay: 'boolean',
+			savePhoto: 'boolean',
+			saveVideo: 'boolean',
+			videoWidth: 'number',
+			videoHeight: 'number',
+			imageClose: 'string',
+			imageUpload: 'string',
+			fileUpload: 'string',
+			filePhoto: 'string',
+			fileVideo: 'string'
+		},
+		slideshow: {
+			ids: 'string',
+			hiddenPage: 'boolean',
+			hoverload: 'boolean'
+		}
+	};
+
+	report.push('The apijs ' + config.version);
+
+	// *** Vérif modules *************************** //
+	report.push('\nChecking modules');
+
+	// bbcode
+	if (typeof BBcode === 'function')
+		report.push('➩ BBcode is here');
+
+	// i18n
+	if ((typeof Internationalization === 'function') && (i18n instanceof Internationalization))
+		report.push('➩ Internationalization is here and loaded');
+
+	else if (typeof Internationalization === 'function')
+		report.push('➩ Internationalization is here');
+
+	// theButton
+	if ((typeof Button === 'function') && (TheButton instanceof Button))
+		report.push('➩ TheButton is here and loaded');
+
+	else if (typeof Button === 'function')
+		report.push('➩ TheButton is here');
+
+	// theDialogue
+	if ((typeof Dialogue === 'function') && (TheDialogue instanceof Dialogue))
+		report.push('➩ TheDialogue is here and loaded');
+
+	else if (typeof Dialogue === 'function')
+		report.push('➩ TheDialogue is here');
+
+	// theUpload
+	if ((typeof Upload === 'function') && (TheUpload instanceof Upload))
+		report.push('➩ TheUpload is here and loaded');
+
+	else if (typeof Upload === 'function')
+		report.push('➩ TheUpload is here');
+
+	// theSlideshow
+	if ((typeof Slideshow === 'function') && (TheSlideshow instanceof Slideshow))
+		report.push('➩ TheSlideshow is here and loaded');
+
+	else if (typeof Slideshow === 'function')
+		report.push('➩ TheSlideshow is here');
+
+	// theMap
+	if ((typeof Map === 'function') && (TheMap instanceof Map))
+		report.push('➩ TheMap is here and loaded');
+
+	else if (typeof Map === 'function')
+		report.push('➩ TheMap is here');
+
+	// *** Vérif configuration ********************* //
+	report.push('\nChecking configuration');
+
+	for (var key in defaultConf) {
+
+		// pas dé vérif si le module n'est pas chargé
+		if ((key === 'dialogue') && (typeof Dialogue !== 'function'))
+			continue;
+
+		if ((key === 'slideshow') && (typeof Slideshow !== 'function'))
+			continue;
+
+		if ((key === 'map') && (typeof Map !== 'function'))
+			continue;
+
+		// config d'un module
+		if (typeof defaultConf[key] === 'object') {
+
+			for (var bis in defaultConf[key]) {
+
+				// config manquante
+				if (config[key][bis] === undefined) {
+					report.push('☠ config.' + key + '.' + bis + ' is missing');
+					error++;
+				}
+
+				// config vide
+				else if (config[key][bis] === null) {
+					report.push('⚠ config.' + key + '.' + bis + ' is null');
+					warning++;
+				}
+
+				// config invalide
+				else if (typeof config[key][bis] !== defaultConf[key][bis]) {
+					report.push('☠ config.' + key + '.' + bis + ' isn\'t a ' + defaultConf[key][bis]);
+					error++;
+				}
+			}
+		}
+
+		// config manquante
+		else if (config[key] === undefined) {
+			report.push('☠ config.' + key + ' is missing');
+			error++;
+		}
+
+		// config vide
+		else if (config[key] === null) {
+			report.push('⚠ config.' + key + ' is null');
+			warning++;
+		}
+
+		// config invalide
+		else if (typeof config[key] !== defaultConf[key]) {
+			report.push('☠ config.' + key + ' isn\'t a ' + defaultConf[key]);
+			error++;
+		}
+	}
+
+	if ((error < 1) && (warning < 1))
+		report.push('➩ no error found');
+
+	// *** Affichage du rapport ******************** //
+	alert(report.join('\n'));
 }
 

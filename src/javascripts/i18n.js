@@ -1,7 +1,7 @@
 /**
  * Created S/05/06/2010
- * Updated V/13/08/2010
- * Version 7
+ * Updated J/19/08/2010
+ * Version 9
  *
  * Copyright 2008-2010 | Fabrice Creuzot <contact@luigifab.info>
  * http://www.luigifab.info/apijs/
@@ -19,39 +19,39 @@
 
 function Internationalization() {
 
-	// #### Traduction ############################################################# private ### //
-	// = révision : 6
-	// » Définition des traductions disponibles
-	this.i18n = new Array();
+	// définition des traductions
+	this.data = [];
 
 	// Deutsch
-	// Dacrydium SARL <contact@dacrydium.fr>
-	this.i18n.de = {
+	// » Dacrydium SARL <contact@dacrydium.fr>
+	this.data.de = {
 		buttonOk: "Okay",
 		buttonCancel: "Stornieren",
 		buttonConfirm: "Bestätigen",
-		buttonClose: "",
+		buttonClose: "Ende",
 
 		downloadLink: "",
 		operationTooLong: "",
 		reloadLink: "",
 		warningLostChange: "",
 		windowTooSmall: "",
-		pressKeyF11: "",
+		pressKeyPhoto: "",
+		pressKeyVideo: "",
 
-		debugInvalidCall: "(debug) ",
-		debugInvalidUse: "(debug) ",
-		debugInvalidAltAttribute: "(debug) ",
-		debugUnknownAction: "(debug) ",
-		debugKeyDetected: "(debug) ",
-		debugKeyCode: "",
-		debugNotExist: "",
-		debugNotRecognizedAltAttribute: ""
+		debugInvalidCall: "(debug) Invalid call",
+		debugInvalidUse: "(debug) Invalid use",
+		debugInvalidAltAttribute: "(debug) Invalid alt attribute",
+		debugUnknownAction: "(debug) Unknown action",
+		debugKeyDetected: "(debug) Key detected",
+		debugKeyCode: "Code of the seizure key : §",
+		debugNotExist: "doesn't exist (unlikely error).",
+		debugNotRecognizedAltAttribute: "The alt attribute of the image wasn't recognized."
 	};
 
 	// English
-	// Fabrice Creuzot <contact@luigifab.info>, Brian Legrand <brianyouhouy@live.fr>
-	this.i18n.en = {
+	// » Fabrice Creuzot <contact@luigifab.info>
+	// » Brian Legrand <brianyouhouy@live.fr>
+	this.data.en = {
 		buttonOk: "Ok",
 		buttonCancel: "Cancel",
 		buttonConfirm: "Confirm",
@@ -62,21 +62,22 @@ function Internationalization() {
 		reloadLink: "Reload this page",
 		warningLostChange: "Warning : all changes in progress will be lost.",
 		windowTooSmall: "Window too small",
-		pressKeyF11: "Now press F11 to use full screen mode or enlarge the window.\n\nThe size of the window (§x§) is smaller than the required size (§x§), so it doesn't allow the display of the picture.",
+		pressKeyPhoto: "[p]Now press F11 to use full screen mode or enlarge the window.[/p][p]The size of the window (§x§) is smaller than the required size (§x§), so it doesn't allow the display of the picture.[/p]",
+		pressKeyVideo: "[p]Now press F11 to use full screen mode or enlarge the window.[/p][p]The size of the window (§x§) is smaller than the required size (§x§), so it doesn't allow the display of the video.[/p]",
 
 		debugInvalidCall: "(debug) Invalid call",
 		debugInvalidUse: "(debug) Invalid use",
 		debugInvalidAltAttribute: "(debug) Invalid alt attribute",
 		debugUnknownAction: "(debug) Unknown action",
 		debugKeyDetected: "(debug) Key detected",
-		debugKeyCode: "Code of the seizure key : ",
+		debugKeyCode: "Code of the seizure key : §",
 		debugNotExist: "doesn't exist (unlikely error).",
 		debugNotRecognizedAltAttribute: "The alt attribute of the image wasn't recognized."
 	};
 
 	// Français
-	// Fabrice Creuzot <contact@luigifab.info>
-	this.i18n.fr = {
+	// » Fabrice Creuzot <contact@luigifab.info>
+	this.data.fr = {
 		buttonOk: "Ok",
 		buttonCancel: "Annuler",
 		buttonConfirm: "Valider",
@@ -87,14 +88,15 @@ function Internationalization() {
 		reloadLink: "Rechargez la page",
 		warningLostChange: "Attention : toutes les modifications en cours seront perdues.",
 		windowTooSmall: "Fenêtre trop petite",
-		pressKeyF11: "Appuyez maintenant sur F11 pour passer en mode plein écran, ou agrandissez la fenêtre.\n\nLa taille de la fenêtre (§x§) est inférieure à la taille requise (§x§) elle ne permet donc pas l'affichage de la photo.",
+		pressKeyPhoto: "[p]Appuyez maintenant sur F11 pour passer en mode plein écran, ou agrandissez la fenêtre.[/p][p]La taille de la fenêtre (§x§) est inférieure à la taille requise (§x§), elle ne permet donc pas l'affichage de la photo.[/p]",
+		pressKeyVideo: "[p]Appuyez maintenant sur F11 pour passer en mode plein écran, ou agrandissez la fenêtre.[/p][p]La taille de la fenêtre (§x§) est inférieure à la taille requise (§x§), elle ne permet donc pas l'affichage de la vidéo.[/p]",
 
 		debugInvalidCall: "(debug) Appel invalide",
 		debugInvalidUse: "(debug) Utilisation invalide",
 		debugInvalidAltAttribute: "(debug) Attribut alt invalide",
 		debugUnknownAction: "(debug) Action inconnue",
 		debugKeyDetected: "(debug) Touche détectée",
-		debugKeyCode: "Code de la touche saisie : ",
+		debugKeyCode: "Code de la touche saisie : §",
 		debugNotExist: "n'existe pas (erreur improbable).",
 		debugNotRecognizedAltAttribute: "L'attribut alt de l'image n'a pas été reconnu."
 	};
@@ -106,31 +108,36 @@ function Internationalization() {
 	// » Vérifie si la langue existe dans les traductions disponibles
 	this.init = function () {
 
-		if ((typeof navigator.language === 'string') && config.autolang && (navigator.language.slice(0, 2) in this.i18n))
+		if ((typeof navigator.language === 'string') && config.autolang && (navigator.language.slice(0, 2) in this.data))
 			config.lang = navigator.language.slice(0, 2);
 
-		else if ((typeof config.lang !== 'string') || !(config.lang in this.i18n))
+		else if ((typeof config.lang !== 'string') || !(config.lang in this.data))
 			config.lang = 'en';
 	};
 
 
 	// #### Traduction par mot clef ################################################# public ### //
-	// = révision : 7
+	// = révision : 9
 	// » Retourne la chaine de caractères correspondante à un mot clef
 	// » En fonction de la langue définie dans la configuration
 	this.translate = function (word, a, b, c, d, e) {
 
+		// mot clef inexistant
+		if (typeof this.data[config.lang][word] !== 'string') {
+			return word;
+		}
+
 		// chaine de caractères configurable
-		if (arguments.length > 1) {
+		else if (arguments.length > 1) {
 
-			var data = this.i18n[config.lang][word].split('§'), resultat = '';
+			var i = 1, j = 0, resultat = '', data = this.data[config.lang][word].split('§');
 
-			for (var i in data) if (data.hasOwnProperty(i)) {
+			for (j in data) if (data.hasOwnProperty(j)) {
 
-				if (arguments.length > 0)
-					resultat += data[i] + shift(arguments);
+				if (i < arguments.length)
+					resultat += data[j] + arguments[i++];
 				else
-					resultat += data[i];
+					resultat += data[j];
 			}
 
 			return resultat;
@@ -138,7 +145,7 @@ function Internationalization() {
 
 		// chaine de caractères simple
 		else {
-			return this.i18n[config.lang][word];
+			return this.data[config.lang][word];
 		}
 	};
 }

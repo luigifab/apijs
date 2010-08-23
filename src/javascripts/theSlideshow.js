@@ -1,7 +1,7 @@
 /**
  * Created J/13/05/2010
- * Updated L/16/08/2010
- * Version 10
+ * Updated S/21/08/2010
+ * Version 11
  *
  * Copyright 2008-2010 | Fabrice Creuzot <contact@luigifab.info>
  * http://www.luigifab.info/apijs/
@@ -123,11 +123,12 @@ function Slideshow() {
 
 
 	// #### Prépare l'affichage du dialogue photo ou vidéo ######## i18n ## debug ## private ### //
-	// = révision : 26
+	// = révision : 28
 	// » Recherche les informations de la photo ou de la vidéo à afficher
 	// » Annule l'action par défaut lors d'un événement
-	// » En mode diaporama, déduit s'il faut mettre à jour l'image principale de l'album, s'il faut afficher un dialogue photo
-	//  ou vidéo ou s'il faut mettre à jour le dialogue photo ou vidéo, s'assure également de ne pas faire deux fois la même chose
+	// » En mode diaporama, déduit s'il faut mettre à jour l'image principale de l'album, s'il faut afficher un dialogue photo ou vidéo
+	//  ou s'il faut mettre à jour les dialogues photo ou vidéo
+	// » S'assure également de ne pas faire deux fois la même chose
 	this.showMedia = function (ev) {
 
 		// *** Recherche des informations *********************** //
@@ -178,7 +179,7 @@ function Slideshow() {
 				TheSlideshow.showDialogue(currentMedia);
 			}
 
-			// changement de média depuis le dialogue
+			// changement de photo ou de vidéo depuis le dialogue
 			// touches droite gauche début fin et boutons précédent suivant
 			else {
 				TheSlideshow.updatePresentation(currentMedia);
@@ -268,7 +269,7 @@ function Slideshow() {
 
 
 	// #### Affichage de la photo ou vidéo ######################## i18n ## debug ## private ### //
-	// = révision : 5
+	// = révision : 6
 	// » Extrait et vérifie les données nécessaires à l'affichage de la photo ou vidéo
 	// » Affiche une photo ou une vidéo grâce au dialogue photo ou vidéo de [TheDialogue]
 	// » Dans tout les cas remplace l'ancien dialogue par un nouveau dialogue
@@ -286,18 +287,18 @@ function Slideshow() {
 
 			// suppression de l'ancien dialogue
 			if (TheDialogue.dialogue !== null)
-				TheDialogue.actionExternal(false);
+				TheDialogue.actionClose(false);
 
 			// mise en place du dialogue photo
 			TheDialogue.dialogPhoto(currentMedia.date, currentMedia.legend, currentMedia.url, currentMedia.width, currentMedia.height);
 			this.showNavigation(currentMedia.album, currentMedia.number);
 
 			// mise à jour de l'arrière plan
-			if (config.navigator && config.dialogue.hiddenPage && (TheDialogue.dialogue === 'photo') &&
+			if (config.navigator && config.slideshow.hiddenPage && (TheDialogue.dialogue === 'photo') &&
 			    !document.getElementById('dialogue').hasAttribute('class'))
 				document.getElementById('dialogue').setAttribute('class', 'norgba');
 
-			else if (config.dialogue.hiddenPage && (TheDialogue.dialogue === 'photo') &&
+			else if (config.slideshow.hiddenPage && (TheDialogue.dialogue === 'photo') &&
 			         (document.getElementById('dialogue').className !== 'norgba'))
 				document.getElementById('dialogue').setAttribute('class', 'norgba');
 		}
@@ -317,18 +318,18 @@ function Slideshow() {
 
 			// suppression de l'ancien dialogue
 			if (TheDialogue.dialogue !== null)
-				TheDialogue.actionExternal(false);
+				TheDialogue.actionClose(false);
 
 			// mise en place du dialogue vidéo
 			TheDialogue.dialogVideo(currentMedia.date, currentMedia.legend, currentMedia.url);
 			this.showNavigation(currentMedia.album, currentMedia.number);
 
 			// mise à jour de l'arrière plan
-			if (config.navigator && config.dialogue.hiddenPage && (TheDialogue.dialogue === 'video') &&
+			if (config.navigator && config.slideshow.hiddenPage && (TheDialogue.dialogue === 'video') &&
 			    !document.getElementById('dialogue').hasAttribute('class'))
 				document.getElementById('dialogue').setAttribute('class', 'norgba');
 
-			else if (config.dialogue.hiddenPage && (TheDialogue.dialogue === 'video') &&
+			else if (config.slideshow.hiddenPage && (TheDialogue.dialogue === 'video') &&
 			         (document.getElementById('dialogue').className !== 'norgba'))
 				document.getElementById('dialogue').setAttribute('class', 'norgba');
 		}
@@ -377,7 +378,7 @@ function Slideshow() {
 
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// DÉFINITION DES ACTIONS DES BOUTONS ET DES TOUCHES (4)
+	// DÉFINITION DES ACTIONS DES BOUTONS ET DES TOUCHES DU CLAVIER (4)
 
 	// #### Action de la touche début ################################### event ## protected ### //
 	// = révision : 3
