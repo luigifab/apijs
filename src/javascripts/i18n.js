@@ -1,9 +1,9 @@
 /**
  * Created S/05/06/2010
- * Updated J/19/08/2010
- * Version 9
+ * Updated V/01/10/2010
+ * Version 11
  *
- * Copyright 2008-2010 | Fabrice Creuzot <contact@luigifab.info>
+ * Copyright 2008-2010 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs/
  *
  * This program is free software, you can redistribute it or modify
@@ -23,20 +23,17 @@ function Internationalization() {
 	this.data = [];
 
 	// Deutsch
-	// » Dacrydium SARL <contact@dacrydium.fr>
+	// » Dacrydium SARL <contact~dacrydium~fr>
 	this.data.de = {
-		buttonOk: "Okay",
-		buttonCancel: "Stornieren",
+		buttonOk: "Ok",
+		buttonCancel: "Abbrechen",
 		buttonConfirm: "Bestätigen",
 		buttonClose: "Ende",
 
-		downloadLink: "",
-		operationTooLong: "",
-		reloadLink: "",
-		warningLostChange: "",
-		windowTooSmall: "",
-		pressKeyPhoto: "",
-		pressKeyVideo: "",
+		downloadLink: "Laden",
+		operationTooLong: "This operation is too long ? ",
+		warningLostChange: "Achtung : alle laufenden änderungen werden verloren.",
+		reloadLink: "Seite nochmal laden",
 
 		debugInvalidCall: "(debug) Invalid call",
 		debugInvalidUse: "(debug) Invalid use",
@@ -49,8 +46,8 @@ function Internationalization() {
 	};
 
 	// English
-	// » Fabrice Creuzot <contact@luigifab.info>
-	// » Brian Legrand <brianyouhouy@live.fr>
+	// » Fabrice Creuzot (luigifab) <code~luigifab~info>
+	// » Brian Legrand <brianyouhouy~live~fr>
 	this.data.en = {
 		buttonOk: "Ok",
 		buttonCancel: "Cancel",
@@ -59,11 +56,8 @@ function Internationalization() {
 
 		downloadLink: "Download",
 		operationTooLong: "This operation is too long ? ",
-		reloadLink: "Reload this page",
 		warningLostChange: "Warning : all changes in progress will be lost.",
-		windowTooSmall: "Window too small",
-		pressKeyPhoto: "[p]Now press F11 to use full screen mode or enlarge the window.[/p][p]The size of the window (§x§) is smaller than the required size (§x§), so it doesn't allow the display of the picture.[/p]",
-		pressKeyVideo: "[p]Now press F11 to use full screen mode or enlarge the window.[/p][p]The size of the window (§x§) is smaller than the required size (§x§), so it doesn't allow the display of the video.[/p]",
+		reloadLink: "Reload this page",
 
 		debugInvalidCall: "(debug) Invalid call",
 		debugInvalidUse: "(debug) Invalid use",
@@ -76,7 +70,7 @@ function Internationalization() {
 	};
 
 	// Français
-	// » Fabrice Creuzot <contact@luigifab.info>
+	// » Fabrice Creuzot (luigifab) <code~luigifab~info>
 	this.data.fr = {
 		buttonOk: "Ok",
 		buttonCancel: "Annuler",
@@ -85,11 +79,8 @@ function Internationalization() {
 
 		downloadLink: "Télécharger",
 		operationTooLong: "Cette opération prend trop de temps ? ",
-		reloadLink: "Rechargez la page",
 		warningLostChange: "Attention : toutes les modifications en cours seront perdues.",
-		windowTooSmall: "Fenêtre trop petite",
-		pressKeyPhoto: "[p]Appuyez maintenant sur F11 pour passer en mode plein écran, ou agrandissez la fenêtre.[/p][p]La taille de la fenêtre (§x§) est inférieure à la taille requise (§x§), elle ne permet donc pas l'affichage de la photo.[/p]",
-		pressKeyVideo: "[p]Appuyez maintenant sur F11 pour passer en mode plein écran, ou agrandissez la fenêtre.[/p][p]La taille de la fenêtre (§x§) est inférieure à la taille requise (§x§), elle ne permet donc pas l'affichage de la vidéo.[/p]",
+		reloadLink: "Rechargez la page",
 
 		debugInvalidCall: "(debug) Appel invalide",
 		debugInvalidUse: "(debug) Utilisation invalide",
@@ -102,7 +93,7 @@ function Internationalization() {
 	};
 
 
-	// #### Autodétection de la langue ############################################## public ### //
+	// #### Auto-détection de la langue ############################################# public ### //
 	// = révision : 5
 	// » Essaye de récupérer la langue utilisée par le navigateur
 	// » Vérifie si la langue existe dans les traductions disponibles
@@ -117,9 +108,9 @@ function Internationalization() {
 
 
 	// #### Traduction par mot clef ################################################# public ### //
-	// = révision : 9
+	// = révision : 12
+	// » Vérifie si le mot clef existe dans les traductions
 	// » Retourne la chaine de caractères correspondante à un mot clef
-	// » En fonction de la langue définie dans la configuration
 	this.translate = function (word, a, b, c, d, e) {
 
 		// mot clef inexistant
@@ -130,17 +121,17 @@ function Internationalization() {
 		// chaine de caractères configurable
 		else if (arguments.length > 1) {
 
-			var i = 1, j = 0, resultat = '', data = this.data[config.lang][word].split('§');
+			var i = 0, arg = 1, translation = '', data = this.data[config.lang][word].split('§');
 
-			for (j in data) if (data.hasOwnProperty(j)) {
+			for (i in data) if (data.hasOwnProperty(i)) {
 
-				if (i < arguments.length)
-					resultat += data[j] + arguments[i++];
+				if (arg < arguments.length)
+					translation += data[i] + arguments[arg++];
 				else
-					resultat += data[j];
+					translation += data[i];
 			}
 
-			return resultat;
+			return translation;
 		}
 
 		// chaine de caractères simple

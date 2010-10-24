@@ -1,9 +1,9 @@
 /**
  * Created D/12/04/2009
- * Updated S/21/08/2010
- * Version 97
+ * Updated D/24/10/2010
+ * Version 99
  *
- * Copyright 2008-2010 | Fabrice Creuzot <contact@luigifab.info>
+ * Copyright 2008-2010 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs/
  *
  * This program is free software, you can redistribute it or modify
@@ -21,6 +21,7 @@ function Dialogue() {
 
 	// définition des attributs
 	this.offset = 0;
+	this.page = true;
 	this.timer = null;
 	this.dialogue = null;
 	this.image = null;
@@ -34,11 +35,11 @@ function Dialogue() {
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// DÉFINITION DES BOITES DE DIALOGUE (8)
 
-	// #### Dialogue d'Information ################################# i18n ## debug ## public ### //
-	// = révision : 63
+	// #### Dialogue d'information ################################# i18n ## debug ## public ### //
+	// = révision : 64
 	// » Permet d'afficher un message d'information à l'intention de l'utilisateur
 	// » Composé d'un titre, d'un paragraphe, et d'un bouton de dialogue (Ok)
-	// » Fermeture par bouton Ok ou touches Échap/F11
+	// » Fermeture par bouton Ok ou touche Échap
 	this.dialogInformation = function (title, text, icon) {
 
 		// *** Création de la boite de dialogue ***************** //
@@ -63,7 +64,7 @@ function Dialogue() {
 	};
 
 
-	// #### Dialogue de Confirmation ############################### i18n ## debug ## public ### //
+	// #### Dialogue de confirmation ############################### i18n ## debug ## public ### //
 	// = révision : 62
 	// » Permet de demander une confirmation à l'utilisateur
 	// » Composé d'un titre, d'un paragraphe, et de deux boutons de dialogue (Annuler et Valider)
@@ -92,7 +93,7 @@ function Dialogue() {
 	};
 
 
-	// #### Dialogue d'Upload ###################################### i18n ## debug ## public ### //
+	// #### Dialogue d'upload ###################################### i18n ## debug ## public ### //
 	// = révision : 66
 	// » Permet à l'utilisateur l'envoi de fichier sans avoir à recharger la page
 	// » Composé d'un titre, d'un paragraphe, d'un champ fichier, et de deux boutons de dialogue (Annuler et Valider)
@@ -119,7 +120,7 @@ function Dialogue() {
 	};
 
 
-	// #### Dialogue de Progression ################################ i18n ## debug ## public ### //
+	// #### Dialogue de progression ################################ i18n ## debug ## public ### //
 	// = révision : 76
 	// » Permet de faire patienter l'utilisateur en affichant une barre de progression
 	// » Composé d'un titre, d'un paragraphe, d'une barre de progression, et d'un lien différé de 10 secondes
@@ -147,17 +148,17 @@ function Dialogue() {
 	};
 
 
-	// #### Dialogue d'Attente ##################################### i18n ## debug ## public ### //
-	// = révision : 63
+	// #### Dialogue d'attente ##################################### i18n ## debug ## public ### //
+	// = révision : 64
 	// » Permet de faire patienter l'utilisateur en affichant un message d'attente
 	// » Composé d'un titre, d'un paragraphe, et d'un lien différé de 4 secondes
 	// » Fermeture automatique ou pas et touche Échap désactivée
-	this.dialogPleaseWait = function (title, text) {
+	this.dialogWaiting = function (title, text) {
 
 		// *** Création de la boite de dialogue ***************** //
 		if ((typeof title === 'string') && (typeof text === 'string')) {
 
-			this.setupDialogue('pleasewait');
+			this.setupDialogue('waiting');
 			this.htmlParent();
 
 			this.htmlTitle(title);
@@ -169,31 +170,25 @@ function Dialogue() {
 		// *** Message de debug ********************************* //
 		else if (config.debug) {
 
-			this.dialogInformation(i18n.translate('debugInvalidCall'), 'TheDialogue » dialogPleaseWait[br]➩ (string) title : ' + title + '[br]➩ (string) text : ' + text);
+			this.dialogInformation(i18n.translate('debugInvalidCall'), 'TheDialogue » dialogWaiting[br]➩ (string) title : ' + title + '[br]➩ (string) text : ' + text);
 		}
 	};
 
 
-	// #### Dialogue Photo ######################################### i18n ## debug ## public ### //
-	// = révision : 102
+	// #### Dialogue photo ######################################### i18n ## debug ## public ### //
+	// = révision : 104
 	// » Permet d'afficher une photo en plein écran au premier plan
 	// » Composé d'une photo, d'une définition, et de trois boutons de dialogue (Précédent Suivant et Fermer)
 	// » Fermeture par bouton Fermer ou touche Échap
-	this.dialogPhoto = function (date, legend, url, width, height) {
-
-		// *** Vérification de la taille disponible ************* //
-		if (!config.dialogue.resize && (typeof date === 'string') && (typeof legend === 'string') && (typeof url === 'string') && (typeof width === 'number') && (typeof height === 'number') && this.checkSize(width, height)) {
-
-			this.dialogInformation(i18n.translate('windowTooSmall'), i18n.translate('pressKeyPhoto', window.innerWidth, window.innerHeight, (width + 150), (height + 100)), 'window');
-		}
+	this.dialogPhoto = function (width, height, url, name, date, legend) {
 
 		// *** Création de la boite de dialogue ***************** //
-		else if ((typeof date === 'string') && (typeof legend === 'string') && (typeof url === 'string') && (typeof width === 'number') && (typeof height === 'number')) {
+		if ((typeof width === 'number') && (typeof height === 'number') && (typeof url === 'string') && (typeof name === 'string') && (typeof date === 'string') && (typeof legend === 'string')) {
 
 			this.setupDialogue('photo');
 			this.htmlParent();
 
-			this.htmlPhoto(date, legend, url, width, height);
+			this.htmlPhoto(width, height, url, name, date, legend);
 			this.htmlButtonClose();
 			this.htmlButtonNavigation();
 		}
@@ -201,31 +196,25 @@ function Dialogue() {
 		// *** Message de debug ********************************* //
 		else if (config.debug) {
 
-			this.dialogInformation(i18n.translate('debugInvalidCall'), 'TheDialogue » dialogPhoto[br]➩ (string) date : ' + date + '[br]➩ (string) legend : ' + legend + '[br]➩ (string) url : ' + url + '[br]➩ (number) width : ' + width + '[br]➩ (number) height : ' + height);
+			this.dialogInformation(i18n.translate('debugInvalidCall'), 'TheDialogue » dialogPhoto[br]➩ (number) width : ' + width + '[br]➩ (number) height : ' + height + '[br]➩ (string) url : ' + url + '[br]➩ (string) name : ' + name + '[br]➩ (string) date : ' + date + '[br]➩ (string) legend : ' + legend);
 		}
 	};
 
 
-	// #### Dialogue Vidéo ######################################### i18n ## debug ## public ### //
-	// = révision : 61
+	// #### Dialogue vidéo ######################################### i18n ## debug ## public ### //
+	// = révision : 63
 	// » Permet d'afficher une vidéo en plein écran au premier plan
 	// » Composé d'une vidéo, d'une définition, et de trois boutons de dialogue (Précédent Suivant et Fermer)
 	// » Fermeture par bouton Fermer ou touche Échap
-	this.dialogVideo = function (date, legend, url) {
-
-		// *** Vérification de la taille disponible ************* //
-		if (!config.dialogue.resize && (typeof legend === 'string') && (typeof legend === 'string') && (typeof url === 'string') && this.checkSize(config.dialogue.videoWidth, config.dialogue.videoHeight)) {
-
-			this.dialogInformation(i18n.translate('windowTooSmall'), i18n.translate('pressKeyVideo', window.innerWidth, window.innerHeight, (config.dialogue.videoWidth + 150), (config.dialogue.videoHeight + 100)), 'window');
-		}
+	this.dialogVideo = function (url, name, date, legend) {
 
 		// *** Création de la boite de dialogue ***************** //
-		else if ((typeof legend === 'string') && (typeof legend === 'string') && (typeof url === 'string')) {
+		if ((typeof url === 'string') && (typeof name === 'string') && (typeof legend === 'string') && (typeof legend === 'string')) {
 
 			this.setupDialogue('video');
 			this.htmlParent();
 
-			this.htmlVideo(date, legend, url);
+			this.htmlVideo(url, name, date, legend);
 			this.htmlButtonClose();
 			this.htmlButtonNavigation();
 		}
@@ -233,12 +222,12 @@ function Dialogue() {
 		// *** Message de debug ********************************* //
 		else if (config.debug) {
 
-			this.dialogInformation(i18n.translate('debugInvalidCall'), 'TheDialogue » dialogVideo[br]➩ (string) date : ' + date + '[br]➩ (string) legend : ' + legend + '[br]➩ (string) url : ' + url);
+			this.dialogInformation(i18n.translate('debugInvalidCall'), 'TheDialogue » dialogVideo[br]➩ (string) url : ' + url + '[br]➩ (string) name : ' + name + '[br]➩ (string) date : ' + date + '[br]➩ (string) legend : ' + legend);
 		}
 	};
 
 
-	// #### Dialogue Automatique ################################### i18n ## debug ## public ### //
+	// #### Dialogue automatique ################################### i18n ## debug ## public ### //
 	// = révision : 6
 	// » Permet d'afficher le contenu d'un élément sous forme d'une boite de dialogue
 	// » Composé des sous éléments qui compose l'élément en question
@@ -267,31 +256,38 @@ function Dialogue() {
 	// DÉFINITION DES ACTIONS DES BOUTONS ET DES TOUCHES DU CLAVIER (3)
 
 	// #### Action de fermeture ######################################### event ## protected ### //
-	// = révision : 34
+	// = révision : 35
 	// » Supprime la boite de dialogue
 	// » Affiche le site en fonction du mode de fermeture
-	this.actionClose = function (total) {
+	this.actionClose = function (all) {
 
-		if (total) {
+		if (all) {
 			this.deleteDialogue();
 			this.showPage();
 		}
 		else {
 			this.deleteDialogue();
 			this.dialogue = null;
+			this.page = false;
 		}
 	};
 
 
 	// #### Action du bouton Valider ##################### i18n ## debug ## event ## private ### //
-	// = révision : 83
+	// = révision : 84
 	// » Retour à l'expéditeur qui se démerde pour la suite de la gestion du dialogue
+	// » Envoie le formulaire de la boite de dialogue si l'action est option
 	// » En provenance des dialogues de confirmation ou d'upload
 	// » Fait appel à [TheButton] ou à [TheUpload]
 	this.actionConfirm = function (action) {
 
+		// *** Formulaire d'options ***************************** //
+		if (action === 'option') {
+			document.getElementBydId('formOption').submit();
+		}
+
 		// *** Retour sur TheButton (confirmation) ************** //
-		if ((action === 'annuler') || (action === 'supprimer')) {
+		else if ((action === 'cancel') || (action === 'delete')) {
 
 			if ((typeof Button === 'function') && (TheButton instanceof Button))
 				TheButton.actionConfirm(action);
@@ -318,10 +314,9 @@ function Dialogue() {
 
 
 	// #### Action des touches du clavier ################ i18n ## debug ## event ## private ### //
-	// = révision : 71
+	// = révision : 73
 	// » Désactive l'action de la touche Échap pour les dialogues d'attente et de progression
 	// » Ferme tous autres dialogues lors de l'appui sur la touche Échap
-	// » Ferme le dialogue d'information fenêtre lors de l'appui sur la touche F11
 	// » En mode diaporama demande l'affichage du média suivant ou précédent lors de l'appui sur les touches droite ou gauche
 	// » En mode diaporama demande l'affichage du premier ou du dernier média lors de l'appui sur les touches début ou fin
 	this.actionKey = function (ev) {
@@ -331,16 +326,12 @@ function Dialogue() {
 			TheDialogue.dialogInformation(i18n.translate('debugKeyDetected'), 'TheDialogue » actionKey[br]' + i18n.translate('debugKeyCode', ev.keyCode));
 		}
 
-		else if ((ev.keyCode === 27) && ((TheDialogue.dialogue === 'pleasewait') || (TheDialogue.dialogue === 'progress')) ) {
+		else if ((ev.keyCode === 27) && ((TheDialogue.dialogue === 'waiting') || (TheDialogue.dialogue === 'progress')) ) {
 			ev.preventDefault();
 		}
 
 		else if (ev.keyCode === 27) {
 			ev.preventDefault();
-			TheDialogue.actionClose(true);
-		}
-
-		else if ((ev.keyCode === 122) && (TheDialogue.dialogue === 'window')) {
 			TheDialogue.actionClose(true);
 		}
 
@@ -356,7 +347,7 @@ function Dialogue() {
 
 		else if ((ev.keyCode === 37) && ((TheDialogue.dialogue === 'photo') || (TheDialogue.dialogue === 'video')) && (TheSlideshow !== null)) {
 			ev.preventDefault();
-			TheSlideshow.actionPrevious();
+			TheSlideshow.actionPrev();
 		}
 
 		else if ((ev.keyCode === 39) && ((TheDialogue.dialogue === 'photo') || (TheDialogue.dialogue === 'video')) && (TheSlideshow !== null)) {
@@ -372,21 +363,21 @@ function Dialogue() {
 	// GESTION DE L'AFFICHAGE DES CONTENEURS PARENTS (5)
 
 	// #### Prépare le terrain ##################################################### private ### //
-	// = révision : 51
-	// » Supprime l'ancienne boite de dialogue ou cache le site internet si nécessaire (config.dialogue.hiddenPage)
-	// » Prend en compte la configuration de TheSlideshow si nécessaire (config.slideshow.hiddenPage)
+	// = révision : 53
+	// » Supprime l'ancienne boite de dialogue ou cache le site internet si nécessaire
+	// » Prend en compte la configuration de TheSlideshow si nécessaire
 	// » Met en place l'écoute des touches du clavier (eventListener:keydown)
 	// » Définie le type de dialogue
 	this.setupDialogue = function (icon) {
 
 		// supprime l'ancien dialogue
-		if (document.getElementById('dialogue'))
+		if (this.dialogue !== null)
 			this.deleteDialogue();
 
 		// cache le site internet
 		if (config.dialogue.hiddenPage || ((TheSlideshow !== null) && config.slideshow.hiddenPage && icon.match(/(photo)|(video)/))) {
 
-			if (window.pageYOffset !== 0)
+			if (this.page && ((window.pageYOffset > 0) || (this.offset > 0)))
 				this.offset = window.pageYOffset;
 
 			for (var id in config.dialogue.blocks) if (config.dialogue.blocks.hasOwnProperty(id)) {
@@ -403,6 +394,7 @@ function Dialogue() {
 			document.addEventListener('keydown', TheDialogue.actionKey, false);
 
 		this.dialogue = icon;
+		this.page = false;
 	};
 
 
@@ -429,7 +421,7 @@ function Dialogue() {
 			document.getElementById(this.dialogue.slice(5)).setAttribute('class', document.getElementById(this.dialogue.slice(5)).getAttribute('class').replace('dialogue', 'nodisplay'));
 		}
 
-		// réinitilise les variables
+		// réinitialise les variables
 		this.timer = null;
 		this.image = null;
 		this.elemA = null;
@@ -440,14 +432,14 @@ function Dialogue() {
 
 
 	// #### Affiche le site ######################################################## private ### //
-	// = révision : 68
+	// = révision : 70
 	// » Supprime l'iframe du formulaire d'upload si nécessaire
-	// » Affiche le site au bon endroit après la suppression de la boite de dialogue si nécessaire (config.dialogue.hiddenPage)
-	// » Prend en compte la configuration de TheSlideshow si nécessaire (config.slideshow.hiddenPage)
+	// » Affiche le site au bon endroit après la suppression de la boite de dialogue si nécessaire
+	// » Prend en compte la configuration de TheSlideshow si nécessaire
 	this.showPage = function () {
 
-		if (document.getElementById('iframe_upload'))
-			document.getElementById('iframe_upload').parentNode.removeChild(document.getElementById('iframe_upload'));
+		if (document.getElementById('iframeUpload'))
+			document.getElementById('iframeUpload').parentNode.removeChild(document.getElementById('iframeUpload'));
 
 		if (config.dialogue.hiddenPage || ((TheSlideshow !== null) && config.slideshow.hiddenPage && this.dialogue.match(/(photo)|(video)/))) {
 
@@ -463,6 +455,7 @@ function Dialogue() {
 		}
 
 		this.dialogue = null;
+		this.page = true;
 	};
 
 
@@ -470,7 +463,7 @@ function Dialogue() {
 	// = révision : 12
 	// » Vérifie si les dialogues photo ou vidéo peuvent être affichés sans redimensionnement
 	// » Renvoie true si la photo ou vidéo doit être redimensionnée et false s'il n'y a rien à faire
-	this.checkSize = function (width, height) {
+	this.changeSize = function (width, height) {
 
 		if ((width > (window.innerWidth - 150)) || (height > (window.innerHeight - 100)))
 			return true;
@@ -480,18 +473,31 @@ function Dialogue() {
 
 
 	// #### Recherche de la taille idéale ########################################## private ### //
-	// = révision : 10
+	// = révision : 16
 	// » Vérifie si la largeur de la boite de dialogue ne dépassera pas la largeur de la fenêtre
 	// » Vérifie si la hauteur de la boite de dialogue ne dépassera pas la hauteur de la fenêtre
-	// » Adapate la taille du contenu du dialogue en conséquence
-	// » Logique de calcul par Lytebox 3.2 (http://www.dolem.com/lytebox/)
-	this.searchSize = function (width, height, url) {
+	// » Adapte la taille du dialogue et de son contenu en conséquence
+	// » Logique de calcul de Lytebox 3.2 (http://www.dolem.com/lytebox/)
+	this.setSize = function (width, height, url) {
 
-		var infoMedia  = { width: width, height: height, id: url.slice((url.lastIndexOf('/') + 1), url.lastIndexOf('.')) };
+		var infoMedia  = { width: width, height: height, id: url.slice((url.lastIndexOf('/') + 1), url.lastIndexOf('.')), mime: null };
 		var infoWindow = { width: window.innerWidth, height: window.innerHeight };
 
+		var mimeTypes = {
+			ogv: 'video/ogg',  webm: 'video/webm',
+			jpg: 'image/jpeg', jpeg: 'image/jpeg',
+			tif: 'image/tiff', tiff: 'image/tiff',
+			png: 'image/png',   svg: 'image/svg+xml'
+		};
+
+		// *** Recherche du type mime *************************** //
+		infoMedia.mime = url.slice(url.lastIndexOf('.') + 1);
+
+		if (infoMedia.mime in mimeTypes)
+			infoMedia.mime = mimeTypes[infoMedia.mime];
+
 		// *** Calcul des dimensions **************************** //
-		if (config.dialogue.resize && this.checkSize(width, height)) {
+		if (this.changeSize(width, height)) {
 
 			infoWindow.width -= 150;
 			infoWindow.height -= 100;
@@ -499,11 +505,11 @@ function Dialogue() {
 			// largeur de l'image supérieur à la largeur de la fenêtre
 			if (infoMedia.width > infoWindow.width) {
 
-				infoMedia.height = Math.round(infoMedia.height * (infoWindow.width / infoMedia.width));
+				infoMedia.height = Math.floor(infoMedia.height * (infoWindow.width / infoMedia.width));
 				infoMedia.width = infoWindow.width;
 
 				if (infoMedia.height > infoWindow.height) {
-					infoMedia.width = Math.round(infoMedia.width * (infoWindow.height / infoMedia.height));
+					infoMedia.width = Math.floor(infoMedia.width * (infoWindow.height / infoMedia.height));
 					infoMedia.height = infoWindow.height;
 				}
 			}
@@ -511,20 +517,20 @@ function Dialogue() {
 			// hauteur de l'image supérieur à la hauteur de la fenêtre
 			else if (infoMedia.height > infoWindow.height) {
 
-				infoMedia.width = Math.round(infoMedia.width * (infoWindow.height / infoMedia.height));
+				infoMedia.width = Math.floor(infoMedia.width * (infoWindow.height / infoMedia.height));
 				infoMedia.height = infoWindow.height;
 
 				if (infoMedia.width > infoWindow.width) {
-					infoMedia.height = Math.round(infoMedia.height * (infoWindow.width / infoMedia.width));
+					infoMedia.height = Math.floor(infoMedia.height * (infoWindow.width / infoMedia.width));
 					infoMedia.width = infoWindow.width;
 				}
 			}
 		}
 
 		// *** Applique les nouvelles dimensions **************** //
-		document.getElementById('boite').style.width = infoMedia.width + 'px';
-		document.getElementById('boite').style.marginLeft = parseInt(-(infoMedia.width + 20) / 2, 10) + 'px';
-		document.getElementById('boite').style.marginTop  = parseInt(-(infoMedia.height + 50) / 2, 10) + 'px';
+		document.getElementById('box').style.width = infoMedia.width + 'px';
+		document.getElementById('box').style.marginLeft = parseInt(-(infoMedia.width + 20) / 2, 10) + 'px';
+		document.getElementById('box').style.marginTop  = parseInt(-(infoMedia.height + 50) / 2, 10) + 'px';
 
 		return infoMedia;
 	};
@@ -536,7 +542,7 @@ function Dialogue() {
 	// DÉFINITION DU CONTENU DES BOITES DE DIALOGUE (12)
 
 	// #### Éléments parents ####################################################### private ### //
-	// = révision : 51
+	// = révision : 53
 	// » Crée le conteneur parent du dialogue
 	// » Crée le conteneur du contenu du dialogue
 	// # <div id="dialogue">
@@ -548,14 +554,15 @@ function Dialogue() {
 		this.elemA = document.createElement('div');
 		this.elemA.setAttribute('id', 'dialogue');
 
+			// Élément div (box)
+			this.elemB = document.createElement('div');
+			this.elemB.setAttribute('id', 'box');
+			this.elemB.setAttribute('class', this.dialogue);
+
+		this.elemA.appendChild(this.elemB);
+
+		// Attache tous les éléments à body
 		document.getElementsByTagName('body')[0].appendChild(this.elemA);
-
-		// Élément div (boite)
-		this.elemA = document.createElement('div');
-		this.elemA.setAttribute('id', 'boite');
-		this.elemA.setAttribute('class', this.dialogue);
-
-		document.getElementById('dialogue').appendChild(this.elemA);
 	};
 
 
@@ -568,20 +575,19 @@ function Dialogue() {
 		this.elemA = document.createElement('h1');
 		this.elemA.appendChild(document.createTextNode(title));
 
-		document.getElementById('boite').appendChild(this.elemA);
+		document.getElementById('box').appendChild(this.elemA);
 	};
 
 
-	// #### Paragraphe ################################################### bbcode ## private ### //
-	// = révision : 58
+	// #### Paragraphe ############################################################# private ### //
+	// = révision : 59
 	// » Met en place le paragraphe du dialogue
 	// » Prend en charge le BB code grâce à [bbcode]
-	// # <p>{text}[...]</p>
-	this.htmlParagraph = function (text) {
+	this.htmlParagraph = function (data) {
 
 		var bbcode = new BBcode();
-		bbcode.init('boite');
-		bbcode.parse(text);
+		bbcode.init('box');
+		bbcode.parse(data);
 	};
 
 
@@ -607,9 +613,9 @@ function Dialogue() {
 
 		this.elemA.appendChild(this.elemB);
 
-		// Attache tous les éléments à la div boite
-		document.getElementById('boite').appendChild(this.elemA);
-		document.getElementById('boite').lastChild.lastChild.focus();
+		// Attache tous les éléments à la div box
+		document.getElementById('box').appendChild(this.elemA);
+		document.getElementById('box').lastChild.lastChild.focus();
 	};
 
 
@@ -645,23 +651,23 @@ function Dialogue() {
 
 		this.elemA.appendChild(this.elemB);
 
-		// Attache tous les éléments à la div boite
-		document.getElementById('boite').appendChild(this.elemA);
+		// Attache tous les éléments à la div box
+		document.getElementById('box').appendChild(this.elemA);
 
 		// Gestion du focus
-		if (document.getElementById('form_upload'))
-			document.getElementById('form_upload').firstChild.firstChild.focus();
+		if (document.getElementById('formUpload'))
+			document.getElementById('formUpload').firstChild.firstChild.focus();
 		else
-			document.getElementById('boite').lastChild.lastChild.focus();
+			document.getElementById('box').lastChild.lastChild.focus();
 	};
 
 
 	// #### Boutons Précédent/Suivant ############################################## private ### //
-	// = révision : 18
+	// = révision : 19
 	// » Met en place les deux boutons précédent et suivant des dialogues photo et vidéo
 	// » À savoir un bouton à gauche et un bouton à droite de la boite de dialogue
 	// # <div class="navigation">
-	// #  <button type="button" disabled="disabled" onclick="TheSlideshow.actionPrevious();" id="previous">«</button>
+	// #  <button type="button" disabled="disabled" onclick="TheSlideshow.actionPrev();" id="prev">«</button>
 	// #  <button type="button" disabled="disabled" onclick="TheSlideshow.actionNext();" id="next">»</button>
 	// # </div>
 	this.htmlButtonNavigation = function () {
@@ -674,8 +680,8 @@ function Dialogue() {
 			this.elemB = document.createElement('button');
 			this.elemB.setAttribute('type', 'button');
 			this.elemB.setAttribute('disabled', 'disabled');
-			this.elemB.setAttribute('onclick', 'TheSlideshow.actionPrevious();');
-			this.elemB.setAttribute('id', 'previous');
+			this.elemB.setAttribute('onclick', 'TheSlideshow.actionPrev();');
+			this.elemB.setAttribute('id', 'prev');
 			this.elemB.appendChild(document.createTextNode('«'));
 
 		this.elemA.appendChild(this.elemB);
@@ -690,8 +696,8 @@ function Dialogue() {
 
 		this.elemA.appendChild(this.elemB);
 
-		// Attache tous les éléments à la div boite
-		document.getElementById('boite').appendChild(this.elemA);
+		// Attache tous les éléments à la div box
+		document.getElementById('box').appendChild(this.elemA);
 	};
 
 
@@ -727,8 +733,8 @@ function Dialogue() {
 
 		this.elemA.appendChild(this.elemB);
 
-		// Attache tous les éléments à la div boite
-		document.getElementById('boite').appendChild(this.elemA);
+		// Attache tous les éléments à la div box
+		document.getElementById('box').appendChild(this.elemA);
 	};
 
 
@@ -759,8 +765,8 @@ function Dialogue() {
 		this.elemA.appendChild(this.elemB);
 		this.elemA.appendChild(document.createTextNode(i18n.translate('warningLostChange')));
 
-		// Attache tous les éléments à la div boite
-		document.getElementById('boite').appendChild(this.elemA);
+		// Attache tous les éléments à la div box
+		document.getElementById('box').appendChild(this.elemA);
 	};
 
 
@@ -771,10 +777,10 @@ function Dialogue() {
 	// » En profite par la même occasion pour pré-charger le graphique SVG du dialogue de progression
 	// » Obligation d'utiliser un nom d'iframe unique entre chaque upload
 	// » Basculement automatique du focus
-	// # <iframe id="iframe_upload" name="iframe_upload_{key}" src="{config.dialogue.imageUpload}" />
-	// # <form id="form_upload" action="{config.dialogue.fileUpload}" method="post" enctype="multipart/form-data" target="iframe_upload_{key}">
+	// # <iframe id="iframeUpload" name="iframeUpload_{key}" src="{config.dialogue.imageUpload}" />
+	// # <form id="formUpload" action="{config.dialogue.fileUpload}" method="post" enctype="multipart/form-data" target="iframeUpload_{key}">
 	// #  <p>
-	// #    <input type="file" name="{data}" onchange="document.getElementById('boite').lastChild.lastChild.focus();" />
+	// #    <input type="file" name="{data}" onchange="document.getElementById('box').lastChild.lastChild.focus();" />
 	// #    <input type="hidden" name="APC_UPLOAD_PROGRESS" value="{key}" />
 	// #  </p>
 	// # </form>
@@ -782,8 +788,8 @@ function Dialogue() {
 
 		// Élément iframe (cible du formulaire)
 		this.elemA = document.createElement('iframe');
-		this.elemA.setAttribute('id', 'iframe_upload');
-		this.elemA.setAttribute('name', 'iframe_upload_' + key);
+		this.elemA.setAttribute('id', 'iframeUpload');
+		this.elemA.setAttribute('name', 'iframeUpload_' + key);
 
 		if (config.navigator)
 			this.elemA.setAttribute('src', config.dialogue.imageUpload);
@@ -792,11 +798,11 @@ function Dialogue() {
 
 		// Élément form (formulaire d'envoi de fichier)
 		this.elemA = document.createElement('form');
-		this.elemA.setAttribute('id', 'form_upload');
+		this.elemA.setAttribute('id', 'formUpload');
 		this.elemA.setAttribute('action', config.dialogue.fileUpload);
 		this.elemA.setAttribute('method', 'post');
 		this.elemA.setAttribute('enctype', 'multipart/form-data');
-		this.elemA.setAttribute('target', 'iframe_upload_' + key);
+		this.elemA.setAttribute('target', 'iframeUpload_' + key);
 
 			// Élément p
 			this.elemB = document.createElement('p');
@@ -805,7 +811,7 @@ function Dialogue() {
 				this.elemC = document.createElement('input');
 				this.elemC.setAttribute('type', 'file');
 				this.elemC.setAttribute('name', data);
-				this.elemC.setAttribute('onchange', "document.getElementById('boite').lastChild.lastChild.focus();");
+				this.elemC.setAttribute('onchange', "document.getElementById('box').lastChild.lastChild.focus();");
 
 			this.elemB.appendChild(this.elemC);
 
@@ -819,8 +825,8 @@ function Dialogue() {
 
 		this.elemA.appendChild(this.elemB);
 
-		// Attache tous les éléments à la div boite
-		document.getElementById('boite').appendChild(this.elemA);
+		// Attache tous les éléments à la div box
+		document.getElementById('box').appendChild(this.elemA);
 	};
 
 
@@ -839,17 +845,17 @@ function Dialogue() {
 		this.elemA.setAttribute('width', '300');
 		this.elemA.setAttribute('height', '17');
 
-		// Attache l'élément à la div boite
-		document.getElementById('boite').appendChild(this.elemA);
+		// Attache l'élément à la div box
+		document.getElementById('box').appendChild(this.elemA);
 	};
 
 
 	// #### Photo et légende ############################################### i18n ## private ### //
-	// = révision : 123
+	// = révision : 130
 	// » Met en place la photo et la légende du dialogue photo
-	// » Prends soin d'attendre le temps que la photo soit intégralement chargée avant de l'afficher (eventListener:load)
-	// » Redimensionne la photo en fonction de la taille de la fenêtre si la config le permet (config.dialogue.resize)
-	// » Affiche un lien pour télécharger la photo originale si la config le permet (config.dialogue.savePhoto)
+	// » Redimensionne la photo en fonction de la taille de la fenêtre lorsque nécessaire
+	// » Prends soin d'attendre le temps que la photo soit intégralement chargée avant de l'afficher si la config le permet
+	// » Affiche un lien pour télécharger la photo originale si la config le permet
 	// » Affiche une icône zoom au survol si la photo est redimensionnée lors de son affichage
 	// # <dl>
 	// #  <dt>
@@ -858,14 +864,14 @@ function Dialogue() {
 	// #    [</a>]
 	// #  </dt>
 	// #  <dd>
-	// #    [<span>{infoPhoto.id} ({date})</span>] {legend}
-	// #    [<a href="{config.dialogue.filePhoto}?id={infoPhoto.id}" class="download">{i18n.downloadLink}</a>]
+	// #    [<span>{infoPhoto.id/name} ({date})</span>] {legend}
+	// #    [<a href="{config.dialogue.filePhoto}?id={infoPhoto.id}" type="{infoPhoto.mime}" class="download">{i18n.downloadLink}</a>]
 	// #  </dd>
 	// # </dl>
-	this.htmlPhoto = function (date, legend, url, width, height) {
+	this.htmlPhoto = function (width, height, url, name, date, legend) {
 
 		// Vérification des dimensions
-		var infoPhoto = this.searchSize(width, height, url);
+		var infoPhoto = this.setSize(width, height, url);
 
 		// Élément dl
 		this.elemA = document.createElement('dl');
@@ -878,7 +884,7 @@ function Dialogue() {
 				// #  <img src="{url}" width="{infoPhoto.width}" height="{infoPhoto.height}" class="loading resized" id="topho" />
 				// #  <span></span>
 				// # </a>
-				if (config.dialogue.resize && this.checkSize(width, height)) {
+				if (this.changeSize(width, height)) {
 
 					this.elemC = document.createElement('a');
 					this.elemC.setAttribute('href', url);
@@ -911,11 +917,30 @@ function Dialogue() {
 			this.elemB = document.createElement('dd');
 
 				// Élément span
-				// # <span>{infoPhoto.id} ({date})</span>
-				if (date !== '§') {
+				// # <span>{infoPhoto.id/name} ({date})</span>
+				if ((name !== 'false') || (date !== 'false')) {
 
 					this.elemC = document.createElement('span');
-					this.elemC.appendChild(document.createTextNode(infoPhoto.id + ' (' + date + ')'));
+
+					// manual name + date
+					if ((name !== 'false') && (name !== 'auto') && (date !== 'false'))
+						this.elemC.appendChild(document.createTextNode(name + ' (' + date + ')'));
+
+					// manual name
+					else if ((name !== 'false') && (name !== 'auto'))
+						this.elemC.appendChild(document.createTextNode(name));
+
+					// auto name + date
+					else if ((name === 'auto') && (date !== 'false'))
+						this.elemC.appendChild(document.createTextNode(infoPhoto.id + ' (' + date + ')'));
+
+					// auto name
+					else if (name === 'auto')
+						this.elemC.appendChild(document.createTextNode(infoPhoto.id));
+
+					// date
+					else if (date !== 'false')
+						this.elemC.appendChild(document.createTextNode('(' + date + ')'));
 
 					this.elemB.appendChild(this.elemC);
 				}
@@ -925,11 +950,12 @@ function Dialogue() {
 				this.elemB.appendChild(document.createTextNode(' ' + legend + ' '));
 
 				// Élément a (lien télécharger)
-				// # <a href="{config.dialogue.filePhoto}?id={infoPhoto.id}" class="download">{i18n.downloadLink}</a>
+				// # <a href="{config.dialogue.filePhoto}?id={infoPhoto.id}" type="{infoPhoto.mime}" class="download">{i18n.downloadLink}</a>
 				if (config.dialogue.savePhoto) {
 
 					this.elemC = document.createElement('a');
 					this.elemC.setAttribute('href', config.dialogue.filePhoto + '?id=' + infoPhoto.id);
+					this.elemC.setAttribute('type', infoPhoto.mime);
 					this.elemC.setAttribute('class', 'download');
 					this.elemC.appendChild(document.createTextNode(i18n.translate('downloadLink')));
 
@@ -938,12 +964,12 @@ function Dialogue() {
 
 		this.elemA.appendChild(this.elemB);
 
-		// Attache tous les éléments à la div boite
-		document.getElementById('boite').appendChild(this.elemA);
+		// Attache tous les éléments à la div box
+		document.getElementById('box').appendChild(this.elemA);
 
 
 		// *** Chargement de l'image ************************************** //
-		if (config.navigator) {
+		if (config.navigator && config.dialogue.showLoader) {
 
 			this.image = new Image(width, height);
 			this.image.src = url;
@@ -963,18 +989,18 @@ function Dialogue() {
 				if (document.getElementById('topho')) {
 
 					// suppression des éléments a et span (photo redimensionnée)
-					if (config.dialogue.resize && document.getElementById('topho').getAttribute('class').match(/resized/)) {
+					if (document.getElementById('topho').getAttribute('class').match(/resized/)) {
 
 						var img = document.getElementById('topho').cloneNode(true);
 						document.getElementById('topho').parentNode.parentNode.removeChild(document.getElementById('topho').parentNode);
-						document.getElementById('boite').firstChild.firstChild.appendChild(img);
+						document.getElementById('box').firstChild.firstChild.appendChild(img);
 					}
 
 					// suppression du lien de téléchargement
 					if (config.dialogue.savePhoto)
-						document.getElementById('boite').firstChild.lastChild.removeChild(document.getElementById('boite').firstChild.lastChild.lastChild);
+						document.getElementById('box').firstChild.lastChild.removeChild(document.getElementById('box').firstChild.lastChild.lastChild);
 
-					document.getElementById('topho').setAttribute('class', 'onerror_' + config.lang);
+					document.getElementById('topho').setAttribute('class', 'error_' + config.lang);
 				}
 			}, false);
 		}
@@ -986,24 +1012,24 @@ function Dialogue() {
 
 
 	// #### Vidéo et légende ############################################### i18n ## private ### //
-	// = révision : 58
+	// = révision : 64
 	// » Met en place la vidéo et la légende du dialogue vidéo
+	// » Redimensionne la vidéo en fonction de la taille de la fenêtre lorsque nécessaire
 	// » Dans le cas où la balise vidéo du standard HTML 5 n'est pas gérée par le navigateur rien ne s'affichera
-	// » Redimensionne la vidéo en fonction de la taille de la fenêtre si la config le permet (config.dialogue.resize)
-	// » Affiche un lien pour télécharger la vidéo originale si la config le permet (config.dialogue.saveVideo)
+	// » Affiche un lien pour télécharger la vidéo si la config le permet
 	// # <dl>
 	// #  <dt>
 	// #    <video src="{url}" width="{infoVideo.width}" height="{infoVideo.height}" controls="controls" [autoplay="autoplay"] />
 	// #  </dt>
 	// #  <dd>
-	// #    [<span>{infoVideo.id} ({date})</span>] {legend}
-	// #    [<a href="{config.dialogue.fileVideo}?id={infoVideo.id}" class="download">{i18n.downloadLink}</a>]
+	// #    [<span>{infoVideo.id/name} ({date})</span>] {legend}
+	// #    [<a href="{config.dialogue.fileVideo}?id={infoVideo.id}" type="{infoVideo.mime}" class="download">{i18n.downloadLink}</a>]
 	// #  </dd>
 	// # </dl>
-	this.htmlVideo = function (date, legend, url) {
+	this.htmlVideo = function (url, name, date, legend) {
 
 		// Vérification des dimensions
-		var infoVideo = this.searchSize(config.dialogue.videoWidth, config.dialogue.videoHeight, url);
+		var infoVideo = this.setSize(config.dialogue.videoWidth, config.dialogue.videoHeight, url);
 
 		// Élément dl
 		this.elemA = document.createElement('dl');
@@ -1029,11 +1055,30 @@ function Dialogue() {
 			this.elemB = document.createElement('dd');
 
 				// Élément span
-				// # <span>{infoVideo.id} ({date})</span>
-				if (date !== '§') {
+				// # <span>{infoVideo.id/name} ({date})</span>
+				if ((name !== 'false') || (date !== 'false')) {
 
 					this.elemC = document.createElement('span');
-					this.elemC.appendChild(document.createTextNode(infoVideo.id + ' (' + date + ')'));
+
+					// manual name + date
+					if ((name !== 'false') && (name !== 'auto') && (date !== 'false'))
+						this.elemC.appendChild(document.createTextNode(name + ' (' + date + ')'));
+
+					// manual name
+					else if ((name !== 'false') && (name !== 'auto'))
+						this.elemC.appendChild(document.createTextNode(name));
+
+					// auto name + date
+					else if ((name === 'auto') && (date !== 'false'))
+						this.elemC.appendChild(document.createTextNode(infoVideo.id + ' (' + date + ')'));
+
+					// auto name
+					else if (name === 'auto')
+						this.elemC.appendChild(document.createTextNode(infoVideo.id));
+
+					// date
+					else if (date !== 'false')
+						this.elemC.appendChild(document.createTextNode('(' + date + ')'));
 
 					this.elemB.appendChild(this.elemC);
 				}
@@ -1043,11 +1088,12 @@ function Dialogue() {
 				this.elemB.appendChild(document.createTextNode(' ' + legend + ' '));
 
 				// Élément a (lien télécharger)
-				// # <a href="{config.dialogue.fileVideo}?id={infoVideo.id}" class="download">{i18n.downloadLink}</a>
+				// # <a href="{config.dialogue.fileVideo}?id={infoVideo.id}" type="{infoVideo.mime}" class="download">{i18n.downloadLink}</a>
 				if (config.dialogue.saveVideo) {
 
 					this.elemC = document.createElement('a');
 					this.elemC.setAttribute('href', config.dialogue.fileVideo + '?id=' + infoVideo.id);
+					this.elemC.setAttribute('type', infoVideo.mime);
 					this.elemC.setAttribute('class', 'download');
 					this.elemC.appendChild(document.createTextNode(i18n.translate('downloadLink')));
 
@@ -1056,7 +1102,7 @@ function Dialogue() {
 
 		this.elemA.appendChild(this.elemB);
 
-		// Attache tous les éléments à la div boite
-		document.getElementById('boite').appendChild(this.elemA);
+		// Attache tous les éléments à la div box
+		document.getElementById('box').appendChild(this.elemA);
 	};
 }

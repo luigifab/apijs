@@ -1,9 +1,9 @@
 /**
  * Created J/03/12/2009
- * Updated D/22/08/2010
- * Version 24
+ * Updated D/24/10/2010
+ * Version 25
  *
- * Copyright 2008-2010 | Fabrice Creuzot <contact@luigifab.info>
+ * Copyright 2008-2010 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs/
  *
  * This program is free software, you can redistribute it or modify
@@ -17,13 +17,13 @@
  * GNU General Public License (GPL) for more details.
  */
 
-// ### Paramètres de configuration ################################ //
-// = révision : 12
-// » Définie les variables globales et la config
+// #### Paramètres de configuration ############################### //
+// = révision : 16
+// » Définie les variables globales et la configuration
 // » Lance l'application JavaScript
 var i18n = null, TheButton = null, TheDialogue = null, TheSlideshow = null, TheUpload = null, TheMap = null;
 var config = {
-	version: '1.1.0',
+	version: '1.2.0',
 	lang: 'fr',
 	debug: true,
 	debugkey: false,
@@ -32,7 +32,7 @@ var config = {
 	dialogue: {
 		blocks: [],
 		hiddenPage: false,
-		resize: true,
+		showLoader: true,
 		autoplay: true,
 		savePhoto: true,
 		saveVideo: true,
@@ -40,9 +40,9 @@ var config = {
 		videoHeight: 480,
 		imageClose: './images/dialogue/close.png',
 		imageUpload: './images/dialogue/progressbar.svg',
-		fileUpload: './iframe.php',
 		filePhoto: './download.php',
-		fileVideo: './download.php'
+		fileVideo: './download.php',
+		fileUpload: './iframe.php'
 	},
 	slideshow: {
 		ids: 'diaporama',
@@ -72,18 +72,16 @@ else {
 }
 
 
-// ### Lancement de l'application ################################# //
-// = révision : 16
+// #### Lancement de l'application ################################ //
+// = révision : 17
 // » Recherche les liens ayant la class popup
 // » Charge les modules disponibles
 function start() {
 
-	for (var tag = document.getElementsByTagName('a'), i = 0; i < tag.length; i++) {
-
-		if (config.navigator && tag[i].hasAttribute('class') && (tag[i].getAttribute('class').match(/popup/)))
+	for (var i = 0, tag = document.getElementsByClassName('popup'); i < tag.length; i++) {
+		if (config.navigator)
 			tag[i].addEventListener('click', openTab, false);
-
-		else if (tag[i].className.match(/popup/))
+		else
 			tag[i].setAttribute('onclick', 'window.open(this.href); return false;');
 	}
 
@@ -107,24 +105,26 @@ function start() {
 }
 
 
-// ### Nouvel onglet ############################################## //
+// #### Nouvel onglet ############################################# //
 // = révision : 2
 // » Ouvre le lien dans un nouvel onglet
 // » Annule l'action par défaut
 function openTab(ev) {
-    ev.preventDefault();
-    window.open(this.href);
+	ev.preventDefault();
+	window.open(this.href);
 }
 
 
-// ### Vérification des modules ################################### //
-// = révision : 7
+// #### Vérification des modules ################################## //
+// = révision : 15
 // » Vérifie les modules
 // » Vérifie les données de configuration
-// » Ne vérifie pas les dépendances
+// » Ne vérifie pas les dépendances entre les modules
 function checkAll() {
 
-	var error = 0, warning = 0, defaultConf = null, report = [];
+	var module = 0, error = 0, warning = 0, report = [];
+	var defaultConf = null, key1 = null, key2 = null;
+
 	defaultConf = {
 		version: 'string',
 		lang: 'string',
@@ -135,7 +135,7 @@ function checkAll() {
 		dialogue: {
 			blocks: 'object',
 			hiddenPage: 'boolean',
-			resize: 'boolean',
+			showLoader: 'boolean',
 			autoplay: 'boolean',
 			savePhoto: 'boolean',
 			saveVideo: 'boolean',
@@ -143,9 +143,9 @@ function checkAll() {
 			videoHeight: 'number',
 			imageClose: 'string',
 			imageUpload: 'string',
-			fileUpload: 'string',
 			filePhoto: 'string',
-			fileVideo: 'string'
+			fileVideo: 'string',
+			fileUpload: 'string'
 		},
 		slideshow: {
 			ids: 'string',
@@ -154,120 +154,148 @@ function checkAll() {
 		}
 	};
 
+	// *** Vérification des modules *************** //
 	report.push('The apijs ' + config.version);
-
-	// *** Vérif modules *************************** //
 	report.push('\nChecking modules');
 
 	// bbcode
-	if (typeof BBcode === 'function')
+	if (typeof BBcode === 'function') {
 		report.push('➩ BBcode is here');
+		module++;
+	}
 
 	// i18n
-	if ((typeof Internationalization === 'function') && (i18n instanceof Internationalization))
+	if ((typeof Internationalization === 'function') && (i18n instanceof Internationalization)) {
 		report.push('➩ Internationalization is here and loaded');
+		module++;
+	}
 
-	else if (typeof Internationalization === 'function')
+	else if (typeof Internationalization === 'function') {
 		report.push('➩ Internationalization is here');
+		module++;
+	}
 
-	// theButton
-	if ((typeof Button === 'function') && (TheButton instanceof Button))
+	// TheButton
+	if ((typeof Button === 'function') && (TheButton instanceof Button)) {
 		report.push('➩ TheButton is here and loaded');
+		module++;
+	}
 
-	else if (typeof Button === 'function')
+	else if (typeof Button === 'function') {
 		report.push('➩ TheButton is here');
+		module++;
+	}
 
-	// theDialogue
-	if ((typeof Dialogue === 'function') && (TheDialogue instanceof Dialogue))
+	// TheDialogue
+	if ((typeof Dialogue === 'function') && (TheDialogue instanceof Dialogue)) {
 		report.push('➩ TheDialogue is here and loaded');
+		module++;
+	}
 
-	else if (typeof Dialogue === 'function')
+	else if (typeof Dialogue === 'function') {
 		report.push('➩ TheDialogue is here');
+		module++;
+	}
 
-	// theUpload
-	if ((typeof Upload === 'function') && (TheUpload instanceof Upload))
+	// TheUpload
+	if ((typeof Upload === 'function') && (TheUpload instanceof Upload)) {
 		report.push('➩ TheUpload is here and loaded');
+		module++;
+	}
 
-	else if (typeof Upload === 'function')
+	else if (typeof Upload === 'function') {
 		report.push('➩ TheUpload is here');
+		module++;
+	}
 
-	// theSlideshow
-	if ((typeof Slideshow === 'function') && (TheSlideshow instanceof Slideshow))
+	// TheSlideshow
+	if ((typeof Slideshow === 'function') && (TheSlideshow instanceof Slideshow)) {
 		report.push('➩ TheSlideshow is here and loaded');
+		module++;
+	}
 
-	else if (typeof Slideshow === 'function')
+	else if (typeof Slideshow === 'function') {
 		report.push('➩ TheSlideshow is here');
+		module++;
+	}
 
-	// theMap
-	if ((typeof Map === 'function') && (TheMap instanceof Map))
+	// TheMap
+	if ((typeof Map === 'function') && (TheMap instanceof Map)) {
 		report.push('➩ TheMap is here and loaded');
+		module++;
+	}
 
-	else if (typeof Map === 'function')
+	else if (typeof Map === 'function') {
 		report.push('➩ TheMap is here');
+		module++;
+	}
 
-	// *** Vérif configuration ********************* //
+	if (module < 1)
+		report.push('➩ no module present');
+
+	// *** Vérif configuration ******************** //
 	report.push('\nChecking configuration');
 
-	for (var key in defaultConf) {
+	for (key1 in defaultConf) if (defaultConf.hasOwnProperty(key1)) {
 
-		// pas dé vérif si le module n'est pas chargé
-		if ((key === 'dialogue') && (typeof Dialogue !== 'function'))
+		// pas dé vérification si le module n'est pas chargé
+		if ((key1 === 'dialogue') && (typeof Dialogue !== 'function'))
 			continue;
 
-		if ((key === 'slideshow') && (typeof Slideshow !== 'function'))
+		if ((key1 === 'slideshow') && (typeof Slideshow !== 'function'))
 			continue;
 
-		if ((key === 'map') && (typeof Map !== 'function'))
+		if ((key1 === 'map') && (typeof Map !== 'function'))
 			continue;
 
 		// config d'un module
-		if (typeof defaultConf[key] === 'object') {
+		if (typeof defaultConf[key1] === 'object') {
 
-			for (var bis in defaultConf[key]) {
+			for (key2 in defaultConf[key1]) {
 
 				// config manquante
-				if (config[key][bis] === undefined) {
-					report.push('☠ config.' + key + '.' + bis + ' is missing');
+				if (config[key1][key2] === undefined) {
+					report.push('☠ config.' + key1 + '.' + key2 + ' is missing');
 					error++;
 				}
 
 				// config vide
-				else if (config[key][bis] === null) {
-					report.push('⚠ config.' + key + '.' + bis + ' is null');
+				else if ((config[key1][key2] === null) && (defaultConf[key1][key2] === 'string')) {
+					report.push('⚠ config.' + key1 + '.' + key2 + ' is null');
 					warning++;
 				}
 
 				// config invalide
-				else if (typeof config[key][bis] !== defaultConf[key][bis]) {
-					report.push('☠ config.' + key + '.' + bis + ' isn\'t a ' + defaultConf[key][bis]);
+				else if (typeof config[key1][key2] !== defaultConf[key1][key2]) {
+					report.push('☠ config.' + key1 + '.' + key2 + ' isn\'t a ' + defaultConf[key1][key2]);
 					error++;
 				}
 			}
 		}
 
 		// config manquante
-		else if (config[key] === undefined) {
-			report.push('☠ config.' + key + ' is missing');
+		else if (config[key1] === undefined) {
+			report.push('☠ config.' + key1 + ' is missing');
 			error++;
 		}
 
 		// config vide
-		else if (config[key] === null) {
-			report.push('⚠ config.' + key + ' is null');
+		else if ((config[key1] === null) && (defaultConf[key1] === 'string')) {
+			report.push('⚠ config.' + key1 + ' is null');
 			warning++;
 		}
 
 		// config invalide
-		else if (typeof config[key] !== defaultConf[key]) {
-			report.push('☠ config.' + key + ' isn\'t a ' + defaultConf[key]);
+		else if (typeof config[key1] !== defaultConf[key1]) {
+			report.push('☠ config.' + key1 + ' isn\'t a ' + defaultConf[key1]);
 			error++;
 		}
 	}
 
-	if ((error < 1) && (warning < 1))
+	if (error < 1)
 		report.push('➩ no error found');
 
-	// *** Affichage du rapport ******************** //
+	// *** Affichage du rapport ******************* //
 	alert(report.join('\n'));
 }
 

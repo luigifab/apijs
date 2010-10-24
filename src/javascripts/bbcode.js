@@ -1,7 +1,7 @@
 /**
- * Created Me/18/08/2010
- * Updated L/23/08/2010
- * Version 1 (dev)
+ * Created J/19/08/2010
+ * Updated D/24/08/2010
+ * Version 0
  *
  * Copyright 2008-2010 | Fabrice Creuzot <contact@luigifab.info>
  * http://www.luigifab.info/apijs/
@@ -16,60 +16,24 @@
  * merchantability or fitness for a particular purpose. See the
  * GNU General Public License (GPL) for more details.
  */
-
 function BBcode() {
-
 	this.id = null;
-
-	// définition de l'attribut
-	this.init = function (id, text) {
+	this.init = function (id) {
 		this.id = id;
 	};
-
 	this.parse = function (text) {
-
-		// Élément p
 		var elem = document.createElement('p');
-
-		// Nœud texte multi-lignes
 		if (text.search(/[br]/) > 0) {
-
 			text = text.split('[br]');
 			elem.appendChild(document.createTextNode(text[0]));
-
 			for (var i = 1; i < text.length; i++) {
 				elem.appendChild(document.createElement('br'));
 				elem.appendChild(document.createTextNode(text[i]));
 			}
 		}
-
-		// Nœud texte mono-ligne
 		else {
 			elem.appendChild(document.createTextNode(text));
 		}
-
 		document.getElementById(this.id).appendChild(elem);
 	};
-
-	/*this.createTagText = function (tag, text) {
-		var tag = document.createElement(tag);
-		tag.appendChild(document.createTextNode(text));
-		return tag;
-	};
-
-	this.result = '';
-	this.regex = /\[\/?(p|a|br|strong|code|em|ins|pre)\]/ig;
-
-	this.parse = function () {
-		//var data = '[p]Azert [strong]qsdfgh[/strong] wxcvbn[/p][div]Azert [strong]qsdfgh[/strong] wxcvbn[/div]';
-		//alert(this.decoupe('p', data));
-	};
-
-	this.decoupe = function (tag, data) {
-		var regexA = new RegExp('\\[' + tag + '\\]');
-		var regexB = new RegExp('\\[\\/' + tag + '\\]');
-		var a = data.search(regexA);
-		var b = data.search(regexB);
-		return data.slice(a, b);
-	};*/
 }

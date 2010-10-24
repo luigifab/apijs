@@ -1,9 +1,9 @@
 /**
  * Created V/08/05/2009
- * Updated Ma/10/08/2010
- * Version 4
+ * Updated Me/15/09/2010
+ * Version 6
  *
- * Copyright 2008-2010 | Fabrice Creuzot <contact@luigifab.info>
+ * Copyright 2008-2010 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs/
  *
  * This program is free software, you can redistribute it or modify
@@ -24,22 +24,23 @@ div.album {
 }
 
 div.album dl.vignette {
-	float:left; margin:4px; padding:5px; width:200px; min-height:168px;
-	font-size:0.8em; color:#777; text-align:center;
+	float:left; margin:4px; padding:5px 5px 4px; width:200px; min-height:168px;
+	font-size:0.8em; color:#666; text-align:center;
 	border:1px solid #CCC; background-color:#CCC;
 	border-radius:6px; -khtml-border-radius:6px; -moz-border-radius:6px; -webkit-border-radius:6px;
 }
 
-div.album dl.vignette:hover { border-color:#888; }
+div.album dl.vignette:hover { border-color:#999; }
 
 
 /* ############################################################### Texte ### */
-div.album dl.vignette dt { margin-bottom:0.4em; }
-div.album dl.vignette dt a { text-decoration:none; }
+div.album dl.vignette dt { margin-bottom:5px; vertical-align:middle; }
+div.album dl.vignette dt a { display:block; text-decoration:none; }
+div.album dl.vignette dt a img { display:block; margin:auto; }
 
-div.album dl.vignette dd { }
-div.album dl.vignette dd span.datenum { color:#999; }
+div.album dl.vignette dd { margin:0 0.5em; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; word-wrap:break-word; }
+div.album dl.vignette dd span.datenum { color:#888; }
 
-div.album dl.vignette:hover dd { color:#444; }
+div.album dl.vignette:hover dd { color:#333; }
 div.album dl.vignette:hover dd span.datenum { color:#666; }
 
