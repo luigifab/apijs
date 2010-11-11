@@ -1,6 +1,6 @@
 /**
  * Created J/03/12/2009
- * Updated D/24/10/2010
+ * Updated J/11/11/2010
  * Version 25
  *
  * Copyright 2008-2010 | Fabrice Creuzot (luigifab) <code~luigifab~info>
@@ -78,10 +78,12 @@ else {
 // » Charge les modules disponibles
 function start() {
 
-	for (var i = 0, tag = document.getElementsByClassName('popup'); i < tag.length; i++) {
-		if (config.navigator)
+	for (var tag = document.getElementsByTagName('a'), size = tag.length, i = 0; i < size; i++) {
+
+		if (config.navigator && tag[i].hasAttribute('class') && (tag[i].getAttribute('class').indexOf('popup') > -1))
 			tag[i].addEventListener('click', openTab, false);
-		else
+
+		else if (tag[i].className.indexOf('popup') > -1)
 			tag[i].setAttribute('onclick', 'window.open(this.href); return false;');
 	}
 

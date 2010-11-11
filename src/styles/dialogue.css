@@ -1,6 +1,6 @@
 /**
  * Created V/08/05/2009
- * Updated J/07/10/2010
+ * Updated J/11/11/2010
  * Version 14
  *
  * Copyright 2008-2010 | Fabrice Creuzot (luigifab) <code~luigifab~info>
@@ -17,7 +17,7 @@
  * GNU General Public License (GPL) for more details.
  */
 
-/* ################################################## Conteneurs thème 1 ### */
+/* ################################################ Conteneurs (thème 1) ### */
 #dialogue, div.dialogue {
 	position:fixed; top:0; left:0; bottom:0; right:0; width:100%; height:100%; z-index:900;
 	color:black; background-color:black; background-color:rgba(0, 0, 0, 0.75);
@@ -40,7 +40,7 @@
 #box.upload, #box.errorupload, #box.progress { min-height:12em; }
 
 
-/* ################################################## Conteneurs thème 2 ### **
+/* ################################################ Conteneurs (thème 2) ### **
 #dialogue, div.dialogue {
 	position:fixed; top:0; left:0; bottom:0; right:0; width:100%; height:100%; z-index:900;
 	color:black; background:#DDD url("../images/dialogue/background.png") no-repeat;
@@ -76,7 +76,7 @@
 
 /* ############################################################### Texte ### */
 #box h1 {
-	margin:0.15em 0 0.8em; padding-left:41px; line-height:32px;
+	margin:0.15em 0 0.7em; padding-left:41px; line-height:32px;
 	font-size:1.6em; font-weight:bold; color:black;
 	background-repeat:no-repeat; background-position:center left;
 }
@@ -96,6 +96,8 @@
 #box dl { margin:0.3em auto 0.15em; color:#333; }
 #box dt { margin-bottom:0.5em; }
 #box dd { overflow:hidden; }
+
+#box ul { margin:-0.4em auto 1em; }
 
 
 /* ################################################# Boutons de contrôle ### */
