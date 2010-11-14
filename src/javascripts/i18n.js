@@ -1,7 +1,7 @@
 /**
  * Created S/05/06/2010
- * Updated V/01/10/2010
- * Version 11
+ * Updated J/04/11/2010
+ * Version 12
  *
  * Copyright 2008-2010 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs/
@@ -37,12 +37,12 @@ function Internationalization() {
 
 		debugInvalidCall: "(debug) Invalid call",
 		debugInvalidUse: "(debug) Invalid use",
-		debugInvalidAltAttribute: "(debug) Invalid alt attribute",
 		debugUnknownAction: "(debug) Unknown action",
 		debugKeyDetected: "(debug) Key detected",
 		debugKeyCode: "Code of the seizure key : §",
-		debugNotExist: "doesn't exist (unlikely error).",
-		debugNotRecognizedAltAttribute: "The alt attribute of the image wasn't recognized."
+		debugInvalidAltAttribute: "(debug) Invalid alt attribute",
+		debugNotRecognizedAltAttribute: "The alt attribute of the image wasn't recognized.",
+		debugNotExist: "doesn't exist (unlikely error)."
 	};
 
 	// English
@@ -61,12 +61,12 @@ function Internationalization() {
 
 		debugInvalidCall: "(debug) Invalid call",
 		debugInvalidUse: "(debug) Invalid use",
-		debugInvalidAltAttribute: "(debug) Invalid alt attribute",
 		debugUnknownAction: "(debug) Unknown action",
 		debugKeyDetected: "(debug) Key detected",
 		debugKeyCode: "Code of the seizure key : §",
-		debugNotExist: "doesn't exist (unlikely error).",
-		debugNotRecognizedAltAttribute: "The alt attribute of the image wasn't recognized."
+		debugInvalidAltAttribute: "(debug) Invalid alt attribute",
+		debugNotRecognizedAltAttribute: "The alt attribute of the image wasn't recognized.",
+		debugNotExist: "doesn't exist (unlikely error)."
 	};
 
 	// Français
@@ -84,46 +84,46 @@ function Internationalization() {
 
 		debugInvalidCall: "(debug) Appel invalide",
 		debugInvalidUse: "(debug) Utilisation invalide",
-		debugInvalidAltAttribute: "(debug) Attribut alt invalide",
 		debugUnknownAction: "(debug) Action inconnue",
 		debugKeyDetected: "(debug) Touche détectée",
 		debugKeyCode: "Code de la touche saisie : §",
-		debugNotExist: "n'existe pas (erreur improbable).",
-		debugNotRecognizedAltAttribute: "L'attribut alt de l'image n'a pas été reconnu."
+		debugInvalidAltAttribute: "(debug) Attribut alt invalide",
+		debugNotRecognizedAltAttribute: "L'attribut alt de l'image n'a pas été reconnu.",
+		debugNotExist: "n'existe pas (erreur improbable)."
 	};
 
 
 	// #### Auto-détection de la langue ############################################# public ### //
-	// = révision : 5
+	// = révision : 6
 	// » Essaye de récupérer la langue utilisée par le navigateur
 	// » Vérifie si la langue existe dans les traductions disponibles
 	this.init = function () {
 
-		if ((typeof navigator.language === 'string') && config.autolang && (navigator.language.slice(0, 2) in this.data))
-			config.lang = navigator.language.slice(0, 2);
+		if ((typeof navigator.language === 'string') && apijs.config.autolang && (navigator.language.slice(0, 2) in this.data))
+			apijs.config.lang = navigator.language.slice(0, 2);
 
-		else if ((typeof config.lang !== 'string') || !(config.lang in this.data))
-			config.lang = 'en';
+		else if ((typeof apijs.config.lang !== 'string') || !(apijs.config.lang in this.data))
+			apijs.config.lang = 'en';
 	};
 
 
 	// #### Traduction par mot clef ################################################# public ### //
-	// = révision : 12
+	// = révision : 14
 	// » Vérifie si le mot clef existe dans les traductions
 	// » Retourne la chaine de caractères correspondante à un mot clef
 	this.translate = function (word, a, b, c, d, e) {
 
 		// mot clef inexistant
-		if (typeof this.data[config.lang][word] !== 'string') {
+		if (typeof this.data[apijs.config.lang][word] !== 'string') {
 			return word;
 		}
 
 		// chaine de caractères configurable
 		else if (arguments.length > 1) {
 
-			var i = 0, arg = 1, translation = '', data = this.data[config.lang][word].split('§');
+			var i = 0, arg = 1, size = 0, translation = '', data = this.data[apijs.config.lang][word].split('§');
 
-			for (i in data) if (data.hasOwnProperty(i)) {
+			for (size = data.length; i < size; i++) {
 
 				if (arg < arguments.length)
 					translation += data[i] + arguments[arg++];
@@ -136,7 +136,7 @@ function Internationalization() {
 
 		// chaine de caractères simple
 		else {
-			return this.data[config.lang][word];
+			return this.data[apijs.config.lang][word];
 		}
 	};
 }

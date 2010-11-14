@@ -1,7 +1,7 @@
 /**
  * Created Me/03/03/2010
- * Updated L/09/08/2010
- * Version 13
+ * Updated Ma/26/08/2010
+ * Version 14
  *
  * Copyright 2008-2010 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs/
@@ -26,8 +26,8 @@ function Map() {
 	this.srvGooglePret = false;
 	this.srvGoogleActif = false;
 
-	this.width = config.map.width;
-	this.height = config.map.height;
+	this.width = apijs.config.map.width;
+	this.height = apijs.config.map.height;
 	this.modifiable = false;
 	this.multipoint = false;
 
@@ -49,7 +49,8 @@ function Map() {
 	// INITIALISATION DES CARTES (4)
 
 	// #### Initialisation ########################################################## public ### //
-	// = révision : 50
+	// = révision : 51
+	// » Applique la configuration dynamique
 	// » Affiche la carte interactive initialement masquée
 	// » Applique la configuration dynamique de la carte courante
 	// » Récupère les coordonnées du formulaire si cela est pertinent
@@ -94,22 +95,22 @@ function Map() {
 		if ((typeof geoportalLoadmap === 'function') || (typeof GMap2 === 'function')) {
 
 			if (typeof geoportalLoadmap === 'function') {
-				document.getElementById('mapControlGeoportail').addEventListener('click', function (ev) { TheMap.actionGeoportail(ev); }, false);
+				document.getElementById('mapControlGeoportail').addEventListener('click', function (ev) { apijs.map.actionGeoportail(ev); }, false);
 				document.getElementById('mapControlGeoportail').removeAttribute('disabled');
 				this.srvGeoportailPret = true;
 			}
 
 			if ((typeof GMap2 === 'function') && GBrowserIsCompatible()) {
-				document.getElementById('mapControlGoogle').addEventListener('click', function (ev) { TheMap.actionGoogle(ev); }, false);
+				document.getElementById('mapControlGoogle').addEventListener('click', function (ev) { apijs.map.actionGoogle(ev); }, false);
 				document.getElementById('mapControlGoogle').removeAttribute('disabled');
 				this.srvGooglePret = true;
 			}
 
 			if (document.getElementById('mapControlRefresh'))
-				document.getElementById('mapControlRefresh').addEventListener('click', function (ev) { TheMap.actionRefresh(ev); }, false);
+				document.getElementById('mapControlRefresh').addEventListener('click', function (ev) { apijs.map.actionRefresh(ev); }, false);
 
-			document.getElementById('mapControlRecenter').addEventListener('click', function (ev) { TheMap.actionRecenter(ev); }, false);
-			document.getElementById('mapControlClose').addEventListener('click', function (ev) { TheMap.actionClose(ev); }, false);
+			document.getElementById('mapControlRecenter').addEventListener('click', function (ev) { apijs.map.actionRecenter(ev); }, false);
+			document.getElementById('mapControlClose').addEventListener('click', function (ev) { apijs.map.actionClose(ev); }, false);
 		}
 
 		// *** Aucun service de disponible ********************** //
@@ -119,15 +120,15 @@ function Map() {
 		}
 
 		// prépa destruction
-		if (config.navigator)
-			window.addEventListener('unload', function () { TheMap.destroy(); }, false);
+		if (apijs.config.navigator)
+			window.addEventListener('unload', function () { apijs.map.destroy(); }, false);
 		else
-			window.onunload = TheMap.destroy;
+			window.onunload = apijs.map.destroy;
 	};
 
 
 	// #### Géoportail ############################################################# private ### //
-	// = révision : 50
+	// = révision : 51
 	// » Utilise l'API Géoportail version 1 : https://api.ign.fr/geoportail/index.do
 	// » Met en place la carte interactive du service Géoportail
 	// » Paramétrage complet de la carte : menu de navigation, niveau de zoom, centrage et taille
@@ -144,7 +145,7 @@ function Map() {
 			this.mapGeoportail = map;
 			this.mapGeoportail.setSize(this.width, this.height);
 			this.mapGeoportail.getMap().getControlsByClass('OpenLayers.Control.KeyboardDefaults')[0].deactivate();
-			this.mapGeoportail.getMap().setCenterAtLonLat(config.map.initLatitude, config.map.initLongitude, config.map.zoomInitial);
+			this.mapGeoportail.getMap().setCenterAtLonLat(apijs.config.map.initLatitude, apijs.config.map.initLongitude, apijs.config.map.zoomInitial);
 			this.mapGeoportail.addGeoportalLayer('GEOGRAPHICALGRIDSYSTEMS.MAPS:WMSC', { opacity:1.0 } );
 			this.mapGeoportail.addGeoportalLayer('ORTHOIMAGERY.ORTHOPHOTOS:WMSC', { visibility:false } );
 			this.mapGeoportail.openLayersPanel(false);
@@ -161,7 +162,7 @@ function Map() {
 
 
 	// #### Google ################################################################# private ### //
-	// = révision : 54
+	// = révision : 55
 	// » Utilise l'API Google Map version 2 : http://code.google.com/intl/fr/apis/maps
 	// » Met en place la carte interactive du service Google
 	// » Paramétrage complet de la carte : menu de navigation, niveau de zoom, centrage et taille
@@ -176,7 +177,7 @@ function Map() {
 
 			this.mapGoogle = new GMap2(document.getElementById('mapGoogle'), { size: new GSize(this.width, this.height) } );
 			this.mapGoogle.enableScrollWheelZoom();
-			this.mapGoogle.setCenter(new GLatLng(config.map.initLatitude, config.map.initLongitude), config.map.zoomInitial + 1);
+			this.mapGoogle.setCenter(new GLatLng(apijs.config.map.initLatitude, apijs.config.map.initLongitude), apijs.config.map.zoomInitial + 1);
 			this.mapGoogle.addControl(new GSmallMapControl());
 			this.mapGoogle.addControl(new google.maps.MenuMapTypeControl());
 		}
@@ -477,28 +478,16 @@ function Map() {
 	// GESTION DES COORDONNÉES (2)
 
 	// #### Vérification de l'adresse ############################################## private ### // (bordel)
-	// = révision : 20
+	// = révision : 0
 	// » Vérifie si les champs « Code postal » et « Ville » sont correctement renseignés
 	// » Affiche un message d'erreur si un des champs n'est pas conforme
-	// » Dépend de [TheInput] pour la vérification des champs
 	this.checkAddress = function () {
-
-		//if (TheInput.tChamp.code_postal && TheInput.tChamp.ville)
-			return true;
-		//
-		//else
-		//	TheDialogue.creerDialogueInformation(
-		//		'Attention',
-		//		"Pour pouvoir afficher la carte, vous devez préalablement remplir au minimum les champs «\u00A0Code postal\u00A0» et «\u00A0Ville\u00A0».",
-		//		'attention'
-		//	);
-		//	return false;
-		//
+		return true;
 	};
 
 
 	// #### Recherche des coordonnées de l'adresse ################################# private ### // (bordel)
-	// = révision : 39
+	// = révision : 40
 	// » Apprendre à faire des commentaires !
 	// » Demande à Google les coordonnées de l'adresse saisie
 	// » Affiche un message d'erreur si l'adresse n'est pas trouvée
@@ -525,29 +514,30 @@ function Map() {
 				// ** Adresse trouvée *************** //
 				if (pt) {
 					// sauvegarde des coordonnées
-					TheMap.coordonnees = true;
-					TheMap.latitude = pt.lat();
-					TheMap.longitude = pt.lng();
+					apijs.map.coordonnees = true;
+					apijs.map.latitude = pt.lat();
+					apijs.map.longitude = pt.lng();
 
 					// création immédiate du marqueur
-					if ((TheMap.srvActuel === 'geoportail') && !TheMap.markerGeoportail ||
-					    (TheMap.srvActuel === 'google') && !TheMap.markerGoogle) {
-						TheMap.setMarker(true);
+					if ((apijs.map.srvActuel === 'geoportail') && !apijs.map.markerGeoportail || (apijs.map.srvActuel === 'google') && !apijs.map.markerGoogle) {
+						apijs.map.setMarker(true);
 					}
 					else {
-						TheMap.synchroMarker(true);
+						apijs.map.synchroMarker(true);
 					}
 				}
 				// ** Adresse introuvable *********** //
 				else {
 					// création dynamique du marqueur
-					if ((TheMap.srvActuel === 'geoportail') && !TheMap.markerGeoportail ||
-					    (TheMap.srvActuel === 'google') && !TheMap.markerGoogle) {
-						TheMap.setMarkerClick();
+					if ((apijs.map.srvActuel === 'geoportail') && !apijs.map.markerGeoportail || (apijs.map.srvActuel === 'google') && !apijs.map.markerGoogle) {
+						apijs.map.setMarkerClick();
 					}
 
 					// information
-					TheDialogue.creerDialogueInformation('Attention', 'Adresse introuvable.', 'attention');
+					if ((typeof Dialogue === 'function') && (apijs.dialogue instanceof Dialogue))
+						apijs.dialogue.dialogInformation('Attention', 'Adresse introuvable...', 'warning');
+					else
+						alert('Adresse introuvable...');
 				}
 			}
 		);
@@ -560,7 +550,7 @@ function Map() {
 	// GESTION DU MARQUEUR (4)
 
 	// #### Création du marqueur dynamique ######################################### private ### //
-	// = révision : 36
+	// = révision : 37
 	// » Permet la création du marqueur lorsque l'utilisateur cliquera sur la carte
 	// » Met en place le gestionnaire d'événement associé pour permettre la création du marqueur
 	// » Un seul et unique marqueur par carte
@@ -569,17 +559,17 @@ function Map() {
 		// *** Géoportail *************************************** //
 		if (this.srvActuel === 'geoportail') {
 
-			this.mapGeoportail.getMap().events.register('click', TheMap.mapGeoportail, function (ev) {
+			this.mapGeoportail.getMap().events.register('click', apijs.map.mapGeoportail, function (ev) {
 
-				if (!TheMap.markerGeoportail) {
+				if (!apijs.map.markerGeoportail) {
 
-					var pt = TheMap.mapGeoportail.getMap().getLonLatFromViewPortPx(ev.xy);
-					pt.transform(TheMap.mapGeoportail.getMap().getProjection(), OpenLayers.Projection.CRS84);
+					var pt = apijs.map.mapGeoportail.getMap().getLonLatFromViewPortPx(ev.xy);
+					pt.transform(apijs.map.mapGeoportail.getMap().getProjection(), OpenLayers.Projection.CRS84);
 
-					TheMap.coordonnees = true;
-					TheMap.latitude = pt.lat;
-					TheMap.longitude = pt.lon;
-					TheMap.setMarker(true);
+					apijs.map.coordonnees = true;
+					apijs.map.latitude = pt.lat;
+					apijs.map.longitude = pt.lon;
+					apijs.map.setMarker(true);
 				}
 			});
 		}
@@ -590,12 +580,12 @@ function Map() {
 			// création du marqueur
 			GEvent.addListener(this.mapGoogle, 'click', function (mk, pt) {
 
-				if (!TheMap.markerGoogle) {
+				if (!apijs.map.markerGoogle) {
 
-					TheMap.coordonnees = true;
-					TheMap.latitude = pt.lat();
-					TheMap.longitude = pt.lng();
-					TheMap.setMarker(true);
+					apijs.map.coordonnees = true;
+					apijs.map.latitude = pt.lat();
+					apijs.map.longitude = pt.lng();
+					apijs.map.setMarker(true);
 				}
 			});
 		}
@@ -603,7 +593,7 @@ function Map() {
 
 
 	// #### Création du marqueur ######################################## (event) ## private ### //
-	// = révision : 48
+	// = révision : 49
 	// » Fabrique le marqueur qui sera positionné sur les coordonnées
 	// » Met en place le gestionnaire d'événement associé au marqueur pour permettre son déplacement
 	// » Sauvegarde par la même occasion les coordonnées dans le formulaire
@@ -620,7 +610,7 @@ function Map() {
 
 			// création du marqueur
 			this.markerGeoportail = new OpenLayers.Feature.Vector(
-				position, null, { externalGraphic:config.map.imageMarker, graphicWidth:26, graphicHeight:32, graphicXOffset:-12, graphicYOffset:-32 }
+				position, null, { externalGraphic:apijs.config.map.imageMarker, graphicWidth:26, graphicHeight:32, graphicXOffset:-12, graphicYOffset:-32 }
 			);
 
 			// couche du marqueur
@@ -639,15 +629,15 @@ function Map() {
 				this.dragGeoportail.activate();
 				this.dragGeoportail.onComplete = function (marker, point) {
 
-					var pt = TheMap.mapGeoportail.getMap().getLonLatFromViewPortPx(point);
-					pt.transform(TheMap.mapGeoportail.getMap().getProjection(), OpenLayers.Projection.CRS84);
+					var pt = apijs.map.mapGeoportail.getMap().getLonLatFromViewPortPx(point);
+					pt.transform(apijs.map.mapGeoportail.getMap().getProjection(), OpenLayers.Projection.CRS84);
 
-					TheMap.latitude = pt.lat;
-					TheMap.longitude = pt.lon;
-					TheMap.centerMap();
+					apijs.map.latitude = pt.lat;
+					apijs.map.longitude = pt.lon;
+					apijs.map.centerMap();
 
-					document.getElementById('carteLatitude').setAttribute('value', TheMap.latitude);
-					document.getElementById('carteLongitude').setAttribute('value', TheMap.longitude);
+					document.getElementById('carteLatitude').setAttribute('value', apijs.map.latitude);
+					document.getElementById('carteLongitude').setAttribute('value', apijs.map.longitude);
 				};
 			}
 		}
@@ -656,7 +646,7 @@ function Map() {
 		else if (this.srvActuel === 'google') {
 
 			var img = new GIcon();
-			img.image = config.map.imageMarker;
+			img.image = apijs.config.map.imageMarker;
 			img.iconSize = new GSize(26, 32);
 			img.iconAnchor = new GPoint(12, 32);
 
@@ -673,21 +663,21 @@ function Map() {
 
 				GEvent.addListener(this.markerGoogle, 'dragend', function () {
 
-					var pt = TheMap.markerGoogle.getPoint();
+					var pt = apijs.map.markerGoogle.getPoint();
 
-					TheMap.latitude = pt.lat();
-					TheMap.longitude = pt.lng();
-					TheMap.mapGoogle.panTo(pt);
+					apijs.map.latitude = pt.lat();
+					apijs.map.longitude = pt.lng();
+					apijs.map.mapGoogle.panTo(pt);
 
-					document.getElementById('carteLatitude').setAttribute('value', TheMap.latitude);
-					document.getElementById('carteLongitude').setAttribute('value', TheMap.longitude);
+					document.getElementById('carteLatitude').setAttribute('value', apijs.map.latitude);
+					document.getElementById('carteLongitude').setAttribute('value', apijs.map.longitude);
 				});
 			}
 		}
 
 		// *** Centre la carte ********************************** //
 		if (centrer)
-			this.centerMap(config.map.zoomSynchro);
+			this.centerMap(apijs.config.map.zoomSynchro);
 
 		// *** Activation bouton recentrer ********************** //
 		if (document.getElementById('mapControlRecenter').hasAttribute('disabled'))
@@ -737,7 +727,7 @@ function Map() {
 
 
 	// #### Centre la carte ######################################################## private ### //
-	// = révision : 26
+	// = révision : 27
 	// » Recentre la carte sur le marqueur
 	// » Adapte le zoom si nécessaire (prend en charge la différence du niveau de zoom entre Géoportail et Google)
 	// » Uniquement s'il y a des coordonnées et donc un marqueur
@@ -749,8 +739,8 @@ function Map() {
 			if (typeof zoom === 'number')
 				this.mapGeoportail.getMap().setCenterAtLonLat(this.longitude, this.latitude, zoom);
 
-			else if (this.mapGeoportail.getMap().getZoom() < config.map.zoomCenter)
-				this.mapGeoportail.getMap().setCenterAtLonLat(this.longitude, this.latitude, config.map.zoomCenter);
+			else if (this.mapGeoportail.getMap().getZoom() < apijs.config.map.zoomCenter)
+				this.mapGeoportail.getMap().setCenterAtLonLat(this.longitude, this.latitude, apijs.config.map.zoomCenter);
 
 			else
 				this.mapGeoportail.getMap().setCenterAtLonLat(this.longitude, this.latitude);
@@ -762,8 +752,8 @@ function Map() {
 			if (typeof zoom === 'number')
 				this.mapGoogle.setCenter(new GLatLng(this.latitude, this.longitude), zoom + 1);
 
-			else if (this.mapGoogle.getZoom() < config.map.zoomCenter)
-				this.mapGoogle.setCenter(new GLatLng(this.latitude, this.longitude), config.map.zoomCenter + 1);
+			else if (this.mapGoogle.getZoom() < apijs.config.map.zoomCenter)
+				this.mapGoogle.setCenter(new GLatLng(this.latitude, this.longitude), apijs.config.map.zoomCenter + 1);
 
 			else
 				this.mapGoogle.setCenter(new GLatLng(this.latitude, this.longitude));

@@ -1,7 +1,7 @@
 /**
  * Created J/03/12/2009
  * Updated J/11/11/2010
- * Version 25
+ * Version 27
  *
  * Copyright 2008-2010 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs/
@@ -18,90 +18,95 @@
  */
 
 // #### Paramètres de configuration ############################### //
-// = révision : 16
-// » Définie les variables globales et la configuration
-// » Lance l'application JavaScript
-var i18n = null, TheButton = null, TheDialogue = null, TheSlideshow = null, TheUpload = null, TheMap = null;
-var config = {
-	version: '1.2.0',
-	lang: 'fr',
-	debug: true,
-	debugkey: false,
-	navigator: true,
-	autolang: true,
-	dialogue: {
-		blocks: [],
-		hiddenPage: false,
-		showLoader: true,
-		autoplay: true,
-		savePhoto: true,
-		saveVideo: true,
-		videoWidth: 640,
-		videoHeight: 480,
-		imageClose: './images/dialogue/close.png',
-		imageUpload: './images/dialogue/progressbar.svg',
-		filePhoto: './download.php',
-		fileVideo: './download.php',
-		fileUpload: './iframe.php'
-	},
-	slideshow: {
-		ids: 'diaporama',
-		hiddenPage: true,
-		hoverload: false
-	},
-	map: {
-		width: 580,
-		height: 400,
-		initLatitude: 1.9,
-		initLongitude: 46.3,
-		imageMarker: './images/map/marker.png',
-		zoomInitial: 5,
-		zoomCenter: 14,
-		zoomSynchro: 15
+// = révision : 17
+// » Définie la variable globale du programme ainsi que sa configuration
+// » Lance le programme JavaScript
+var apijs = {
+	i18n: null,
+	dialogue: null,
+	slideshow: null,
+	map: null,
+	config: {
+		version: '2.0.0',
+		lang: 'fr',
+		debug: true,
+		debugkey: false,
+		navigator: true,
+		autolang: true,
+		dialogue: {
+			blocks: [],
+			hiddenPage: false,
+			showLoader: true,
+			autoplay: true,
+			savePhoto: true,
+			saveVideo: true,
+			videoWidth: 640,
+			videoHeight: 480,
+			imageClose: './images/dialogue/close.png',
+			imageUpload: './images/dialogue/progressbar.svg',
+			filePhoto: './download.php',
+			fileVideo: './download.php',
+			fileUpload: './iframe.php'
+		},
+		slideshow: {
+			ids: 'diaporama',
+			hiddenPage: true,
+			hoverload: false
+		},
+		map: {
+			width: 580,
+			height: 400,
+			initLatitude: 1.9,
+			initLongitude: 46.3,
+			imageMarker: './images/map/marker.png',
+			zoomInitial: 5,
+			zoomCenter: 14,
+			zoomSynchro: 15
+		}
 	}
 };
 
-if (!navigator.userAgent.match(/MSIE/)) {
+if (navigator.userAgent.indexOf('MSIE') < 0) {
 	window.addEventListener('load', start, false);
 }
 else {
-	config.navigator = false;
+	apijs.config.navigator = false;
 	window.innerWidth = document.documentElement.clientWidth;
 	window.innerHeight = document.documentElement.clientHeight;
-	window.onload = start;
+	window.attachEvent('onload', start);
 }
 
 
-// #### Lancement de l'application ################################ //
-// = révision : 17
+// #### Lancement du programme #################################### //
+// = révision : 22
 // » Recherche les liens ayant la class popup
 // » Charge les modules disponibles
 function start() {
 
+	// recherche des liens
 	for (var tag = document.getElementsByTagName('a'), size = tag.length, i = 0; i < size; i++) {
 
-		if (config.navigator && tag[i].hasAttribute('class') && (tag[i].getAttribute('class').indexOf('popup') > -1))
+		if (apijs.config.navigator && tag[i].hasAttribute('class') && (tag[i].getAttribute('class').indexOf('popup') > -1))
 			tag[i].addEventListener('click', openTab, false);
 
 		else if (tag[i].className.indexOf('popup') > -1)
 			tag[i].setAttribute('onclick', 'window.open(this.href); return false;');
 	}
 
+	// chargement des modules
 	if ((typeof Internationalization === 'function') && (typeof BBcode === 'function') && (typeof Dialogue === 'function')) {
 
-		i18n = new Internationalization();
-		i18n.init();
-
-		TheDialogue = new Dialogue();
+		apijs.i18n = new Internationalization();
+		apijs.i18n.init();
+		apijs.dialogue = new Dialogue();
 
 		if (typeof Slideshow === 'function') {
-			TheSlideshow = new Slideshow();
-			TheSlideshow.init();
+			apijs.slideshow = new Slideshow();
+			apijs.slideshow.init();
 		}
-
 		if ((typeof Map === 'function') && document.getElementById('carteInteractive')) {
-			TheMap = new Map();
-			TheMap.init();
+			apijs.map = new Map();
+			apijs.map.init();
 		}
 	}
 }
@@ -112,20 +117,21 @@ function start() {
 // » Ouvre le lien dans un nouvel onglet
 // » Annule l'action par défaut
 function openTab(ev) {
+
 	ev.preventDefault();
 	window.open(this.href);
 }
 
 
 // #### Vérification des modules ################################## //
-// = révision : 15
+// = révision : 19
 // » Vérifie les modules
 // » Vérifie les données de configuration
 // » Ne vérifie pas les dépendances entre les modules
 function checkAll() {
 
-	var module = 0, error = 0, warning = 0, report = [];
-	var defaultConf = null, key1 = null, key2 = null;
+	var module = 0, error = 0, warning = 0;
+	var report = [], defaultConf = null, key1 = null, key2 = null;
 
 	defaultConf = {
 		version: 'string',
@@ -157,17 +163,17 @@ function checkAll() {
 	};
 
 	// *** Vérification des modules *************** //
-	report.push('The apijs ' + config.version);
+	report.push('The apijs ' + apijs.config.version);
 	report.push('\nChecking modules');
 
-	// bbcode
+	// [bbcode]
 	if (typeof BBcode === 'function') {
 		report.push('➩ BBcode is here');
 		module++;
 	}
 
-	// i18n
-	if ((typeof Internationalization === 'function') && (i18n instanceof Internationalization)) {
+	// [i18n]
+	if ((typeof Internationalization === 'function') && (apijs.i18n instanceof Internationalization)) {
 		report.push('➩ Internationalization is here and loaded');
 		module++;
 	}
@@ -177,8 +183,8 @@ function checkAll() {
 		module++;
 	}
 
-	// TheButton
-	if ((typeof Button === 'function') && (TheButton instanceof Button)) {
+	// [TheButton]
+	if ((typeof Button === 'function') && (apijs.button instanceof Button)) {
 		report.push('➩ TheButton is here and loaded');
 		module++;
 	}
@@ -188,8 +194,8 @@ function checkAll() {
 		module++;
 	}
 
-	// TheDialogue
-	if ((typeof Dialogue === 'function') && (TheDialogue instanceof Dialogue)) {
+	// [Thedialogue]
+	if ((typeof Dialogue === 'function') && (apijs.dialogue instanceof Dialogue)) {
 		report.push('➩ TheDialogue is here and loaded');
 		module++;
 	}
@@ -199,8 +205,8 @@ function checkAll() {
 		module++;
 	}
 
-	// TheUpload
-	if ((typeof Upload === 'function') && (TheUpload instanceof Upload)) {
+	// [TheUpload]
+	if ((typeof Upload === 'function') && (apijs.upload instanceof Upload)) {
 		report.push('➩ TheUpload is here and loaded');
 		module++;
 	}
@@ -210,8 +216,8 @@ function checkAll() {
 		module++;
 	}
 
-	// TheSlideshow
-	if ((typeof Slideshow === 'function') && (TheSlideshow instanceof Slideshow)) {
+	// [TheSlideshow]
+	if ((typeof Slideshow === 'function') && (apijs.slideshow instanceof Slideshow)) {
 		report.push('➩ TheSlideshow is here and loaded');
 		module++;
 	}
@@ -221,8 +227,8 @@ function checkAll() {
 		module++;
 	}
 
-	// TheMap
-	if ((typeof Map === 'function') && (TheMap instanceof Map)) {
+	// [TheMap]
+	if ((typeof Map === 'function') && (apijs.map instanceof Map)) {
 		report.push('➩ TheMap is here and loaded');
 		module++;
 	}
@@ -235,7 +241,7 @@ function checkAll() {
 	if (module < 1)
 		report.push('➩ no module present');
 
-	// *** Vérif configuration ******************** //
+	// *** Vérification de la configuration ******* //
 	report.push('\nChecking configuration');
 
 	for (key1 in defaultConf) if (defaultConf.hasOwnProperty(key1)) {
@@ -256,40 +262,40 @@ function checkAll() {
 			for (key2 in defaultConf[key1]) {
 
 				// config manquante
-				if (config[key1][key2] === undefined) {
-					report.push('☠ config.' + key1 + '.' + key2 + ' is missing');
+				if (apijs.config[key1][key2] === undefined) {
+					report.push('☠ apijs.config.' + key1 + '.' + key2 + ' is missing');
 					error++;
 				}
 
 				// config vide
-				else if ((config[key1][key2] === null) && (defaultConf[key1][key2] === 'string')) {
-					report.push('⚠ config.' + key1 + '.' + key2 + ' is null');
+				else if ((apijs.config[key1][key2] === null) && (defaultConf[key1][key2] === 'string')) {
+					report.push('⚠ apijs.config.' + key1 + '.' + key2 + ' is null');
 					warning++;
 				}
 
 				// config invalide
-				else if (typeof config[key1][key2] !== defaultConf[key1][key2]) {
-					report.push('☠ config.' + key1 + '.' + key2 + ' isn\'t a ' + defaultConf[key1][key2]);
+				else if (typeof apijs.config[key1][key2] !== defaultConf[key1][key2]) {
+					report.push('☠ apijs.config.' + key1 + '.' + key2 + ' isn\'t a ' + defaultConf[key1][key2]);
 					error++;
 				}
 			}
 		}
 
 		// config manquante
-		else if (config[key1] === undefined) {
-			report.push('☠ config.' + key1 + ' is missing');
+		else if (apijs.config[key1] === undefined) {
+			report.push('☠ apijs.config.' + key1 + ' is missing');
 			error++;
 		}
 
 		// config vide
-		else if ((config[key1] === null) && (defaultConf[key1] === 'string')) {
-			report.push('⚠ config.' + key1 + ' is null');
+		else if ((apijs.config[key1] === null) && (defaultConf[key1] === 'string')) {
+			report.push('⚠ apijs.config.' + key1 + ' is null');
 			warning++;
 		}
 
 		// config invalide
-		else if (typeof config[key1] !== defaultConf[key1]) {
-			report.push('☠ config.' + key1 + ' isn\'t a ' + defaultConf[key1]);
+		else if (typeof apijs.config[key1] !== defaultConf[key1]) {
+			report.push('☠ apijs.config.' + key1 + ' isn\'t a ' + defaultConf[key1]);
 			error++;
 		}
 	}
