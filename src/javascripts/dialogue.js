@@ -1,7 +1,7 @@
 /**
  * Created D/12/04/2009
- * Updated V/12/11/2010
- * Version 100
+ * Updated L/15/11/2010
+ * Version 101
  *
  * Copyright 2008-2010 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs/
@@ -381,7 +381,7 @@ function Dialogue() {
 	// GESTION DE L'AFFICHAGE DES CONTENEURS PARENTS (6)
 
 	// #### Prépare le terrain ##################################################### private ### //
-	// = révision : 55
+	// = révision : 56
 	// » Supprime l'ancienne boite de dialogue ou cache le site internet si nécessaire
 	// » Prend en compte la configuration de [TheSlideshow] si nécessaire
 	// » Met en place l'écoute des touches du clavier (eventListener:keydown)
@@ -393,7 +393,8 @@ function Dialogue() {
 			this.deleteDialogue();
 
 		// cache le site internet
-		if (apijs.config.dialogue.hiddenPage || ((apijs.slideshow !== null) && apijs.config.slideshow.hiddenPage && icon.match(/(?:photo)|(?:video)/))) {
+		if (apijs.config.dialogue.hiddenPage || (apijs.config.slideshow.hiddenPage && (apijs.slideshow !== null) &&
+		    (/(?:photo)|(?:video)/.test(icon) !== false))) {
 
 			if (this.page && ((window.pageYOffset > 0) || (this.offset > 0)))
 				this.offset = window.pageYOffset;
@@ -453,7 +454,7 @@ function Dialogue() {
 
 
 	// #### Affiche le site ######################################################## private ### //
-	// = révision : 72
+	// = révision : 73
 	// » Supprime l'iframe du formulaire d'upload si nécessaire
 	// » Affiche le site au bon endroit après la suppression de la boite de dialogue si nécessaire
 	// » Prend en compte la configuration de [TheSlideshow] si nécessaire
@@ -462,7 +463,8 @@ function Dialogue() {
 		if (document.getElementById('iframeUpload'))
 			document.getElementById('iframeUpload').parentNode.removeChild(document.getElementById('iframeUpload'));
 
-		if (apijs.config.dialogue.hiddenPage || ((apijs.slideshow !== null) && apijs.config.slideshow.hiddenPage && this.type.match(/(?:photo)|(?:video)/))) {
+		if (apijs.config.dialogue.hiddenPage || (apijs.config.slideshow.hiddenPage && (apijs.slideshow !== null) &&
+		    (/(?:photo)|(?:video)/.test(this.type) !== false))) {
 
 			for (var id in apijs.config.dialogue.blocks) if (apijs.config.dialogue.blocks.hasOwnProperty(id)) {
 

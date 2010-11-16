@@ -1,7 +1,7 @@
 /**
  * Created J/19/08/2010
- * Updated J/11/11/2010
- * Version 2
+ * Updated L/15/11/2010
+ * Version 3
  *
  * Copyright 2008-2010 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs/
@@ -62,7 +62,7 @@ function BBcode() {
 	// GÉNÉRATION DE L'OBJET (3)
 
 	// #### Création de l'objet représentant le bbcode ############################# private ### //
-	// = révision : 3
+	// = révision : 4
 	// » Parcours le bbcode récursivement
 	// » Sauvegarde chaque élément et chaque bout de texte dans un tableau d'objets
 	// » À bien noter qu'en JavaScript, les objets sont passés par référence, ils ne sont jamais copiés
@@ -86,9 +86,9 @@ function BBcode() {
 			}
 			// balise double
 			else {
-				cut = other.search(new RegExp('(\\[\\/' + element + '\\])'));
-				element = other.slice(0, cut + RegExp.$1.length);
-				other = other.slice(cut + RegExp.$1.length);
+				cut = other.indexOf('[/' + element + ']');
+				element = other.slice(0, cut + element.length + 3);
+				other = other.slice(cut + element.length + 3);
 			}
 
 			// auto-rappel
@@ -103,7 +103,7 @@ function BBcode() {
 		// extrait l'élément et ses attributs ainsi que ce qu'il y a après
 		// demande la sauvegarde de l'élément et de ses attributs
 		// auto-rappel pour analyser ce qu'il y a après
-		else if (/^\[(area|br|col|hr|iframe|img|input|param)((?:\ [a-z:]+=["'][^"\[\]']+["'])*)\]/.exec(data) !== null) {
+		else if (/^\[(area|br|col|hr|iframe|img|input|param)((?:\ [a-z:]+=["'][^"\[\]']+["'])*)\]/.test(data)) {
 
 			element = RegExp.$1;
 			attributes = RegExp.$2;
@@ -119,12 +119,12 @@ function BBcode() {
 		// extrait l'élément et ses attributs, son contenu ainsi que ce qu'il y a après
 		// demande la sauvegarde de l'élément, de son contenu et de ses attributs
 		// auto-rappel pour analyser son contenu et ce qu'il y a après
-		else if (/^\[([a-z]+)((?:\ [a-z:]+=["'][^"\[\]']+["'])*)\]/.exec(data) !== null) {
+		else if (/^\[([a-z]+)((?:\ [a-z:]+=["'][^"\[\]']+["'])*)\]/.test(data)) {
 
 			element = RegExp.$1;
 			attributes = RegExp.$2;
 
-			cut = data.search(new RegExp('\\[\\/' + element + '\\]'));
+			cut = data.indexOf('[/' + element + ']');
 			content = data.slice(2 + element.length + attributes.length, cut);
 			other = data.slice(3 + element.length + cut);
 
