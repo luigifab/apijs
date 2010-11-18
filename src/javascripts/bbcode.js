@@ -1,6 +1,6 @@
 /**
  * Created J/19/08/2010
- * Updated L/15/11/2010
+ * Updated J/18/11/2010
  * Version 3
  *
  * Copyright 2008-2010 | Fabrice Creuzot (luigifab) <code~luigifab~info>
@@ -62,7 +62,7 @@ function BBcode() {
 	// GÉNÉRATION DE L'OBJET (3)
 
 	// #### Création de l'objet représentant le bbcode ############################# private ### //
-	// = révision : 4
+	// = révision : 5
 	// » Parcours le bbcode récursivement
 	// » Sauvegarde chaque élément et chaque bout de texte dans un tableau d'objets
 	// » À bien noter qu'en JavaScript, les objets sont passés par référence, ils ne sont jamais copiés
@@ -75,20 +75,19 @@ function BBcode() {
 		// auto-rappel pour analyser chaque morceau
 		if ((data[0] !== '[') && ((cut = data.search(/\[([a-z]+)(?:\ [a-z:]+=["'][^"\[\]']+["'])*\]/)) > -1)) {
 
+			// texte
 			text = data.slice(0, cut);
 			other = data.slice(cut);
-			element = RegExp.$1;
+
+			// balise double (par défaut)
+			cut = other.indexOf('[/' + RegExp.$1 + ']');
+			element = other.slice(0, cut + RegExp.$1.length + 3);
+			other = other.slice(cut + RegExp.$1.length + 3);
 
 			// balise simple
 			if (/^(\[(?:area|br|col|hr|iframe|img|input|param)(?:\ [a-z:]+=["'][^"\[\]']+["'])*\])/.test(other)) {
 				element = other.slice(0, RegExp.$1.length);
 				other = other.slice(RegExp.$1.length);
-			}
-			// balise double
-			else {
-				cut = other.indexOf('[/' + element + ']');
-				element = other.slice(0, cut + element.length + 3);
-				other = other.slice(cut + element.length + 3);
 			}
 
 			// auto-rappel

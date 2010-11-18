@@ -1,7 +1,7 @@
 /**
  * Created J/03/12/2009
- * Updated J/11/11/2010
- * Version 27
+ * Updated J/18/11/2010
+ * Version 28
  *
  * Copyright 2008-2010 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs/
@@ -18,7 +18,7 @@
  */
 
 // #### Paramètres de configuration ############################### //
-// = révision : 17
+// = révision : 18
 // » Définie la variable globale du programme ainsi que sa configuration
 // » Lance le programme JavaScript
 var apijs = {
@@ -27,7 +27,6 @@ var apijs = {
 	slideshow: null,
 	map: null,
 	config: {
-		version: '2.0.0',
 		lang: 'fr',
 		debug: true,
 		debugkey: false,
@@ -124,7 +123,7 @@ function openTab(ev) {
 
 
 // #### Vérification des modules ################################## //
-// = révision : 19
+// = révision : 20
 // » Vérifie les modules
 // » Vérifie les données de configuration
 // » Ne vérifie pas les dépendances entre les modules
@@ -134,7 +133,6 @@ function checkAll() {
 	var report = [], defaultConf = null, key1 = null, key2 = null;
 
 	defaultConf = {
-		version: 'string',
 		lang: 'string',
 		debug: 'boolean',
 		debugkey: 'boolean',
@@ -163,7 +161,7 @@ function checkAll() {
 	};
 
 	// *** Vérification des modules *************** //
-	report.push('The apijs ' + apijs.config.version);
+	report.push('The apijs');
 	report.push('\nChecking modules');
 
 	// [bbcode]
