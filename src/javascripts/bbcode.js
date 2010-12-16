@@ -1,10 +1,10 @@
 /**
  * Created J/19/08/2010
- * Updated J/18/11/2010
- * Version 3
+ * Updated D/26/12/2010
+ * Version 4
  *
  * Copyright 2008-2010 | Fabrice Creuzot (luigifab) <code~luigifab~info>
- * http://www.luigifab.info/apijs/
+ * http://www.luigifab.info/apijs
  *
  * This program is free software, you can redistribute it or modify
  * it under the terms of the GNU General Public License (GPL) as published
@@ -62,7 +62,7 @@ function BBcode() {
 	// GÉNÉRATION DE L'OBJET (3)
 
 	// #### Création de l'objet représentant le bbcode ############################# private ### //
-	// = révision : 5
+	// = révision : 9
 	// » Parcours le bbcode récursivement
 	// » Sauvegarde chaque élément et chaque bout de texte dans un tableau d'objets
 	// » À bien noter qu'en JavaScript, les objets sont passés par référence, ils ne sont jamais copiés
@@ -70,35 +70,38 @@ function BBcode() {
 
 		var element = null, attributes = null, content = null, text = null, other = null, cut = 0;
 
-		// la chaine contient du texte et des éléments
+		// la chaine contient du texte suivit d'un ou plusieurs éléments
 		// extrait le premier bout de texte, le premier élément et son contenu ainsi que ce qu'il y a après
 		// auto-rappel pour analyser chaque morceau
-		if ((data[0] !== '[') && ((cut = data.search(/\[([a-z]+)(?:\ [a-z:]+=["'][^"\[\]']+["'])*\]/)) > -1)) {
+		if ((data[0] !== '[') && ((cut = data.search(/\[([a-z1-6]+)(?:\ [a-z:]+=["'][^"\[\]']+["'])*\]/)) > -1)) {
 
 			// texte
 			text = data.slice(0, cut);
 			other = data.slice(cut);
 
-			// balise double (par défaut)
+			// élément double (par défaut)
 			cut = other.indexOf('[/' + RegExp.$1 + ']');
 			element = other.slice(0, cut + RegExp.$1.length + 3);
 			other = other.slice(cut + RegExp.$1.length + 3);
-
-			// balise simple
-			if (/^(\[(?:area|br|col|hr|iframe|img|input|param)(?:\ [a-z:]+=["'][^"\[\]']+["'])*\])/.test(other)) {
-				element = other.slice(0, RegExp.$1.length);
-				other = other.slice(RegExp.$1.length);
-			}
 
 			// auto-rappel
 			this.readData(text, level);
 			this.readData(element, level);
 
+			// élément simple (auto-rappel)
+			if (/^(\[(?:area|br|col|hr|iframe|img|input|param)(?:\ [a-z:]+=["'][^"\[\]']+["'])*\])/.test(other)) {
+
+				element = other.slice(0, RegExp.$1.length);
+				other = other.slice(RegExp.$1.length);
+
+				this.readData(element, level);
+			}
+
 			if (other.length > 0)
 				this.readData(other, level);
 		}
 
-		// la chaine contient un élément vide en première position
+		// la chaine contient un élément simple en première position
 		// extrait l'élément et ses attributs ainsi que ce qu'il y a après
 		// demande la sauvegarde de l'élément et de ses attributs
 		// auto-rappel pour analyser ce qu'il y a après
@@ -114,11 +117,11 @@ function BBcode() {
 				this.readData(other, level);
 		}
 
-		// la chaine contient un élément en première position
+		// la chaine contient un élément double en première position
 		// extrait l'élément et ses attributs, son contenu ainsi que ce qu'il y a après
 		// demande la sauvegarde de l'élément, de son contenu et de ses attributs
 		// auto-rappel pour analyser son contenu et ce qu'il y a après
-		else if (/^\[([a-z]+)((?:\ [a-z:]+=["'][^"\[\]']+["'])*)\]/.test(data)) {
+		else if (/^\[([a-z1-6]+)((?:\ [a-z:]+=["'][^"\[\]']+["'])*)\]/.test(data)) {
 
 			element = RegExp.$1;
 			attributes = RegExp.$2;
@@ -141,47 +144,45 @@ function BBcode() {
 	};
 
 
-	// #### Ajoute un élément ou du texte ########################################## private ### //
-	// = révision : 2
-	// » Enregistre le nœud texte dans le tableau d'objets
-	// » Enregistre le nœud élément et ses attributs dans le tableau d'objets
+	// #### Ajoute un nœud élément ou un nœud texte ################################ private ### //
+	// = révision : 5
+	// » Enregistre le nœud élément et ses attributs ou le nœud texte dans le tableau d'objets
+	// » À bien noter qu'en JavaScript, les objets sont passés par référence, ils ne sont jamais copiés
 	this.addElement = function (data, attributes, level) {
 
-		var directlink = null, attribute = null, value = null;
+		var directlink = null, attr = null, name = null, value = null;
 		directlink = this.getContentNode(this.object, 0, level);
 
-		// *** Sauvegarde le texte ****************************** //
+		// nœud élément
 		if (attributes !== null) {
 
 			if (directlink.hasOwnProperty('content'))
 				directlink.content.push({ tag: data });
 			else
 				directlink.content = [{ tag: data }];
+
+			if (attributes.length > 5) {
+				attributes = attributes.slice(1, -1).split(/["']\ /);
+
+				for (attr in attributes) if (attributes.hasOwnProperty(attr)) {
+
+					name = attributes[attr].slice(0, attributes[attr].indexOf('='));
+					value = attributes[attr].slice(attributes[attr].indexOf('=') + 2);
+
+					if (directlink.hasOwnProperty('content'))
+						directlink.content[directlink.content.length - 1][name] = value;
+					else
+						directlink[name] = value;
+				}
+			}
 		}
 
-		// *** Sauvegarde l'élément ***************************** //
+		// nœud texte
 		else {
 			if (directlink.hasOwnProperty('content'))
 				directlink.content.push({ text: data });
 			else
 				directlink.content = [{ text: data }];
-		}
-
-		// *** Sauvegarde les attributs de l'élément ************ //
-		if ((attributes !== null) && (attributes.length > 5)) {
-
-			attributes = attributes.slice(1, -1).split(/["']\ /);
-
-			for (var attr in attributes) if (attributes.hasOwnProperty(attr)) {
-
-				attribute = attributes[attr].slice(0, attributes[attr].indexOf('='));
-				value = attributes[attr].slice(attributes[attr].indexOf('=') + 2);
-
-				if (directlink.hasOwnProperty('content'))
-					directlink.content[directlink.content.length - 1][attribute] = value;
-				else
-					directlink[attribute] = value;
-			}
 		}
 	};
 
@@ -208,10 +209,10 @@ function BBcode() {
 
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// GESTION DE L'ARBRE DOM (2)
+	// GÉNÉRATION DE L'ARBRE DOM (2)
 
 	// #### Résultat ################################################################ public ### //
-	// = révision : 1
+	// = révision : 3
 	// » Renvoie le fragment DOM correspondant au bbcode
 	this.getDomFragment = function () {
 
@@ -219,34 +220,35 @@ function BBcode() {
 	};
 
 
-	// #### Création de l'arbre DOM ################################################ private ### //
-	// = révision : 6
+	// #### Création de l'arbre DOM ###################################### config ## private ### //
+	// = révision : 11
 	// » Crée récursivement les différents nœuds à partir du tableau d'objets
 	// » Prend en charge les nœuds éléments et leurs attributs ainsi que les nœuds textes
 	// » À bien noter qu'en JavaScript, les objets sont passés par référence, ils ne sont jamais copiés
 	// » Source http://jsperf.com/create-nested-dom-structure
-	this.createDomFragment = function (dom) {
+	// ~ config : navigator
+	this.createDomFragment = function (data) {
 
-		var tag = null, attr = null;
+		var tag = null, attr = null, elem = 0;
 
 		// prépare un nœud élément ou renvoie un nœud texte
-		if (dom.hasOwnProperty('tag'))
-			tag = document.createElement(dom.tag);
+		if (data.hasOwnProperty('tag'))
+			tag = document.createElement(data.tag);
 		else
-			return document.createTextNode(dom.text);
+			return document.createTextNode(data.text);
 
 		// extraction des données de l'élément
-		// ajoute ses attributs et son nœud texte
+		// ajoute ses attributs et son nœud texte si nécessaire
 		// prend en charge les liens à ouvrir dans un nouvel onglet
-		for (attr in dom) if (dom.hasOwnProperty(attr)) {
+		for (attr in data) if (data.hasOwnProperty(attr)) {
 
 			if (attr === 'text')
-				tag.appendChild(document.createTextNode(dom[attr]));
+				tag.appendChild(document.createTextNode(data[attr]));
 
 			if ((attr !== 'tag') && (attr !== 'text') && (attr !== 'content'))
-				tag.setAttribute(attr, dom[attr]);
+				tag.setAttribute(attr, data[attr]);
 
-			if ((dom.tag === 'a') && (attr === 'class') && (/popup/.test(dom[attr]))) {
+			if ((data.tag === 'a') && (attr === 'class') && (data[attr].indexOf('popup') > -1) && (typeof openTab === 'function')) {
 
 				if (apijs.config.navigator)
 					tag.addEventListener('click', openTab, false);
@@ -257,10 +259,10 @@ function BBcode() {
 
 		// l'élément contient un ou plusieurs sous éléments
 		// auto-rappel pour analyser chaque élément
-		if (dom.hasOwnProperty('content')) {
+		if (data.hasOwnProperty('content')) {
 
-			for (var elem = 0, size = dom.content.length; elem < size; elem++)
-				tag.appendChild(this.createDomFragment(dom.content[elem]));
+			for (elem = 0; elem < data.content.length; elem++)
+				tag.appendChild(this.createDomFragment(data.content[elem]));
 		}
 
 		return tag;

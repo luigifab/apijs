@@ -1,10 +1,10 @@
 /**
  * Created V/08/05/2009
- * Updated J/18/11/2010
- * Version 15
+ * Updated D/12/12/2010
+ * Version 17
  *
  * Copyright 2008-2010 | Fabrice Creuzot (luigifab) <code~luigifab~info>
- * http://www.luigifab.info/apijs/
+ * http://www.luigifab.info/apijs
  *
  * This program is free software, you can redistribute it or modify
  * it under the terms of the GNU General Public License (GPL) as published
@@ -23,7 +23,7 @@
 	color:black; background-color:black; background-color:rgba(0, 0, 0, 0.75);
 }
 
-#dialogue.norgba { background-color:black; }
+#dialogue.norgba, div.dialogue.norgba { background-color:black; }
 
 #box {
 	position:relative; top:28%; margin:auto; padding:0.6em 0.8em 2.4em; width:33em; min-height:9em; overflow:hidden;
@@ -36,7 +36,7 @@
 	border:2px solid #999; box-shadow:none; -moz-box-shadow:none; -webkit-box-shadow:none; opacity:1;
 }
 
-#box.download, #box.option { top:26%; }
+#box.download, #box.options { top:26%; }
 #box.upload, #box.errorupload, #box.progress { min-height:12em; }
 
 
@@ -55,23 +55,25 @@
 }
 
 #box.photo, #box.video { top:50%; left:50%; padding:10px 10px 5px; width:auto; min-height:inherit; overflow:visible; }
+
+#box.download, #box.options { top:26%; }
 #box.upload, #box.errorupload, #box.progress { min-height:12em; } */
 
 
 /* ############################################################## Icônes ### */
 #box.information  h1 { background-image:url("../images/icons/32/gnome-dialog-information.png"); }
 #box.confirmation h1 { background-image:url("../images/icons/32/gnome-dialog-question.png"); }
-#box.waiting      h1 { background-image:url("../images/icons/32/gnome-appointment-soon.png"); }
-
-#box.delete   h1 { background-image:url("../images/icons/32/gnome-delete.png"); }
-#box.download h1 { background-image:url("../images/icons/32/gnome-save.png"); }
-#box.error    h1 { background-image:url("../images/icons/32/gnome-dialog-error.png"); }
-#box.option   h1 { background-image:url("../images/icons/32/gnome-preferences-other.png"); }
-#box.warning  h1 { background-image:url("../images/icons/32/gnome-dialog-warning.png"); }
+#box.options h1 { background-image:url("../images/icons/32/gnome-preferences-other.png"); }
+#box.waiting h1 { background-image:url("../images/icons/32/gnome-appointment-soon.png"); }
 
 #box.upload      h1 { background-image:url("../images/icons/32/gnome-mail-new.png"); }
 #box.errorupload h1 { background-image:url("../images/icons/32/gnome-dialog-error.png"); }
 #box.progress    h1 { background-image:url("../images/icons/32/gnome-appointment-soon.png"); }
+
+#box.delete   h1 { background-image:url("../images/icons/32/gnome-delete.png"); }
+#box.download h1 { background-image:url("../images/icons/32/gnome-save.png"); }
+#box.error    h1 { background-image:url("../images/icons/32/gnome-dialog-error.png"); }
+#box.warning  h1 { background-image:url("../images/icons/32/gnome-dialog-warning.png"); }
 
 
 /* ############################################################### Texte ### */
@@ -84,6 +86,12 @@
 #box p {
 	margin:1em auto;
 	font-size:1em; line-height:1.4em;
+}
+
+#box p.saving {
+	position:absolute; bottom:6em; left:7em; margin:0; padding-left:23px; height:16px;
+	font-size:0.85em; line-height:1.45em; color:#333;
+	background:url("../images/dialogue/saving.png") no-repeat left center;
 }
 
 #box p.reload {
@@ -117,18 +125,35 @@
 
 
 /* ############################################### Boutons de navigation ### */
-#box div.navigation button {
-	position:absolute; top:40%; padding:0.1em 0.3em;
-	font-size:1.3em; color:white; cursor:pointer;
-	border:none; background-color:#777; /* thème1(#777) thème2(#AAA) */ opacity:0.35;
-	border-radius:0.4em; -khtml-border-radius:0.4em; -moz-border-radius:0.4em; -webkit-border-radius:0.4em;
+#box div.navigation.txt button {
+	position:absolute; top:42%; padding:0.4em 0; width:7em;
+	font-size:0.8em; color:#CCC; cursor:pointer;
+	border:none; background-color:#444; opacity:0.25;
 }
 
-#box div.navigation button#prev { left:-31px; }
-#box div.navigation button#next { right:-31px; }
+#box div.navigation.txt button#prev {
+	left:-4.9em; transform:rotate(-90deg); -moz-transform:rotate(-90deg); -o-transform:rotate(-90deg); -webkit-transform:rotate(-90deg);
+	border-radius:1em 1em 0.4em 0.4em; -khtml-border-radius:1em 1em 0.4em 0.4em; -moz-border-radius:1em 1em 0.4em 0.4em;
+	-webkit-border-radius:1em 1em 0.4em 0.4em;
+}
+
+#box div.navigation.txt button#next {
+	right:-4.9em; transform:rotate(90deg); -moz-transform:rotate(90deg); -o-transform:rotate(90deg); -webkit-transform:rotate(90deg);
+	border-radius:1em 1em 0.4em 0.4em; -khtml-border-radius:1em 1em 0.4em 0.4em; -moz-border-radius:1em 1em 0.4em 0.4em;
+	-webkit-border-radius:1em 1em 0.4em 0.4em;
+}
+
+#box div.navigation.img button {
+	position:absolute; top:40%; padding:0; width:25px; height:50px;
+	font-size:0.85em; color:#CCC; cursor:pointer;
+	border:none; background-color:transparent; opacity:0.25;
+}
+
+#box div.navigation.img button#prev { left:-2.9em; }
+#box div.navigation.img button#next { right:-2.9em; }
 
 #box div.navigation button[disabled] { display:none; }
-#box div.navigation button:hover, #box div.navigation button:focus, #box div.navigation button:active { opacity:0.7; }
+#box div.navigation button:hover, #box div.navigation button:focus, #box div.navigation button:active { opacity:0.55; }
 
 
 /* ################################################# Bouton de fermeture ### */
@@ -152,30 +177,30 @@
 
 
 /* ###################################################### Dialogue photo ### */
-#box.photo dt a { display:block; position:relative; }
+#box.photo dl dt a { display:block; position:relative; }
 
-#box.photo dt a span {
+#box.photo dl dt a span {
 	display:none; position:absolute; bottom:5px; right:5px; width:24px; height:24px;
 	background:transparent url("../images/icons/24/gnome-zoom-in.png") no-repeat center; opacity:0.75;
 }
 
-#box.photo dt a:hover span, #box.photo dt a:active span, #box.photo dt a:focus span { display:inline-block; }
+#box.photo dl dt a:hover span, #box.photo dt a:active span, #box.photo dt a:focus span { display:inline-block; }
 
-#box.photo dt img { display:block; }
-#box.photo dt img.loading  { background:white url("../images/dialogue/loading.png") no-repeat center; }
-#box.photo dt img.error_de { background:white url("../images/dialogue/error/de.png") no-repeat center; }
-#box.photo dt img.error_en { background:white url("../images/dialogue/error/en.png") no-repeat center; }
-#box.photo dt img.error_fr { background:white url("../images/dialogue/error/fr.png") no-repeat center; }
+#box.photo dl dt img { display:block; }
+#box.photo dl dt img.loading  { background:white url("../images/dialogue/loading.png") no-repeat center; }
+#box.photo dl dt img.error_de { background:white url("../images/dialogue/error/de.png") no-repeat center; }
+#box.photo dl dt img.error_en { background:white url("../images/dialogue/error/en.png") no-repeat center; }
+#box.photo dl dt img.error_fr { background:white url("../images/dialogue/error/fr.png") no-repeat center; }
 
-#box.video dt video { display:block; color:white; background-color:black; }
+#box.video dl dt video { display:block; color:white; background-color:black; }
 
 
 /* ############################################## Lien de téléchargement ### */
-#box dd a.download {
-	float:right; margin:0.4em 0.5em 0;
+#box dl dd a.download {
+	float:right; margin:0.35em 0.5em 0;
 	font-size:0.7em; color:#AAA;
 }
 
-#box dd a.download:hover, #box dd a.download:active, #box dd a.download:focus { color:#777; }
-#box dd span { margin-right:0.2em; font-size:0.85em; color:#777; }
+#box dl dd a.download:hover, #box dl dd a.download:active, #box dl dd a.download:focus { color:#777; }
+#box dl dd span { margin-right:0.2em; font-size:0.85em; color:#777; }
 

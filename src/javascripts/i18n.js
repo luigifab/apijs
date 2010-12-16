@@ -1,10 +1,10 @@
 /**
  * Created S/05/06/2010
- * Updated J/04/11/2010
- * Version 12
+ * Updated D/19/12/2010
+ * Version 13
  *
  * Copyright 2008-2010 | Fabrice Creuzot (luigifab) <code~luigifab~info>
- * http://www.luigifab.info/apijs/
+ * http://www.luigifab.info/apijs
  *
  * This program is free software, you can redistribute it or modify
  * it under the terms of the GNU General Public License (GPL) as published
@@ -22,18 +22,22 @@ function Internationalization() {
 	// définition des traductions
 	this.data = [];
 
-	// Deutsch
+	// Deutsch (incomplet)
 	// » Dacrydium SARL <contact~dacrydium~fr>
 	this.data.de = {
 		buttonOk: "Ok",
 		buttonCancel: "Abbrechen",
 		buttonConfirm: "Bestätigen",
 		buttonClose: "Ende",
+		buttonPrev: "Previous",
+		buttonNext: "Next",
 
 		downloadLink: "Laden",
 		operationTooLong: "This operation is too long ? ",
 		warningLostChange: "Achtung : alle laufenden änderungen werden verloren.",
 		reloadLink: "Seite nochmal laden",
+		operationInProgress: "Laufende Aktion...",
+		savingInProgress: "Saving...",
 
 		debugInvalidCall: "(debug) Invalid call",
 		debugInvalidUse: "(debug) Invalid use",
@@ -53,11 +57,15 @@ function Internationalization() {
 		buttonCancel: "Cancel",
 		buttonConfirm: "Confirm",
 		buttonClose: "Close",
+		buttonPrev: "Previous",
+		buttonNext: "Next",
 
 		downloadLink: "Download",
 		operationTooLong: "This operation is too long ? ",
 		warningLostChange: "Warning : all changes in progress will be lost.",
 		reloadLink: "Reload this page",
+		operationInProgress: "Operation in progress...",
+		savingInProgress: "Saving...",
 
 		debugInvalidCall: "(debug) Invalid call",
 		debugInvalidUse: "(debug) Invalid use",
@@ -76,11 +84,15 @@ function Internationalization() {
 		buttonCancel: "Annuler",
 		buttonConfirm: "Valider",
 		buttonClose: "Fermer",
+		buttonPrev: "Précédent",
+		buttonNext: "Suivant",
 
 		downloadLink: "Télécharger",
 		operationTooLong: "Cette opération prend trop de temps ? ",
 		warningLostChange: "Attention : toutes les modifications en cours seront perdues.",
 		reloadLink: "Rechargez la page",
+		operationInProgress: "Opération en cours...",
+		savingInProgress: "Enregistrement en cours...",
 
 		debugInvalidCall: "(debug) Appel invalide",
 		debugInvalidUse: "(debug) Utilisation invalide",
@@ -94,16 +106,32 @@ function Internationalization() {
 
 
 	// #### Auto-détection de la langue ############################################# public ### //
-	// = révision : 6
-	// » Essaye de récupérer la langue utilisée par le navigateur
-	// » Vérifie si la langue existe dans les traductions disponibles
+	// = révision : 8
+	// » Essaye de récupérer la langue utilisée par la page web
+	// » Vérifie ensuite si elle existe dans la liste des langues disponibles
+	// » Prend soin de vérifier que la configuration de la langue est correcte
 	this.init = function () {
 
-		if ((typeof navigator.language === 'string') && apijs.config.autolang && (navigator.language.slice(0, 2) in this.data))
-			apijs.config.lang = navigator.language.slice(0, 2);
+		if (apijs.config.autolang) {
 
-		else if ((typeof apijs.config.lang !== 'string') || !(apijs.config.lang in this.data))
+			var autolang = null;
+
+			if (document.getElementsByTagName("html")[0].getAttribute('xml:lang'))
+				autolang = document.getElementsByTagName("html")[0].getAttribute('xml:lang').slice(0, 2);
+
+			else if (document.getElementsByTagName("html")[0].getAttribute('lang'))
+				autolang = document.getElementsByTagName("html")[0].getAttribute('lang').slice(0, 2);
+
+			if ((typeof autolang === 'string') && (autolang in this.data))
+				apijs.config.lang = autolang;
+
+			else if ((typeof apijs.config.lang !== 'string') || !(apijs.config.lang in this.data))
+				apijs.config.lang = 'en';
+		}
+
+		else if ((typeof apijs.config.lang !== 'string') || !(apijs.config.lang in this.data)) {
 			apijs.config.lang = 'en';
+		}
 	};
 
 

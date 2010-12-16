@@ -1,10 +1,10 @@
 /**
  * Created V/08/05/2009
- * Updated J/18/11/2010
+ * Updated V/24/12/2010
  * Version 7
  *
  * Copyright 2008-2010 | Fabrice Creuzot (luigifab) <code~luigifab~info>
- * http://www.luigifab.info/apijs/
+ * http://www.luigifab.info/apijs
  *
  * This program is free software, you can redistribute it or modify
  * it under the terms of the GNU General Public License (GPL) as published
@@ -24,7 +24,7 @@ div.album {
 }
 
 div.album dl.vignette {
-	float:left; margin:4px; padding:5px 5px 4px; width:200px; min-height:168px;
+	float:left; margin:4px; padding:5px 5px 4px; width:200px;
 	font-size:0.8em; color:#666; text-align:center;
 	border:1px solid #CCC; background-color:#CCC;
 	border-radius:0.6em; -khtml-border-radius:0.6em; -moz-border-radius:0.6em; -webkit-border-radius:0.6em;
@@ -34,7 +34,7 @@ div.album dl.vignette:hover { border-color:#999; }
 
 
 /* ############################################################### Texte ### */
-div.album dl.vignette dt { margin-bottom:0.4em; vertical-align:middle; }
+div.album dl.vignette dt { margin-bottom:0.4em; min-height:150px; vertical-align:middle; }
 div.album dl.vignette dt a { display:block; text-decoration:none; }
 div.album dl.vignette dt a img { display:block; margin:auto; }
 

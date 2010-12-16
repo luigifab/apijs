@@ -1,10 +1,10 @@
 /**
  * Created J/03/12/2009
- * Updated J/18/11/2010
- * Version 28
+ * Updated D/26/12/2010
+ * Version 32
  *
  * Copyright 2008-2010 | Fabrice Creuzot (luigifab) <code~luigifab~info>
- * http://www.luigifab.info/apijs/
+ * http://www.luigifab.info/apijs
  *
  * This program is free software, you can redistribute it or modify
  * it under the terms of the GNU General Public License (GPL) as published
@@ -15,16 +15,20 @@
  * but without any warranty, without even the implied warranty of
  * merchantability or fitness for a particular purpose. See the
  * GNU General Public License (GPL) for more details.
+ *
+ * Variables prédéfinies pour JSLint
+ * Internationalization, BBcode, Dialogue, Slideshow, Map, Upload, apijs, window, start, openTab, alert
  */
 
 // #### Paramètres de configuration ############################### //
-// = révision : 18
+// = révision : 23
 // » Définie la variable globale du programme ainsi que sa configuration
 // » Lance le programme JavaScript
 var apijs = {
 	i18n: null,
 	dialogue: null,
 	slideshow: null,
+	upload: null,
 	map: null,
 	config: {
 		lang: 'fr',
@@ -35,12 +39,16 @@ var apijs = {
 		dialogue: {
 			blocks: [],
 			hiddenPage: false,
+			savingDialog: false,
+			savingTime: 2250,
 			showLoader: true,
-			autoplay: true,
+			autoPlay: true,
 			savePhoto: true,
 			saveVideo: true,
 			videoWidth: 640,
 			videoHeight: 480,
+			imagePrev: null,
+			imageNext: null,
 			imageClose: './images/dialogue/close.png',
 			imageUpload: './images/dialogue/progressbar.svg',
 			filePhoto: './download.php',
@@ -65,6 +73,9 @@ var apijs = {
 	}
 };
 
+function myFuncA() { alert('myFuncA() in main.js (this is an example)'); apijs.dialogue.actionClose(true); }
+function myFuncB(id) { alert('myFuncB(' + id + ') in main.js (this is an example)'); apijs.dialogue.actionClose(true); }
+
 if (navigator.userAgent.indexOf('MSIE') < 0) {
 	window.addEventListener('load', start, false);
 }
@@ -77,13 +88,13 @@ else {
 
 
 // #### Lancement du programme #################################### //
-// = révision : 22
-// » Recherche les liens ayant la class popup
+// = révision : 24
+// » Recherche les liens ayant la classe popup
 // » Charge les modules disponibles
 function start() {
 
-	// recherche des liens
-	for (var tag = document.getElementsByTagName('a'), size = tag.length, i = 0; i < size; i++) {
+	// *** Recherche des liens ************************* //
+	for (var tag = document.getElementsByTagName('a'), i = 0; i < tag.length; i++) {
 
 		if (apijs.config.navigator && tag[i].hasAttribute('class') && (tag[i].getAttribute('class').indexOf('popup') > -1))
 			tag[i].addEventListener('click', openTab, false);
@@ -92,17 +103,22 @@ function start() {
 			tag[i].setAttribute('onclick', 'window.open(this.href); return false;');
 	}
 
-	// chargement des modules
-	if ((typeof Internationalization === 'function') && (typeof BBcode === 'function') && (typeof Dialogue === 'function')) {
+	// *** Chargement des modules ********************** //
+	if (typeof Internationalization === 'function') {
 
 		apijs.i18n = new Internationalization();
 		apijs.i18n.init();
-		apijs.dialogue = new Dialogue();
 
-		if (typeof Slideshow === 'function') {
-			apijs.slideshow = new Slideshow();
-			apijs.slideshow.init();
+		if ((typeof Dialogue === 'function') && (typeof BBcode === 'function')) {
+
+			apijs.dialogue = new Dialogue();
+
+			if (typeof Slideshow === 'function') {
+				apijs.slideshow = new Slideshow();
+				apijs.slideshow.init();
+			}
 		}
+
 		if ((typeof Map === 'function') && document.getElementById('carteInteractive')) {
 			apijs.map = new Map();
 			apijs.map.init();
@@ -112,8 +128,9 @@ function start() {
 
 
 // #### Nouvel onglet ############################################# //
-// = révision : 2
+// = révision : 3
 // » Ouvre le lien dans un nouvel onglet
+// » Fonction pouvant être utilisée par [bbcode] (non obligatoire)
 // » Annule l'action par défaut
 function openTab(ev) {
 
@@ -123,15 +140,12 @@ function openTab(ev) {
 
 
 // #### Vérification des modules ################################## //
-// = révision : 20
-// » Vérifie les modules
-// » Vérifie les données de configuration
+// = révision : 27
+// » Vérifie les modules et la configuration des modules chargés
 // » Ne vérifie pas les dépendances entre les modules
 function checkAll() {
 
-	var module = 0, error = 0, warning = 0;
-	var report = [], defaultConf = null, key1 = null, key2 = null;
-
+	var module = 0, error = 0, warning = 0, report = [], defaultConf = null, keyA = null, keyB = null;
 	defaultConf = {
 		lang: 'string',
 		debug: 'boolean',
@@ -141,12 +155,16 @@ function checkAll() {
 		dialogue: {
 			blocks: 'object',
 			hiddenPage: 'boolean',
+			savingDialog: 'boolean',
+			savingTime: 'number',
 			showLoader: 'boolean',
-			autoplay: 'boolean',
+			autoPlay: 'boolean',
 			savePhoto: 'boolean',
 			saveVideo: 'boolean',
 			videoWidth: 'number',
 			videoHeight: 'number',
+			imagePrev: 'string',
+			imageNext: 'string',
 			imageClose: 'string',
 			imageUpload: 'string',
 			filePhoto: 'string',
@@ -160,148 +178,131 @@ function checkAll() {
 		}
 	};
 
-	// *** Vérification des modules *************** //
-	report.push('The apijs');
-	report.push('\nChecking modules');
+	// *** Vérification des modules ******************** //
+	report.push('Checking modules');
 
 	// [bbcode]
 	if (typeof BBcode === 'function') {
-		report.push('➩ BBcode is here');
+		report.push(' ➩ BBcode is here');
 		module++;
 	}
 
 	// [i18n]
 	if ((typeof Internationalization === 'function') && (apijs.i18n instanceof Internationalization)) {
-		report.push('➩ Internationalization is here and loaded');
+		report.push(' ➩ Internationalization is here and loaded');
 		module++;
 	}
-
 	else if (typeof Internationalization === 'function') {
-		report.push('➩ Internationalization is here');
+		report.push(' ➩ Internationalization is here');
 		module++;
 	}
 
-	// [TheButton]
-	if ((typeof Button === 'function') && (apijs.button instanceof Button)) {
-		report.push('➩ TheButton is here and loaded');
-		module++;
-	}
-
-	else if (typeof Button === 'function') {
-		report.push('➩ TheButton is here');
-		module++;
-	}
-
-	// [Thedialogue]
+	// [TheDialogue]
 	if ((typeof Dialogue === 'function') && (apijs.dialogue instanceof Dialogue)) {
-		report.push('➩ TheDialogue is here and loaded');
+		report.push(' ➩ TheDialogue is here and loaded');
 		module++;
 	}
-
 	else if (typeof Dialogue === 'function') {
-		report.push('➩ TheDialogue is here');
-		module++;
-	}
-
-	// [TheUpload]
-	if ((typeof Upload === 'function') && (apijs.upload instanceof Upload)) {
-		report.push('➩ TheUpload is here and loaded');
-		module++;
-	}
-
-	else if (typeof Upload === 'function') {
-		report.push('➩ TheUpload is here');
+		report.push(' ➩ TheDialogue is here');
 		module++;
 	}
 
 	// [TheSlideshow]
 	if ((typeof Slideshow === 'function') && (apijs.slideshow instanceof Slideshow)) {
-		report.push('➩ TheSlideshow is here and loaded');
+		report.push(' ➩ TheSlideshow is here and loaded');
+		module++;
+	}
+	else if (typeof Slideshow === 'function') {
+		report.push(' ➩ TheSlideshow is here');
 		module++;
 	}
 
-	else if (typeof Slideshow === 'function') {
-		report.push('➩ TheSlideshow is here');
+	// [TheUpload]
+	if ((typeof Upload === 'function') && (apijs.upload instanceof Upload)) {
+		report.push(' ➩ TheUpload is here and loaded');
+		module++;
+	}
+	else if (typeof Upload === 'function') {
+		report.push(' ➩ TheUpload is here');
 		module++;
 	}
 
 	// [TheMap]
 	if ((typeof Map === 'function') && (apijs.map instanceof Map)) {
-		report.push('➩ TheMap is here and loaded');
+		report.push(' ➩ TheMap is here and loaded');
 		module++;
 	}
-
 	else if (typeof Map === 'function') {
-		report.push('➩ TheMap is here');
+		report.push(' ➩ TheMap is here');
 		module++;
 	}
 
 	if (module < 1)
-		report.push('➩ no module present');
+		report.push(' ➩ no module present');
 
-	// *** Vérification de la configuration ******* //
+	// *** Vérification de la configuration ************ //
 	report.push('\nChecking configuration');
 
-	for (key1 in defaultConf) if (defaultConf.hasOwnProperty(key1)) {
+	for (keyA in defaultConf) if (defaultConf.hasOwnProperty(keyA)) {
 
 		// pas dé vérification si le module n'est pas chargé
-		if ((key1 === 'dialogue') && (typeof Dialogue !== 'function'))
+		if ((keyA === 'dialogue') && (typeof Dialogue !== 'function'))
 			continue;
 
-		if ((key1 === 'slideshow') && (typeof Slideshow !== 'function'))
+		if ((keyA === 'slideshow') && (typeof Slideshow !== 'function'))
 			continue;
 
-		if ((key1 === 'map') && (typeof Map !== 'function'))
+		if ((keyA === 'map') && (typeof Map !== 'function'))
 			continue;
 
 		// config d'un module
-		if (typeof defaultConf[key1] === 'object') {
+		if (typeof defaultConf[keyA] === 'object') {
 
-			for (key2 in defaultConf[key1]) {
+			for (keyB in defaultConf[keyA]) {
 
 				// config manquante
-				if (apijs.config[key1][key2] === undefined) {
-					report.push('☠ apijs.config.' + key1 + '.' + key2 + ' is missing');
+				if (apijs.config[keyA][keyB] === undefined) {
+					report.push(' ☠ apijs.config.' + keyA + '.' + keyB + ' is missing');
 					error++;
 				}
 
 				// config vide
-				else if ((apijs.config[key1][key2] === null) && (defaultConf[key1][key2] === 'string')) {
-					report.push('⚠ apijs.config.' + key1 + '.' + key2 + ' is null');
+				else if ((apijs.config[keyA][keyB] === null) && (defaultConf[keyA][keyB] === 'string')) {
+					report.push(' ⚠ apijs.config.' + keyA + '.' + keyB + ' is null');
 					warning++;
 				}
 
 				// config invalide
-				else if (typeof apijs.config[key1][key2] !== defaultConf[key1][key2]) {
-					report.push('☠ apijs.config.' + key1 + '.' + key2 + ' isn\'t a ' + defaultConf[key1][key2]);
+				else if (typeof apijs.config[keyA][keyB] !== defaultConf[keyA][keyB]) {
+					report.push(' ☠ apijs.config.' + keyA + '.' + keyB + ' isn\'t a ' + defaultConf[keyA][keyB]);
 					error++;
 				}
 			}
 		}
 
 		// config manquante
-		else if (apijs.config[key1] === undefined) {
-			report.push('☠ apijs.config.' + key1 + ' is missing');
+		else if (apijs.config[keyA] === undefined) {
+			report.push(' ☠ apijs.config.' + keyA + ' is missing');
 			error++;
 		}
 
 		// config vide
-		else if ((apijs.config[key1] === null) && (defaultConf[key1] === 'string')) {
-			report.push('⚠ apijs.config.' + key1 + ' is null');
+		else if ((apijs.config[keyA] === null) && (defaultConf[keyA] === 'string')) {
+			report.push(' ⚠ apijs.config.' + keyA + ' is null');
 			warning++;
 		}
 
 		// config invalide
-		else if (typeof apijs.config[key1] !== defaultConf[key1]) {
-			report.push('☠ apijs.config.' + key1 + ' isn\'t a ' + defaultConf[key1]);
+		else if (typeof apijs.config[keyA] !== defaultConf[keyA]) {
+			report.push(' ☠ apijs.config.' + keyA + ' isn\'t a ' + defaultConf[keyA]);
 			error++;
 		}
 	}
 
 	if (error < 1)
-		report.push('➩ no error found');
+		report.push(' ➩ no error found');
 
-	// *** Affichage du rapport ******************* //
+	// *** Affichage du rapport ************************ //
 	alert(report.join('\n'));
 }
 
