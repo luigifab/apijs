@@ -1,9 +1,9 @@
 /**
  * Created V/08/05/2009
- * Updated D/12/12/2010
+ * Updated S/01/01/2011
  * Version 17
  *
- * Copyright 2008-2010 | Fabrice Creuzot (luigifab) <code~luigifab~info>
+ * Copyright 2008-2011 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
  *
  * This program is free software, you can redistribute it or modify
@@ -73,6 +73,7 @@
 #box.delete   h1 { background-image:url("../images/icons/32/gnome-delete.png"); }
 #box.download h1 { background-image:url("../images/icons/32/gnome-save.png"); }
 #box.error    h1 { background-image:url("../images/icons/32/gnome-dialog-error.png"); }
+#box.print    h1 { background-image:url("../images/icons/32/gnome-document-print.png"); }
 #box.warning  h1 { background-image:url("../images/icons/32/gnome-dialog-warning.png"); }
 
 

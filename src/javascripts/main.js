@@ -1,9 +1,9 @@
 /**
  * Created J/03/12/2009
- * Updated D/26/12/2010
+ * Updated V/31/12/2010
  * Version 32
  *
- * Copyright 2008-2010 | Fabrice Creuzot (luigifab) <code~luigifab~info>
+ * Copyright 2008-2011 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
  *
  * This program is free software, you can redistribute it or modify
@@ -16,12 +16,12 @@
  * merchantability or fitness for a particular purpose. See the
  * GNU General Public License (GPL) for more details.
  *
- * Variables prédéfinies pour JSLint
- * Internationalization, BBcode, Dialogue, Slideshow, Map, Upload, apijs, window, start, openTab, alert
+ * Configuration de JSLint
+ * Internationalization, BBcode, Dialogue, Slideshow, Upload, Map, window, apijs, start, openTab, alert
  */
 
 // #### Paramètres de configuration ############################### //
-// = révision : 23
+// = révision : 24
 // » Définie la variable globale du programme ainsi que sa configuration
 // » Lance le programme JavaScript
 var apijs = {
@@ -76,7 +76,7 @@ var apijs = {
 function myFuncA() { alert('myFuncA() in main.js (this is an example)'); apijs.dialogue.actionClose(true); }
 function myFuncB(id) { alert('myFuncB(' + id + ') in main.js (this is an example)'); apijs.dialogue.actionClose(true); }
 
-if (navigator.userAgent.indexOf('MSIE') < 0) {
+if ((navigator.userAgent.indexOf('MSIE') < 0) || (navigator.userAgent.indexOf('MSIE 9') > -1)) {
 	window.addEventListener('load', start, false);
 }
 else {
@@ -88,7 +88,7 @@ else {
 
 
 // #### Lancement du programme #################################### //
-// = révision : 24
+// = révision : 25
 // » Recherche les liens ayant la classe popup
 // » Charge les modules disponibles
 function start() {
@@ -133,14 +133,13 @@ function start() {
 // » Fonction pouvant être utilisée par [bbcode] (non obligatoire)
 // » Annule l'action par défaut
 function openTab(ev) {
-
 	ev.preventDefault();
 	window.open(this.href);
 }
 
 
 // #### Vérification des modules ################################## //
-// = révision : 27
+// = révision : 28
 // » Vérifie les modules et la configuration des modules chargés
 // » Ne vérifie pas les dépendances entre les modules
 function checkAll() {
@@ -252,13 +251,16 @@ function checkAll() {
 		if ((keyA === 'slideshow') && (typeof Slideshow !== 'function'))
 			continue;
 
+		if ((keyA === 'upload') && (typeof Upload !== 'function'))
+			continue;
+
 		if ((keyA === 'map') && (typeof Map !== 'function'))
 			continue;
 
 		// config d'un module
 		if (typeof defaultConf[keyA] === 'object') {
 
-			for (keyB in defaultConf[keyA]) {
+			for (keyB in defaultConf[keyA]) if (defaultConf[keyA].hasOwnProperty(keyB)) {
 
 				// config manquante
 				if (apijs.config[keyA][keyB] === undefined) {

@@ -1,9 +1,9 @@
 /**
  * Created J/19/08/2010
- * Updated D/26/12/2010
- * Version 4
+ * Updated Ma/28/12/2010
+ * Version 5
  *
- * Copyright 2008-2010 | Fabrice Creuzot (luigifab) <code~luigifab~info>
+ * Copyright 2008-2011 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
  *
  * This program is free software, you can redistribute it or modify
@@ -62,7 +62,7 @@ function BBcode() {
 	// GÉNÉRATION DE L'OBJET (3)
 
 	// #### Création de l'objet représentant le bbcode ############################# private ### //
-	// = révision : 9
+	// = révision : 10
 	// » Parcours le bbcode récursivement
 	// » Sauvegarde chaque élément et chaque bout de texte dans un tableau d'objets
 	// » À bien noter qu'en JavaScript, les objets sont passés par référence, ils ne sont jamais copiés
@@ -75,28 +75,27 @@ function BBcode() {
 		// auto-rappel pour analyser chaque morceau
 		if ((data[0] !== '[') && ((cut = data.search(/\[([a-z1-6]+)(?:\ [a-z:]+=["'][^"\[\]']+["'])*\]/)) > -1)) {
 
-			// texte
+			// texte (auto-rappel)
 			text = data.slice(0, cut);
+			this.readData(text, level);
+
+			// élément double (auto-rappel)
 			other = data.slice(cut);
 
-			// élément double (par défaut)
-			cut = other.indexOf('[/' + RegExp.$1 + ']');
-			element = other.slice(0, cut + RegExp.$1.length + 3);
-			other = other.slice(cut + RegExp.$1.length + 3);
-
-			// auto-rappel
-			this.readData(text, level);
-			this.readData(element, level);
-
-			// élément simple (auto-rappel)
-			if (/^(\[(?:area|br|col|hr|iframe|img|input|param)(?:\ [a-z:]+=["'][^"\[\]']+["'])*\])/.test(other)) {
-
-				element = other.slice(0, RegExp.$1.length);
-				other = other.slice(RegExp.$1.length);
-
+			if ((cut = other.indexOf('[/' + RegExp.$1 + ']')) > -1) {
+				element = other.slice(0, cut + RegExp.$1.length + 3);
+				other = other.slice(cut + RegExp.$1.length + 3);
 				this.readData(element, level);
 			}
 
+			// élément simple (auto-rappel)
+			if (/^(\[(?:area|br|col|hr|iframe|img|input|param)(?:\ [a-z:]+=["'][^"\[\]']+["'])*\])/.test(other)) {
+				element = other.slice(0, RegExp.$1.length);
+				other = other.slice(RegExp.$1.length);
+				this.readData(element, level);
+			}
+
+			// ce qu'il reste (auto-rappel)
 			if (other.length > 0)
 				this.readData(other, level);
 		}
