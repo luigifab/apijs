@@ -1,6 +1,6 @@
 /**
  * Created J/19/08/2010
- * Updated Ma/28/12/2010
+ * Updated J/13/01/2011
  * Version 5
  *
  * Copyright 2008-2011 | Fabrice Creuzot (luigifab) <code~luigifab~info>
@@ -62,7 +62,7 @@ function BBcode() {
 	// GÉNÉRATION DE L'OBJET (3)
 
 	// #### Création de l'objet représentant le bbcode ############################# private ### //
-	// = révision : 10
+	// = révision : 11
 	// » Parcours le bbcode récursivement
 	// » Sauvegarde chaque élément et chaque bout de texte dans un tableau d'objets
 	// » À bien noter qu'en JavaScript, les objets sont passés par référence, ils ne sont jamais copiés
@@ -73,7 +73,7 @@ function BBcode() {
 		// la chaine contient du texte suivit d'un ou plusieurs éléments
 		// extrait le premier bout de texte, le premier élément et son contenu ainsi que ce qu'il y a après
 		// auto-rappel pour analyser chaque morceau
-		if ((data[0] !== '[') && ((cut = data.search(/\[([a-z1-6]+)(?:\ [a-z:]+=["'][^"\[\]']+["'])*\]/)) > -1)) {
+		if ((data[0] !== '[') && ((cut = data.search(/\[([a-z1-6]+)(?: [a-z:]+=["'][^"\[\]']+["'])*\]/)) > -1)) {
 
 			// texte (auto-rappel)
 			text = data.slice(0, cut);
@@ -89,7 +89,7 @@ function BBcode() {
 			}
 
 			// élément simple (auto-rappel)
-			if (/^(\[(?:area|br|col|hr|iframe|img|input|param)(?:\ [a-z:]+=["'][^"\[\]']+["'])*\])/.test(other)) {
+			if (/^(\[(?:area|br|col|hr|iframe|img|input|param)(?: [a-z:]+=["'][^"\[\]']+["'])*\])/.test(other)) {
 				element = other.slice(0, RegExp.$1.length);
 				other = other.slice(RegExp.$1.length);
 				this.readData(element, level);
@@ -104,7 +104,7 @@ function BBcode() {
 		// extrait l'élément et ses attributs ainsi que ce qu'il y a après
 		// demande la sauvegarde de l'élément et de ses attributs
 		// auto-rappel pour analyser ce qu'il y a après
-		else if (/^\[(area|br|col|hr|iframe|img|input|param)((?:\ [a-z:]+=["'][^"\[\]']+["'])*)\]/.test(data)) {
+		else if (/^\[(area|br|col|hr|iframe|img|input|param)((?: [a-z:]+=["'][^"\[\]']+["'])*)\]/.test(data)) {
 
 			element = RegExp.$1;
 			attributes = RegExp.$2;
@@ -120,7 +120,7 @@ function BBcode() {
 		// extrait l'élément et ses attributs, son contenu ainsi que ce qu'il y a après
 		// demande la sauvegarde de l'élément, de son contenu et de ses attributs
 		// auto-rappel pour analyser son contenu et ce qu'il y a après
-		else if (/^\[([a-z1-6]+)((?:\ [a-z:]+=["'][^"\[\]']+["'])*)\]/.test(data)) {
+		else if (/^\[([a-z1-6]+)((?: [a-z:]+=["'][^"\[\]']+["'])*)\]/.test(data)) {
 
 			element = RegExp.$1;
 			attributes = RegExp.$2;
@@ -161,7 +161,7 @@ function BBcode() {
 				directlink.content = [{ tag: data }];
 
 			if (attributes.length > 5) {
-				attributes = attributes.slice(1, -1).split(/["']\ /);
+				attributes = attributes.slice(1, -1).split(/["'] /);
 
 				for (attr in attributes) if (attributes.hasOwnProperty(attr)) {
 
@@ -219,13 +219,12 @@ function BBcode() {
 	};
 
 
-	// #### Création de l'arbre DOM ###################################### config ## private ### //
-	// = révision : 11
+	// #### Création de l'arbre DOM ################################################ private ### //
+	// = révision : 13
 	// » Crée récursivement les différents nœuds à partir du tableau d'objets
 	// » Prend en charge les nœuds éléments et leurs attributs ainsi que les nœuds textes
 	// » À bien noter qu'en JavaScript, les objets sont passés par référence, ils ne sont jamais copiés
 	// » Source http://jsperf.com/create-nested-dom-structure
-	// ~ config : navigator
 	this.createDomFragment = function (data) {
 
 		var tag = null, attr = null, elem = 0;

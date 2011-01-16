@@ -1,7 +1,7 @@
 /**
  * Created J/03/12/2009
- * Updated V/31/12/2010
- * Version 32
+ * Updated D/16/01/2011
+ * Version 35
  *
  * Copyright 2008-2011 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
@@ -17,11 +17,11 @@
  * GNU General Public License (GPL) for more details.
  *
  * Configuration de JSLint
- * Internationalization, BBcode, Dialogue, Slideshow, Upload, Map, window, apijs, start, openTab, alert
+ * Internationalization, BBcode, Dialogue, Slideshow, Upload, Map, window, apijs, start, openTab, alert, customInit, customInitIE
  */
 
-// #### Paramètres de configuration ############################### //
-// = révision : 24
+// #### Paramètres de configuration ######################################### //
+// = révision : 27
 // » Définie la variable globale du programme ainsi que sa configuration
 // » Lance le programme JavaScript
 var apijs = {
@@ -49,10 +49,10 @@ var apijs = {
 			videoHeight: 480,
 			imagePrev: null,
 			imageNext: null,
-			imageClose: './images/dialogue/close.png',
-			imageUpload: './images/dialogue/progressbar.svg',
-			filePhoto: './download.php',
-			fileVideo: './download.php',
+			imageClose: { src: './images/dialogue/close.png', width: 60, height: 22 },
+			imageUpload: { src: './images/dialogue/progressbar.svg', width: 300, height: 17 },
+			filePhoto: './downloadfile.php',
+			fileVideo: './downloadfile.php',
 			fileUpload: './iframe.php'
 		},
 		slideshow: {
@@ -73,34 +73,37 @@ var apijs = {
 	}
 };
 
-function myFuncA() { alert('myFuncA() in main.js (this is an example)'); apijs.dialogue.actionClose(true); }
-function myFuncB(id) { alert('myFuncB(' + id + ') in main.js (this is an example)'); apijs.dialogue.actionClose(true); }
-
 if ((navigator.userAgent.indexOf('MSIE') < 0) || (navigator.userAgent.indexOf('MSIE 9') > -1)) {
 	window.addEventListener('load', start, false);
 }
 else {
 	apijs.config.navigator = false;
+	document.createElement('video');
 	window.innerWidth = document.documentElement.clientWidth;
 	window.innerHeight = document.documentElement.clientHeight;
 	window.attachEvent('onload', start);
 }
 
+function myFuncA() { alert('myFuncA() in main.js (this is an example)'); apijs.dialogue.actionClose(true); }
+function myFuncB(id) { alert('myFuncB(' + id + ') in main.js (this is an example)'); apijs.dialogue.actionClose(true); }
 
-// #### Lancement du programme #################################### //
-// = révision : 25
+
+// #### Lancement du programme ############################################## //
+// = révision : 32
 // » Recherche les liens ayant la classe popup
 // » Charge les modules disponibles
 function start() {
 
 	// *** Recherche des liens ************************* //
-	for (var tag = document.getElementsByTagName('a'), i = 0; i < tag.length; i++) {
-
-		if (apijs.config.navigator && tag[i].hasAttribute('class') && (tag[i].getAttribute('class').indexOf('popup') > -1))
+	if (apijs.config.navigator) {
+		for (var tag = document.getElementsByClassName('popup'), i = 0; i < tag.length; i++)
 			tag[i].addEventListener('click', openTab, false);
-
-		else if (tag[i].className.indexOf('popup') > -1)
-			tag[i].setAttribute('onclick', 'window.open(this.href); return false;');
+	}
+	else {
+		for (var tag = document.getElementsByTagName('a'), i = 0; i < document.getElementsByTagName('a').length; i++) {
+			if (tag[i].hasAttribute('class') && (tag[i].getAttribute('class').indexOf('popup') > -1))
+				tag[i].setAttribute('onclick', 'window.open(this.href); return false;');
+		}
 	}
 
 	// *** Chargement des modules ********************** //
@@ -124,10 +127,17 @@ function start() {
 			apijs.map.init();
 		}
 	}
+
+	// *** Code utilisateur **************************** //
+	if (apijs.config.navigator && (typeof customInit === 'function'))
+		customInit();
+
+	else if (!apijs.config.navigator && (typeof customInitIE === 'function'))
+		customInitIE();
 }
 
 
-// #### Nouvel onglet ############################################# //
+// #### Nouvel onglet ####################################################### //
 // = révision : 3
 // » Ouvre le lien dans un nouvel onglet
 // » Fonction pouvant être utilisée par [bbcode] (non obligatoire)
@@ -138,13 +148,43 @@ function openTab(ev) {
 }
 
 
-// #### Vérification des modules ################################## //
-// = révision : 28
-// » Vérifie les modules et la configuration des modules chargés
+// #### Configuration dynamique ############################################# //
+// = révision : 4
+// » Renvoie un booléen, une valeur null ou un objet lorsque nécessaire
+// » Renvoie dans tous les cas quelque chose
+function getValue(value) {
+
+	if (value === 'true')
+		return true;
+
+	else if (value === 'false')
+		return false;
+
+	else if (value === 'null')
+		return null;
+
+	else if (value === 'specialPrev')
+		return { src: './images/icons/24/gnome-prev.png', width: 24, height: 24 };
+
+	else if (value === 'specialNext')
+		return { src: './images/icons/24/gnome-next.png', width: 24, height: 24 };
+
+	else if (value === 'specialClose')
+		return { src: './images/dialogue/close.png', width: 60, height: 22 };
+
+	else
+		return value;
+}
+
+
+// #### Vérification des modules ############################################ //
+// = révision : 35
+// » Recherche les modules presénts
+// » Vérifie la configuration des modules chargés
 // » Ne vérifie pas les dépendances entre les modules
 function checkAll() {
 
-	var module = 0, error = 0, warning = 0, report = [], defaultConf = null, keyA = null, keyB = null;
+	var module = 0, error = 0, report = [], defaultConf = null, keyA = null, keyB = null, keyC = null;
 	defaultConf = {
 		lang: 'string',
 		debug: 'boolean',
@@ -162,10 +202,10 @@ function checkAll() {
 			saveVideo: 'boolean',
 			videoWidth: 'number',
 			videoHeight: 'number',
-			imagePrev: 'string',
-			imageNext: 'string',
-			imageClose: 'string',
-			imageUpload: 'string',
+			imagePrev: { src: 'string', width: 'number', height: 'number' },
+			imageNext: { src: 'string', width: 'number', height: 'number' },
+			imageClose: { src: 'string', width: 'number', height: 'number' },
+			imageUpload: { src: 'string', width: 'number', height: 'number' },
 			filePhoto: 'string',
 			fileVideo: 'string',
 			fileUpload: 'string'
@@ -177,7 +217,7 @@ function checkAll() {
 		}
 	};
 
-	// *** Vérification des modules ******************** //
+	// *** Recherche des modules *********************** //
 	report.push('Checking modules');
 
 	// [bbcode]
@@ -244,17 +284,18 @@ function checkAll() {
 
 	for (keyA in defaultConf) if (defaultConf.hasOwnProperty(keyA)) {
 
-		// pas dé vérification si le module n'est pas chargé
-		if ((keyA === 'dialogue') && (typeof Dialogue !== 'function'))
+		// pas de vérification
+		// si le module n'est pas chargé ou s'il n'existe pas
+		if ((keyA === 'dialogue') && ((typeof Dialogue !== 'function') || (apijs.slideshow instanceof Dialogue)))
 			continue;
 
-		if ((keyA === 'slideshow') && (typeof Slideshow !== 'function'))
+		if ((keyA === 'slideshow') && ((typeof Slideshow !== 'function') || (apijs.slideshow instanceof Slideshow)))
 			continue;
 
-		if ((keyA === 'upload') && (typeof Upload !== 'function'))
+		if ((keyA === 'upload') && ((typeof Upload !== 'function') || (apijs.upload instanceof Upload)))
 			continue;
 
-		if ((keyA === 'map') && (typeof Map !== 'function'))
+		if ((keyA === 'map') && ((typeof Map !== 'function') || (apijs.map instanceof Map)))
 			continue;
 
 		// config d'un module
@@ -262,16 +303,45 @@ function checkAll() {
 
 			for (keyB in defaultConf[keyA]) if (defaultConf[keyA].hasOwnProperty(keyB)) {
 
+				// objet
+				if (typeof defaultConf[keyA][keyB] === 'object') {
+
+					for (keyC in defaultConf[keyA][keyB]) if (defaultConf[keyA][keyB].hasOwnProperty(keyC)) {
+
+						// config non spécifiée
+						if (apijs.config[keyA][keyB] === null) {
+							report.push(' ⚠ apijs.config.' + keyA + '.' + keyB + ' is null');
+							break;
+						}
+
+						// config manquante
+						else if (apijs.config[keyA][keyB][keyC] === undefined) {
+							report.push(' ☠ apijs.config.' + keyA + '.' + keyB + '.' + keyC + ' is missing');
+							error++;
+						}
+
+						// config vide
+						else if (apijs.config[keyA][keyB][keyC] === null) {
+							report.push(' ⚠ apijs.config.' + keyA + '.' + keyB + '.' + keyC + ' is null');
+						}
+
+						// config invalide
+						else if (typeof apijs.config[keyA][keyB][keyC] !== defaultConf[keyA][keyB][keyC]) {
+							report.push(' ☠ apijs.config.' + keyA + '.' + keyB + '.' + keyC + ' isn\'t a ' + defaultConf[keyA][keyB][keyC]);
+							error++;
+						}
+					}
+				}
+
 				// config manquante
-				if (apijs.config[keyA][keyB] === undefined) {
+				else if (apijs.config[keyA][keyB] === undefined) {
 					report.push(' ☠ apijs.config.' + keyA + '.' + keyB + ' is missing');
 					error++;
 				}
 
 				// config vide
-				else if ((apijs.config[keyA][keyB] === null) && (defaultConf[keyA][keyB] === 'string')) {
+				else if (apijs.config[keyA][keyB] === null) {
 					report.push(' ⚠ apijs.config.' + keyA + '.' + keyB + ' is null');
-					warning++;
 				}
 
 				// config invalide
@@ -289,9 +359,8 @@ function checkAll() {
 		}
 
 		// config vide
-		else if ((apijs.config[keyA] === null) && (defaultConf[keyA] === 'string')) {
+		else if (apijs.config[keyA] === null) {
 			report.push(' ⚠ apijs.config.' + keyA + ' is null');
-			warning++;
 		}
 
 		// config invalide

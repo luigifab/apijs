@@ -1,6 +1,6 @@
 /**
  * Created S/05/06/2010
- * Updated D/19/12/2010
+ * Updated D/16/01/2011
  * Version 13
  *
  * Copyright 2008-2011 | Fabrice Creuzot (luigifab) <code~luigifab~info>
@@ -22,7 +22,7 @@ function Internationalization() {
 	// définition des traductions
 	this.data = [];
 
-	// Deutsch (incomplet)
+	// Deutsch
 	// » Dacrydium SARL <contact~dacrydium~fr>
 	this.data.de = {
 		buttonOk: "Ok",
@@ -38,6 +38,8 @@ function Internationalization() {
 		reloadLink: "Seite nochmal laden",
 		operationInProgress: "Laufende Aktion...",
 		savingInProgress: "Saving...",
+		browserNoVideo: "Your browser doesn't support the <video> element.",
+		browserUpgarde: "Please upgarde your browser.",
 
 		debugInvalidCall: "(debug) Invalid call",
 		debugInvalidUse: "(debug) Invalid use",
@@ -45,8 +47,8 @@ function Internationalization() {
 		debugKeyDetected: "(debug) Key detected",
 		debugKeyCode: "Code of the seizure key : §",
 		debugInvalidAltAttribute: "(debug) Invalid alt attribute",
-		debugNotRecognizedAltAttribute: "The alt attribute of the image wasn't recognized.",
-		debugNotExist: "doesn't exist (unlikely error)."
+		debugNotRecognizedAltAttribute: "The alt attribute of the image wasn't recognized",
+		debugNotExist: "doesn't exist (unlikely error)"
 	};
 
 	// English
@@ -66,6 +68,8 @@ function Internationalization() {
 		reloadLink: "Reload this page",
 		operationInProgress: "Operation in progress...",
 		savingInProgress: "Saving...",
+		browserNoVideo: "Your browser doesn't support the <video> element.",
+		browserUpgarde: "Please upgarde your browser.",
 
 		debugInvalidCall: "(debug) Invalid call",
 		debugInvalidUse: "(debug) Invalid use",
@@ -73,8 +77,8 @@ function Internationalization() {
 		debugKeyDetected: "(debug) Key detected",
 		debugKeyCode: "Code of the seizure key : §",
 		debugInvalidAltAttribute: "(debug) Invalid alt attribute",
-		debugNotRecognizedAltAttribute: "The alt attribute of the image wasn't recognized.",
-		debugNotExist: "doesn't exist (unlikely error)."
+		debugNotRecognizedAltAttribute: "The alt attribute of the image wasn't recognized",
+		debugNotExist: "doesn't exist (unlikely error)"
 	};
 
 	// Français
@@ -93,6 +97,8 @@ function Internationalization() {
 		reloadLink: "Rechargez la page",
 		operationInProgress: "Opération en cours...",
 		savingInProgress: "Enregistrement en cours...",
+		browserNoVideo: "Votre navigateur ne supporte pas l'élément <video>.",
+		browserUpgarde: "Veuillez mettre à jour votre navigateur.",
 
 		debugInvalidCall: "(debug) Appel invalide",
 		debugInvalidUse: "(debug) Utilisation invalide",
@@ -100,13 +106,13 @@ function Internationalization() {
 		debugKeyDetected: "(debug) Touche détectée",
 		debugKeyCode: "Code de la touche saisie : §",
 		debugInvalidAltAttribute: "(debug) Attribut alt invalide",
-		debugNotRecognizedAltAttribute: "L'attribut alt de l'image n'a pas été reconnu.",
-		debugNotExist: "n'existe pas (erreur improbable)."
+		debugNotRecognizedAltAttribute: "L'attribut alt de l'image n'a pas été reconnu",
+		debugNotExist: "n'existe pas (erreur improbable)"
 	};
 
 
 	// #### Auto-détection de la langue ############################################# public ### //
-	// = révision : 8
+	// = révision : 9
 	// » Essaye de récupérer la langue utilisée par la page web
 	// » Vérifie ensuite si elle existe dans la liste des langues disponibles
 	// » Prend soin de vérifier que la configuration de la langue est correcte
@@ -116,11 +122,11 @@ function Internationalization() {
 
 			var autolang = null;
 
-			if (document.getElementsByTagName("html")[0].getAttribute('xml:lang'))
-				autolang = document.getElementsByTagName("html")[0].getAttribute('xml:lang').slice(0, 2);
+			if (document.getElementsByTagName('html')[0].getAttribute('xml:lang'))
+				autolang = document.getElementsByTagName('html')[0].getAttribute('xml:lang').slice(0, 2);
 
-			else if (document.getElementsByTagName("html")[0].getAttribute('lang'))
-				autolang = document.getElementsByTagName("html")[0].getAttribute('lang').slice(0, 2);
+			else if (document.getElementsByTagName('html')[0].getAttribute('lang'))
+				autolang = document.getElementsByTagName('html')[0].getAttribute('lang').slice(0, 2);
 
 			if ((typeof autolang === 'string') && (autolang in this.data))
 				apijs.config.lang = autolang;
@@ -136,7 +142,7 @@ function Internationalization() {
 
 
 	// #### Traduction par mot clef ################################################# public ### //
-	// = révision : 14
+	// = révision : 15
 	// » Vérifie si le mot clef existe dans les traductions
 	// » Retourne la chaine de caractères correspondante à un mot clef
 	this.translate = function (word, a, b, c, d, e) {
@@ -149,9 +155,7 @@ function Internationalization() {
 		// chaine de caractères configurable
 		else if (arguments.length > 1) {
 
-			var i = 0, arg = 1, size = 0, translation = '', data = this.data[apijs.config.lang][word].split('§');
-
-			for (size = data.length; i < size; i++) {
+			for (var data = this.data[apijs.config.lang][word].split('§'), i = 0, arg = 1, translation = ''; i < data.length; i++) {
 
 				if (arg < arguments.length)
 					translation += data[i] + arguments[arg++];
