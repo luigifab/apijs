@@ -1,7 +1,7 @@
 /**
  * Created J/03/12/2009
- * Updated D/16/01/2011
- * Version 35
+ * Updated J/10/02/2011
+ * Version 37
  *
  * Copyright 2008-2011 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
@@ -17,11 +17,12 @@
  * GNU General Public License (GPL) for more details.
  *
  * Configuration de JSLint
- * Internationalization, BBcode, Dialogue, Slideshow, Upload, Map, window, apijs, start, openTab, alert, customInit, customInitIE
+ * Internationalization, BBcode, Dialogue, Slideshow, Upload, Map, window, apijs, start
+ * openTab, customInit, customInitIE, alert
  */
 
 // #### Paramètres de configuration ######################################### //
-// = révision : 27
+// = révision : 29
 // » Définie la variable globale du programme ainsi que sa configuration
 // » Lance le programme JavaScript
 var apijs = {
@@ -35,6 +36,7 @@ var apijs = {
 		debug: true,
 		debugkey: false,
 		navigator: true,
+		transition: true,
 		autolang: true,
 		dialogue: {
 			blocks: [],
@@ -57,7 +59,7 @@ var apijs = {
 		},
 		slideshow: {
 			ids: 'diaporama',
-			hiddenPage: true,
+			hiddenPage: false,
 			hoverload: false
 		},
 		map: {
@@ -78,19 +80,21 @@ if ((navigator.userAgent.indexOf('MSIE') < 0) || (navigator.userAgent.indexOf('M
 }
 else {
 	apijs.config.navigator = false;
+	apijs.config.transition = false;
 	document.createElement('video');
 	window.innerWidth = document.documentElement.clientWidth;
 	window.innerHeight = document.documentElement.clientHeight;
 	window.attachEvent('onload', start);
 }
 
-function myFuncA() { alert('myFuncA() in main.js (this is an example)'); apijs.dialogue.actionClose(true); }
-function myFuncB(id) { alert('myFuncB(' + id + ') in main.js (this is an example)'); apijs.dialogue.actionClose(true); }
+function myFuncA() { apijs.dialogue.dialogInformation('myFuncA', "[pre]Yes, it's myFuncA() in main.js.[/pre]"); }
+function myFuncB(id) { apijs.dialogue.dialogInformation('myFuncB', "[pre]Yes, it's myFuncB(" + id + ') in main.js.[/pre]'); }
 
 
 // #### Lancement du programme ############################################## //
-// = révision : 32
+// = révision : 35
 // » Recherche les liens ayant la classe popup
+// » Vérifie si le navigateur supporte les transitions CSS ou pas
 // » Charge les modules disponibles
 function start() {
 
@@ -104,6 +108,13 @@ function start() {
 			if (tag[i].hasAttribute('class') && (tag[i].getAttribute('class').indexOf('popup') > -1))
 				tag[i].setAttribute('onclick', 'window.open(this.href); return false;');
 		}
+	}
+
+	// *** Support des transitions CSS ***************** //
+	if ((typeof document.getElementsByTagName('body')[0].style.transitionDuration !== 'string') &&
+	    (typeof document.getElementsByTagName('body')[0].style.MozTransitionDuration !== 'string') &&
+	    (typeof document.getElementsByTagName('body')[0].style.webkitTransitionDuration !== 'string')) {
+		apijs.config.transition = false;
 	}
 
 	// *** Chargement des modules ********************** //
@@ -140,7 +151,7 @@ function start() {
 // #### Nouvel onglet ####################################################### //
 // = révision : 3
 // » Ouvre le lien dans un nouvel onglet
-// » Fonction pouvant être utilisée par [bbcode] (non obligatoire)
+// » Fonction pouvant être utilisée par [bbcode]
 // » Annule l'action par défaut
 function openTab(ev) {
 	ev.preventDefault();
@@ -178,7 +189,7 @@ function getValue(value) {
 
 
 // #### Vérification des modules ############################################ //
-// = révision : 35
+// = révision : 36
 // » Recherche les modules presénts
 // » Vérifie la configuration des modules chargés
 // » Ne vérifie pas les dépendances entre les modules
@@ -190,6 +201,7 @@ function checkAll() {
 		debug: 'boolean',
 		debugkey: 'boolean',
 		navigator: 'boolean',
+		transition: 'boolean',
 		autolang: 'boolean',
 		dialogue: {
 			blocks: 'object',
