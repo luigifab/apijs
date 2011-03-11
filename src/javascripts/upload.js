@@ -1,7 +1,7 @@
 /**
  * Created L/13/04/2009
- * Updated D/19/12/2010
- * Version 20 (DOESN'T WORK)
+ * Updated L/28/02/2011
+ * Version 21
  *
  * Copyright 2008-2011 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
@@ -20,24 +20,22 @@
 function Upload() {
 
 	// définition des attributs
-	this.sens = 1;
-	this.anim = 0;
-
 	this.timer = null;
 	this.upload = null;
 	this.extension = null;
-	this.clef = null;
+	this.key = null;
+	this.sens = 1;
+	this.anim = 0;
 
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// DÉFINITION DES ENVOIS DE FICHIER (X)
+	// TODO (X)
 
-	// #### Envoyer un Fichier ############################################# debug ## public ### // TODO
+	// #### Envoyer un Fichier ############################################# debug ## public ### // TODO TODO
 	// = révision : 11
 	// » Permet à l'utilisateur d'envoyer un fichier (tous les fichiers sont acceptés)
 	// » Le champ fichier du formulaire se nomme « fichier » ou « {data} »
 	// » Le fichier s'affichera dans la div ayant pour id « mesFichiers » ou « {div} »
-	// » Dépend de [TheDialogue]
 	this.envoyerFichier = function (titre, taille, data, div) {
 
 		// *** Mise en place du formulaire ********************** //
@@ -51,7 +49,7 @@ function Upload() {
 
 			this.setupUpload('fichier', div, ['*']);
 
-			TheDialogue.creerDialogueUpload(titre, 'Taille maximum : ' + taille.toString().replace(/\./, ',') + ' Mo\nTous les fichiers sont acceptés.', data, this.clef);
+			TheDialogue.creerDialogueUpload(titre, 'Taille maximum : ' + taille.toString().replace(/\./, ',') + ' Mo\nTous les fichiers sont acceptés.', data, this.key);
 		}
 
 		// *** Message de debug ********************************* //
@@ -62,28 +60,15 @@ function Upload() {
 	};
 
 
-	//this.setupUpload('image', div, ['.jpg', '.gif', '.png', '.tif']);
-	//TheDialogue.creerDialogueUpload(titre, 'Taille maximale : ' + taille.toString().replace(/\./, ',') + ' Mo\nFormats acceptés : jpg, gif, png et tif', data, this.clef);
-
-	//this.setupUpload('avatar', 'avatar', ['.jpg', '.gif', '.png']);
-	//TheDialogue.creerDialogueUpload(titre, 'Taille maximum : ' + taille.toString().replace(/\./, ',') + ' Mo\nFormats acceptés : jpg, gif et png', data, this.clef);
-
-	//this.setupUpload('photo', 'album', ['.jpg', '.tif']);
-	//TheDialogue.creerDialogueUpload(titre, 'Taille maximale : ' + taille.toString().replace(/\./, ',') + ' Mo\nFormats acceptés : jpg et tif', data, this.clef);
-
-	//this.setupUpload('video', 'album', ['.ogv']);
-	//TheDialogue.creerDialogueUpload(titre, 'Taille maximale : ' + taille.toString().replace(/\./, ',') + ' Mo\nFormat accepté : ogv', data, this.clef);
-
-
 
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// TODO (2)
+	// TODO (X)
 
 	// #### Prépare le terrain ##################################################### private ### // TODO
-	// = révision : 6
+	// = révision : 7
 	// » Initialise les variables d'un nouvel envoi de fichier
-	// » Génération d'une clef unique car il y a obligation d'utiliser un nom d'iframe unique
+	// » Génération d'une clef unique car il y a obligation d'utiliser un nom d'iframe unique entre chaque upload
 	this.setupUpload = function (type, extension) {
 
 		this.sens = 1;
@@ -91,12 +76,13 @@ function Upload() {
 
 		this.upload = type;
 		this.extension = extension;
-		this.clef = uniqid();
+		this.key = uniqid();
 	};
 
 
-	// #### Prépare le terrain ##################################################### private ### // TODO
+	// #### ?? ##################################################################### private ### // TODO
 	// = révision : 1
+	// » ??
 	this.getExtensions = function () {
 
 		var texte = null;
@@ -161,7 +147,7 @@ function Upload() {
 	// GESTION DE L'ENVOI DU FICHIER (2)
 
 	// #### Envoi temps réel ###################################### i18n ## event ## private ### // TODO
-	// = révision : 0
+	// = révision : 1
 	// » Auto-rappel toutes les 1000 ms soit environ une mise à jour seconde
 	// » Auto-rappel quelque soit l'état du graphique, et si l'animation n'a pas été désactivée
 	// » Communique avec le serveur pour savoir ou en est l'avancement de l'envoi du fichier
@@ -193,16 +179,16 @@ function Upload() {
 		// # </root>
 		try {
 			// cas 1 : envoi terminé avec succès
-			if (window.frames['iframeUpload_' + this.clef].document.getElementsByTagName('statut')[0].firstChild.data === '1') {
+			if (window.frames['iframeUpload_' + this.key].document.getElementsByTagName('statut')[0].firstChild.data === '1') {
 
 				this.animDone();
 				window.setTimeout(function () { TheDialogue.actionExterne(); }, 1000);
 			}
 
 			// cas 2 : envoi terminé avec erreur
-			else if (window.frames['iframeUpload_' + this.clef].document.getElementsByTagName('statut')[0].firstChild.data === '2') {
+			else if (window.frames['iframeUpload_' + this.key].document.getElementsByTagName('statut')[0].firstChild.data === '2') {
 
-				TheDialogue.creerDialogueInformation(window.frames['iframeUpload' + this.clef].document.getElementsByTagName('titre')[0].firstChild.data, window.frames['iframeUpload' + this.clef].document.getElementsByTagName('message')[0].firstChild.data, 'eeupload');
+				TheDialogue.creerDialogueInformation(window.frames['iframeUpload' + this.key].document.getElementsByTagName('titre')[0].firstChild.data, window.frames['iframeUpload' + this.key].document.getElementsByTagName('message')[0].firstChild.data, 'eeupload');
 			}
 
 			// autres cas
@@ -219,7 +205,7 @@ function Upload() {
 		// *** Nettoyage **************************************** //
 		this.upload = null;
 		this.extension = null;
-		this.clef = null;
+		this.key = null;
 	};
 
 
@@ -229,13 +215,12 @@ function Upload() {
 	// GESTION DE LA BARRE DE PROGRESSION (2)
 
 	// #### Avancement générique ######################################## timeout ## private ### // TODO
-	// = révision : 44
-	// » Auto-rappel toutes les 100 ms soit environ dix images seconde
-	// » Auto-rappel si le graphique existe mais n'est pas prêt, et si l'animation n'a pas été désactivée
-	// » Auto-rappel si le graphique existe et est prêt, et si l'animation n'a pas été désactivée
+	// = révision : 45
+	// » Auto-rappel toutes les 100 ms soit environ dix images par seconde
+	// » Auto-rappel si le graphique existe mais n'est pas encore prêt, et si l'animation n'a pas été désactivée
+	// » Auto-rappel si le graphique existe, s'il est prêt, et si l'animation n'a pas été désactivée
 	// » Se termine automatiquement à partir du moment où : l'animation est désactivée (le temps d'attente a expiré), le graphique n'existe plus
 	// » Fait bouger la barre de progression de gauche à droite et de droite à gauche en boucle
-	// ~ ids : progressbar
 	this.animGeneric = function () {
 
 		// *** Attente du graphique SVG ************************* //
@@ -276,19 +261,18 @@ function Upload() {
 
 
 	// #### Avancement de la barre de progression ################################## private ### // TODO
-	// = révision : 28
+	// = révision : 29
 	// » Vérifie si le graphique existe et est prêt
 	// » Fait avancer la barre de progression jusqu'à une certaine valeur
-	// ~ ids : progressbar
-	this.animRealTime = function (valeur) {
+	this.animToValue = function (value) {
 
 		if (document.getElementById('progressbar') && document.getElementById('progressbar').getSVGDocument()) {
 
-			valeur = (typeof valeur !== number) ? 100 : valeur;
+			value = (typeof value !== number) ? 100 : value;
 
 			var svg = document.getElementById('progressbar').getSVGDocument();
-			svg.getElementsByTagName('rect')[1].setAttribute('width', 0 + valeur * 3);
-			svg.getElementsByTagName('text')[0].firstChild.replaceData(0, svg.getElementsByTagName('text')[0].firstChild.length, valeur + '%');
+			svg.getElementsByTagName('rect')[1].setAttribute('width', 0 + value * 3);
+			svg.getElementsByTagName('text')[0].firstChild.replaceData(0, svg.getElementsByTagName('text')[0].firstChild.length, value + '%');
 		}
 	};
 }

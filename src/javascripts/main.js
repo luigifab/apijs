@@ -1,7 +1,7 @@
 /**
  * Created J/03/12/2009
- * Updated J/10/02/2011
- * Version 37
+ * Updated J/10/03/2011
+ * Version 39
  *
  * Copyright 2008-2011 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
@@ -22,7 +22,7 @@
  */
 
 // #### Paramètres de configuration ######################################### //
-// = révision : 29
+// = révision : 31
 // » Définie la variable globale du programme ainsi que sa configuration
 // » Lance le programme JavaScript
 var apijs = {
@@ -87,12 +87,26 @@ else {
 	window.attachEvent('onload', start);
 }
 
-function myFuncA() { apijs.dialogue.dialogInformation('myFuncA', "[pre]Yes, it's myFuncA() in main.js.[/pre]"); }
-function myFuncB(id) { apijs.dialogue.dialogInformation('myFuncB', "[pre]Yes, it's myFuncB(" + id + ') in main.js.[/pre]'); }
+
+// #### Mes fonctions ####################################################### //
+// = révision : 2
+// » Fonctions de démonstration
+// » Pour les dialogues de confirmation et d'options
+function myFuncA() {
+	apijs.dialogue.dialogInformation('myFuncA', "[pre]Yes, it's myFuncA() in main.js.[/pre]");
+}
+
+function myFuncB(id) {
+	apijs.dialogue.dialogInformation('myFuncB', "[pre]Yes, it's myFuncB(" + id + ') in main.js.[/pre]');
+}
+
+function myFuncC() {
+	return confirm("Yes, it's myFuncC() in main.js, a very important function.\n\nWhat next ?\n» Click confirm to return true.\n» Click cancel to return false.");
+}
 
 
 // #### Lancement du programme ############################################## //
-// = révision : 35
+// = révision : 36
 // » Recherche les liens ayant la classe popup
 // » Vérifie si le navigateur supporte les transitions CSS ou pas
 // » Charge les modules disponibles
@@ -131,6 +145,10 @@ function start() {
 				apijs.slideshow = new Slideshow();
 				apijs.slideshow.init();
 			}
+		}
+
+		if (typeof Upload === 'function') {
+			apijs.upload = new Upload();
 		}
 
 		if ((typeof Map === 'function') && document.getElementById('carteInteractive')) {

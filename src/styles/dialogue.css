@@ -1,7 +1,7 @@
 /**
  * Created V/08/05/2009
- * Updated V/11/02/2011
- * Version 21
+ * Updated V/11/03/2011
+ * Version 22
  *
  * Copyright 2008-2011 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
@@ -19,11 +19,11 @@
 
 /* ################################################ Conteneurs (thème 1) ### */
 #dialogue {
-	position:fixed; top:0; right:0; bottom:0; left:0; width:100%; height:100%; z-index:9000;
+	position:fixed; top:0; right:0; bottom:0; left:0; width:100%; height:100%; z-index:9000; opacity:0;
 	transition-duration:1s, 0.3s; -moz-transition-duration:1s, 0.3s; -webkit-transition-duration:1s, 0.3s;
 	transition-property:background-color, opacity; -moz-transition-property:background-color, opacity;
 	-webkit-transition-property:background-color, opacity;
-	color:black; background-color:transparent; opacity:0;
+	color:black; background-color:transparent;
 }
 
 #box {
@@ -55,11 +55,11 @@
 
 /* ################################################ Conteneurs (thème 2) ### **
 #dialogue {
-	position:fixed; top:0; right:0; bottom:0; left:0; width:100%; height:100%; z-index:9000;
+	position:fixed; top:0; right:0; bottom:0; left:0; width:100%; height:100%; z-index:9000; opacity:0;
 	transition-duration:1s, 0.3s; -moz-transition-duration:1s, 0.3s; -webkit-transition-duration:1s, 0.3s;
 	transition-property:background, opacity; -moz-transition-property:background, opacity;
 	-webkit-transition-property:background, opacity;
-	color:black; background:none; opacity:0;
+	color:black; background:none;
 }
 
 #box {
@@ -135,8 +135,8 @@
 }
 
 #box dl { margin:3px auto; color:#333; }
-#box dt { margin-bottom:7px; }
-#box dd { overflow:hidden; }
+#box dl dt { margin-bottom:7px; }
+#box dl dd { overflow:hidden; }
 
 #box ul { margin:-0.4em auto 1em; }
 
@@ -154,7 +154,7 @@
 	-webkit-transition-property:border, background-color;
 }
 
-#box div.control button.cancel  { background-image:url("../images/icons/16/silk-cancel.png"); }
+#box div.control button.cancel  { float:left; background-image:url("../images/icons/16/silk-cancel.png"); }
 #box div.control button.confirm { background-image:url("../images/icons/16/silk-accept.png"); }
 
 #box div.control button:hover, #box div.control button:active, #box div.control button:focus { border:1px solid #AAA; background-color:#EFEFEF; }
@@ -213,6 +213,9 @@
 
 /* ############################################ Dialogues photo et vidéo ### */
 #box.video dl dt video { display:block; color:white; background-color:black; }
+#box.video dl dt video p { margin:0; padding:1em; line-height:1.2em; }
+#box.video dl dt video a { display:inline; padding:0; min-height:inherit; color:yellow; background:none; }
+
 #box.photo dl dt a { display:block; position:relative; }
 
 #box.photo dl dt a span {

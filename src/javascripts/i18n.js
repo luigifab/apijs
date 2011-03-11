@@ -1,7 +1,7 @@
 /**
  * Created S/05/06/2010
- * Updated L/07/02/2011
- * Version 14
+ * Updated S/26/02/2011
+ * Version 15
  *
  * Copyright 2008-2011 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
@@ -38,8 +38,7 @@ function Internationalization() {
 		reloadLink: "Seite nochmal laden",
 		operationInProgress: "Laufende Aktion...",
 		savingInProgress: "Saving...",
-		browserNoVideo: "Your browser doesn't support the <video> element.",
-		browserUpgarde: "Please upgarde your browser.",
+		browserNoVideo: "[p]Your browser doesn't support the <video> element.[br]Remember to upgrade your browser.[/p][ul][li][a href='http://www.google.com/chrome?hl=en' class='popup']Chrome 3.0+[/a][/li][li][a href='http://www.mozilla-europe.org/en/firefox/' class='popup']Firefox 3.5+[/a][/li][li][a href='http://www.konqueror.org/' class='popup']Konqueror 4.4+[/a][/li][li][a href='http://www.opera.com/' class='popup']Opera 10.50+[/a][/li][li][a href='http://www.apple.com/safari/' class='popup']Safari 3.1+[/a][/li][/ul]",
 
 		debugInvalidCall: "(debug) Invalid call",
 		debugInvalidUse: "(debug) Invalid use",
@@ -68,8 +67,7 @@ function Internationalization() {
 		reloadLink: "Reload this page",
 		operationInProgress: "Operation in progress...",
 		savingInProgress: "Saving...",
-		browserNoVideo: "Your browser doesn't support the <video> element.",
-		browserUpgarde: "Please upgarde your browser.",
+		browserNoVideo: "[p]Your browser doesn't support the <video> element.[br]Remember to upgrade your browser.[/p][ul][li][a href='http://www.google.com/chrome?hl=en' class='popup']Chrome 3.0+[/a][/li][li][a href='http://www.mozilla-europe.org/en/firefox/' class='popup']Firefox 3.5+[/a][/li][li][a href='http://www.konqueror.org/' class='popup']Konqueror 4.4+[/a][/li][li][a href='http://www.opera.com/' class='popup']Opera 10.50+[/a][/li][li][a href='http://www.apple.com/safari/' class='popup']Safari 3.1+[/a][/li][/ul]",
 
 		debugInvalidCall: "(debug) Invalid call",
 		debugInvalidUse: "(debug) Invalid use",
@@ -97,8 +95,7 @@ function Internationalization() {
 		reloadLink: "Rechargez la page",
 		operationInProgress: "Opération en cours...",
 		savingInProgress: "Enregistrement en cours...",
-		browserNoVideo: "Votre navigateur ne supporte pas l'élément <video>.",
-		browserUpgarde: "Veuillez mettre à jour votre navigateur.",
+		browserNoVideo: "[p]Votre navigateur ne supporte pas l'élément <video>.[br]Pensez à mettre à jour votre navigateur.[/p][ul][li][a href='http://www.google.com/chrome?hl=fr' class='popup']Chrome 3.0+[/a][/li][li][a href='http://www.mozilla-europe.org/fr/firefox/' class='popup']Firefox 3.5+[/a][/li][li][a href='http://www.konqueror.org/' class='popup']Konqueror 4.4+[/a][/li][li][a href='http://www.opera.com/' class='popup']Opera 10.50+[/a][/li][li][a href='http://www.apple.com/fr/safari/' class='popup']Safari 3.1+[/a][/li][/ul]",
 
 		debugInvalidCall: "(debug) Appel invalide",
 		debugInvalidUse: "(debug) Utilisation invalide",

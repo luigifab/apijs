@@ -1,6 +1,6 @@
 /**
  * Created V/08/05/2009
- * Updated S/15/01/2011
+ * Updated D/27/02/2011
  * Version 9
  *
  * Copyright 2008-2011 | Fabrice Creuzot (luigifab) <code~luigifab~info>
@@ -19,7 +19,7 @@
 
 /* ####################################################### Mode standard ### */
 div.album {
-	margin:1.2em auto 1.8em; padding:0.3em; width:660px; overflow:hidden;
+	margin:1.2em auto; padding:0.3em; width:660px; overflow:hidden;
 	background-color:#EEE; border-radius:1em; -khtml-border-radius:1em; -moz-border-radius:1em; -webkit-border-radius:1em;
 }
 
@@ -48,7 +48,7 @@ div.album dl:hover dd span.datenum { color:#666; }
 
 /* ################################################### Mode présentation ### */
 div.presentation {
-	display:inline-block; margin:1.2em 1em 1.4em; padding:6px 6px 3px; text-align:center; overflow:hidden;
+	display:inline-block; margin:1.2em 1em; padding:6px 6px 3px; text-align:center; overflow:hidden;
 	background-color:#EEE; border-radius:0.5em; -khtml-border-radius:0.5em; -moz-border-radius:0.5em; -webkit-border-radius:0.5em;
 }
 

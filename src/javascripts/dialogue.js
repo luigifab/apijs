@@ -1,7 +1,7 @@
 /**
  * Created D/12/04/2009
- * Updated V/04/02/2011
- * Version 105
+ * Updated J/10/03/2011
+ * Version 107
  *
  * Copyright 2008-2011 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
@@ -70,7 +70,7 @@ function Dialogue() {
 
 
 	// #### Dialogue de confirmation ############################### i18n ## debug ## public ### //
-	// = révision : 74
+	// = révision : 75
 	// » Permet de demander une confirmation à l'utilisateur
 	// » Composé d'un titre, d'un paragraphe, et de deux boutons de dialogue (Annuler et Valider)
 	// » Par la suite peut également être composé d'un lien différé de 5 secondes
@@ -92,7 +92,7 @@ function Dialogue() {
 			this.params = params;
 
 			this.showDialogue();
-			document.getElementById('box').lastChild.lastChild.focus();
+			document.getElementById('box').lastChild.firstChild.focus();
 		}
 
 		// *** Message de debug ********************************* //
@@ -104,15 +104,16 @@ function Dialogue() {
 
 
 	// #### Dialogue d'options ##################################### i18n ## debug ## public ### //
-	// = révision : 7
+	// = révision : 9
 	// » Permet à l'utilisateur de modifier des options
 	// » Composé d'un formulaire, d'un titre, d'un paragraphe, et de deux boutons de dialogue (Annuler et Valider)
 	// » Par la suite peut également être composé d'un lien différé de 5 secondes
+	// » Validation du formulaire uniquement si la fonction callback renvoie true
 	// » Fermeture par bouton Annuler ou touche Échap tant que le formulaire n'est pas validé
-	this.dialogFormOptions = function (title, text, action, icon) {
+	this.dialogFormOptions = function (title, text, callback, params, action, icon) {
 
 		// *** Création de la boite de dialogue ***************** //
-		if ((typeof title === 'string') && (typeof text === 'string') && (typeof action === 'string')) {
+		if ((typeof title === 'string') && (typeof text === 'string') && (typeof callback === 'function') && (typeof action === 'string')) {
 
 			this.setupDialogue('options', icon);
 
@@ -121,13 +122,16 @@ function Dialogue() {
 			this.htmlParagraph(text);
 			this.htmlButtonConfirm('submit');
 
+			this.callback = callback;
+			this.params = params;
+
 			this.showDialogue();
 		}
 
 		// *** Message de debug ********************************* //
 		else if (apijs.config.debug) {
 
-			this.dialogInformation(apijs.i18n.translate('debugInvalidCall'), '[pre]TheDialogue » dialogFormOptions[br]➩ (string) title : ' + title + '[br]➩ (string) text : ' + text + '[br]➩ (string) action : ' + action + '[br]➩ (string) icon : ' + icon + '[/pre]');
+			this.dialogInformation(apijs.i18n.translate('debugInvalidCall'), '[pre]TheDialogue » dialogFormOptions[br]➩ (string) title : ' + title + '[br]➩ (string) text : ' + text + '[br]➩ (function) callback : ' + callback + '[br]➩ (object) params : ' + params + '[br]➩ (string) action : ' + action + '[br]➩ (string) icon : ' + icon + '[/pre]');
 		}
 	};
 
@@ -311,17 +315,17 @@ function Dialogue() {
 
 
 	// #### Action du bouton Valider ##################### i18n ## debug ## event ## private ### //
-	// = révision : 96
+	// = révision : 98
 	// » Désactive l'action de la touche Échap
 	// » Pour le dialogue de confirmation appel la fonction de rappel (appel différé d'au moins 500 millisecondes)
 	// » Pour le dialogue d'options envoi le formulaire (envoi différé d'au moins 500 millisecondes)
 	// » Pour le dialogue d'upload retour sur [TheUpload]
 	this.actionConfirm = function () {
 
-		this.dialogType += ' lock';
-
 		// *** Dialogue de confirmation ************************* //
 		if (this.dialogType.indexOf('confirmation') > -1) {
+
+			this.dialogType += ' lock';
 
 			if (apijs.config.dialogue.savingDialog) {
 				this.dialogWaiting(document.getElementById('box').firstChild.firstChild.nodeValue, apijs.i18n.translate('operationInProgress'));
@@ -352,32 +356,43 @@ function Dialogue() {
 		// *** Dialogue d'options ******************************* //
 		else if (this.dialogType.indexOf('options') > -1) {
 
-			this.elemA = document.createElement('p');
-			this.elemA.setAttribute('class', 'saving');
-			this.elemA.appendChild(document.createTextNode(apijs.i18n.translate('operationInProgress')));
+			if (apijs.dialogue.callback(apijs.dialogue.params) === true) {
 
-			document.getElementById('box').removeChild(document.getElementById('box').lastChild);
-			document.getElementById('box').lastChild.setAttribute('class', 'novisible');
-			document.getElementById('box').appendChild(this.elemA);
+				this.dialogType += ' lock';
 
-			this.timer = window.setTimeout(apijs.dialogue.htmlLinkReload, 5000);
+				this.elemA = document.createElement('p');
+				this.elemA.setAttribute('class', 'saving');
+				this.elemA.appendChild(document.createTextNode(apijs.i18n.translate('operationInProgress')));
 
-			if (apijs.config.dialogue.savingTime > 500) {
-				window.setTimeout(function () {
-					if (document.getElementById('box') && (document.getElementById('box').nodeName.toLowerCase() === 'form'))
-						document.getElementById('box').submit();
-				}, apijs.config.dialogue.savingTime);
+				document.getElementById('box').removeChild(document.getElementById('box').lastChild);
+				document.getElementById('box').lastChild.setAttribute('class', 'novisible');
+				document.getElementById('box').appendChild(this.elemA);
+
+				this.timer = window.setTimeout(apijs.dialogue.htmlLinkReload, 5000);
+
+				if (apijs.config.dialogue.savingTime > 500) {
+					window.setTimeout(function () {
+						if (document.getElementById('box') && (document.getElementById('box').nodeName.toLowerCase() === 'form'))
+							document.getElementById('box').submit();
+					}, apijs.config.dialogue.savingTime);
+					return false;
+				}
+				else {
+					return true;
+				}
 			}
 			else {
-				document.getElementById('box').submit();
+				return false;
 			}
 		}
 
 		// *** Dialogue d'upload ******************************** //
 		else if (this.dialogType.indexOf('upload') > -1) {
 
+			this.dialogType += ' lock';
+
 			if ((typeof Upload === 'function') && (apijs.upload instanceof Upload))
-				apijs.upload.actionConfirm();
+				return apijs.upload.actionConfirm();
 
 			else if (apijs.config.debug)
 				this.dialogInformation(apijs.i18n.translate('debugInvalidUse'), '[pre]TheDialogue » actionConfirm[br]➩ TheUpload ' + apijs.i18n.translate('debugNotExist') + '[/pre]');
@@ -561,7 +576,7 @@ function Dialogue() {
 
 
 	// #### Supprime le dialogue ################################################### private ### //
-	// = révision : 72
+	// = révision : 74
 	// » Dégage le timer du lien différé
 	// » Annule l'écoute des touches du clavier (eventListener:keydown)
 	// » Met en pause la vidéo du dialogue vidéo lorsque nécessaire
@@ -577,8 +592,11 @@ function Dialogue() {
 		if (apijs.config.navigator)
 			document.removeEventListener('keydown', apijs.dialogue.actionKey, false);
 
-		if (apijs.config.navigator && (document.getElementById('dialogue').getElementsByTagName('video').length > 0))
-			document.getElementById('dialogue').getElementsByTagName('video')[0].pause();
+		if (apijs.config.navigator && (document.getElementById('dialogue').getElementsByTagName('video').length > 0)) {
+
+			if (typeof document.getElementById('dialogue').getElementsByTagName('video')[0].pause === 'function')
+				document.getElementById('dialogue').getElementsByTagName('video')[0].pause();
+		}
 
 		// *** Supprime le dialogue ***************************** //
 		if (apijs.config.transition && all) {
@@ -771,7 +789,7 @@ function Dialogue() {
 	// DÉFINITION DU CONTENU DES BOITES DE DIALOGUE (13)
 
 	// #### Éléments parents ####################################################### private ### //
-	// = révision : 66
+	// = révision : 67
 	// » Crée le conteneur parent
 	// » Crée le conteneur du contenu du dialogue (div ou form)
 	// » Met en place le gestionnaire d'évènement du formulaire (eventListener:submit)
@@ -797,7 +815,8 @@ function Dialogue() {
 	};
 
 	// # <div class="init "id="dialogue">
-	// #  <form action="{action}" method="post" [enctype="{enctype}"] [target="{target}"] class="{this.dialogType}" id="box"></form>
+	// #  <form action="{action}" method="post" [enctype="{enctype}"] [target="{target}"] onsubmit="return apijs.dialogue.actionConfirm();"
+	// #   class="{this.dialogType}" id="box"></form>
 	// # </div>
 	this.htmlFormParent = function (action, enctype, target) {
 
@@ -817,14 +836,9 @@ function Dialogue() {
 		if (typeof target === 'string')
 			this.elemB.setAttribute('target', target);
 
+		this.elemB.setAttribute('onsubmit', 'return apijs.dialogue.actionConfirm();');
 		this.elemB.setAttribute('class', this.dialogType);
 		this.elemB.setAttribute('id', 'box');
-
-		// eventListener:submit
-		if (apijs.config.navigator)
-			this.elemB.addEventListener('submit', function (ev) { ev.preventDefault(); apijs.dialogue.actionConfirm(); }, false);
-		else
-			this.elemB.attachEvent('onsubmit', function (ev) { ev.returnValue = false; apijs.dialogue.actionConfirm(); });
 
 		this.elemA.appendChild(this.elemB);
 
@@ -889,7 +903,7 @@ function Dialogue() {
 
 
 	// #### Boutons Annuler/Valider ######################################## i18n ## private ### //
-	// = révision : 84
+	// = révision : 85
 	// » Met en place les boutons annuler et valider des dialogues de confirmation, d'options et d'upload
 	// » Auto-focus différé sur le bouton valider du dialogue de confirmation ou sur le champ fichier du dialogue d'upload
 	// # <div class="control">
@@ -902,24 +916,24 @@ function Dialogue() {
 		this.elemA = document.createElement('div');
 		this.elemA.setAttribute('class', 'control');
 
-			// Élément button (Annuler)
-			this.elemB = document.createElement('button');
-			this.elemB.setAttribute('type', 'button');
-			this.elemB.setAttribute('class', 'cancel');
-			this.elemB.setAttribute('onclick', 'apijs.dialogue.actionClose(true);');
-			this.elemB.appendChild(document.createTextNode(apijs.i18n.translate('buttonCancel')));
-
-		this.elemA.appendChild(this.elemB);
-
 			// Élément button (Valider)
 			this.elemB = document.createElement('button');
 			this.elemB.setAttribute('type', type);
 			this.elemB.setAttribute('class', 'confirm');
 
 			if (type !== 'submit')
-				this.elemB.setAttribute('onclick', "apijs.dialogue.actionConfirm();");
+				this.elemB.setAttribute('onclick', 'apijs.dialogue.actionConfirm();');
 
 			this.elemB.appendChild(document.createTextNode(apijs.i18n.translate('buttonConfirm')));
+
+		this.elemA.appendChild(this.elemB);
+
+			// Élément button (Annuler)
+			this.elemB = document.createElement('button');
+			this.elemB.setAttribute('type', 'button');
+			this.elemB.setAttribute('class', 'cancel');
+			this.elemB.setAttribute('onclick', 'apijs.dialogue.actionClose(true);');
+			this.elemB.appendChild(document.createTextNode(apijs.i18n.translate('buttonCancel')));
 
 		this.elemA.appendChild(this.elemB);
 
@@ -1079,7 +1093,7 @@ function Dialogue() {
 
 
 	// #### Formulaire d'envoi de fichier ########################################## private ### //
-	// = révision : 131
+	// = révision : 132
 	// » Met en place le contenu du formulaire du dialogue d'upload
 	// » Composé d'un champ fichier et d'un champ caché pour l'extension APC de PHP
 	// » Composé également d'une iframe qui sera détruite lors de l'affichage du site
@@ -1088,7 +1102,7 @@ function Dialogue() {
 	// » À noter qu'il est obligatoire d'utiliser un nom d'iframe unique
 	// # <iframe [src="{config.dialogue.imageUpload.src}"] name="iframeUpload-{key}" id="iframeUpload" />
 	// # <div>
-	// #  <input type="file" name="{data}" onchange="document.getElementById('box').lastChild.lastChild.focus();" />
+	// #  <input type="file" name="{data}" onchange="document.getElementById('box').lastChild.firstChild.focus();" />
 	// #  <input type="hidden" name="APC_UPLOAD_PROGRESS" value="{key}" />
 	// # </div>
 	this.htmlFormUpload = function (data, key) {
@@ -1111,7 +1125,7 @@ function Dialogue() {
 			this.elemB = document.createElement('input');
 			this.elemB.setAttribute('type', 'file');
 			this.elemB.setAttribute('name', data);
-			this.elemB.setAttribute('onchange', "document.getElementById('box').lastChild.lastChild.focus();");
+			this.elemB.setAttribute('onchange', "document.getElementById('box').lastChild.firstChild.focus();");
 
 		this.elemA.appendChild(this.elemB);
 
@@ -1270,7 +1284,7 @@ function Dialogue() {
 
 
 	// #### Vidéo et légende ############################################### i18n ## private ### //
-	// = révision : 72
+	// = révision : 74
 	// » Met en place la vidéo et la légende du dialogue vidéo
 	// » Redimensionne la vidéo en fonction de la taille de la fenêtre lorsque nécessaire
 	// » Un message d'information s'affiche lorsque la balise vidéo n'est pas gérée par le navigateur
@@ -1289,7 +1303,7 @@ function Dialogue() {
 	this.htmlVideo = function (url, name, date, legend) {
 
 		// vérification des dimensions
-		var infoVideo = this.updateSize(apijs.config.dialogue.videoWidth, apijs.config.dialogue.videoHeight, url);
+		var novideo = null, infoVideo = this.updateSize(apijs.config.dialogue.videoWidth, apijs.config.dialogue.videoHeight, url);
 
 		// Élément dl
 		this.elemA = document.createElement('dl');
@@ -1308,11 +1322,13 @@ function Dialogue() {
 					this.elemC.setAttribute('autoplay', 'autoplay');
 
 				// pour les navigateurs obsolètes
-				this.elemC.appendChild(document.createTextNode(apijs.i18n.translate('browserNoVideo')));
-				this.elemC.appendChild(document.createElement('br'));
-				this.elemC.appendChild(document.createTextNode(apijs.i18n.translate('browserUpgarde')));
+				if (!apijs.config.navigator || (typeof this.elemC.pause !== 'function')) {
 
-				if (!apijs.config.navigator) {
+					novideo = new BBcode();
+					novideo.init(apijs.i18n.translate('browserNoVideo'));
+					novideo.exec();
+
+					this.elemC.appendChild(novideo.getDomFragment());
 					this.elemC.style.width = infoVideo.width;
 					this.elemC.style.height = infoVideo.height;
 				}
