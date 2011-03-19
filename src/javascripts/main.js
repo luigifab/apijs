@@ -1,6 +1,6 @@
 /**
  * Created J/03/12/2009
- * Updated J/10/03/2011
+ * Updated V/18/03/2011
  * Version 39
  *
  * Copyright 2008-2011 | Fabrice Creuzot (luigifab) <code~luigifab~info>
@@ -89,9 +89,9 @@ else {
 
 
 // #### Mes fonctions ####################################################### //
-// = révision : 2
-// » Fonctions de démonstration
-// » Pour les dialogues de confirmation et d'options
+// = révision : 3
+// » Fonctions de démonstration pour les dialogues de confirmation et d'options
+// » Pour le dialogue d'options, si le paramètre reçu est un objet, alors c'est une copie et non une référence
 function myFuncA() {
 	apijs.dialogue.dialogInformation('myFuncA', "[pre]Yes, it's myFuncA() in main.js.[/pre]");
 }
@@ -106,7 +106,7 @@ function myFuncC() {
 
 
 // #### Lancement du programme ############################################## //
-// = révision : 36
+// = révision : 37
 // » Recherche les liens ayant la classe popup
 // » Vérifie si le navigateur supporte les transitions CSS ou pas
 // » Charge les modules disponibles
@@ -158,6 +158,7 @@ function start() {
 	}
 
 	// *** Code utilisateur **************************** //
+	// voir le fichier custom.js pour plus d'informations
 	if (apijs.config.navigator && (typeof customInit === 'function'))
 		customInit();
 

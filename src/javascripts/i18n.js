@@ -1,7 +1,7 @@
 /**
  * Created S/05/06/2010
- * Updated S/26/02/2011
- * Version 15
+ * Updated J/17/03/2011
+ * Version 16
  *
  * Copyright 2008-2011 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
@@ -134,6 +134,22 @@ function Internationalization() {
 
 		else if ((typeof apijs.config.lang !== 'string') || !(apijs.config.lang in this.data)) {
 			apijs.config.lang = 'en';
+		}
+	};
+
+
+	// #### Changement de langue #################################################### public ### //
+	// = révision : 1
+	// » Vérifie si la langue demandée existe dans la liste des langues disponibles
+	// » Renvoie true si la langue a été modifiée et false dans le cas contraire
+	this.changeLang = function (lang) {
+
+		if ((typeof lang === 'string') && (lang in this.data)) {
+			apijs.config.lang = lang;
+			return true;
+		}
+		else {
+			return false;
 		}
 	};
 

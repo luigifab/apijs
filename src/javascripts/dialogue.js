@@ -1,7 +1,7 @@
 /**
  * Created D/12/04/2009
- * Updated J/10/03/2011
- * Version 107
+ * Updated J/17/03/2011
+ * Version 108
  *
  * Copyright 2008-2011 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
@@ -75,6 +75,7 @@ function Dialogue() {
 	// » Composé d'un titre, d'un paragraphe, et de deux boutons de dialogue (Annuler et Valider)
 	// » Par la suite peut également être composé d'un lien différé de 5 secondes
 	// » Fermeture par bouton Annuler ou touche Échap tant que le dialogue n'est pas validé
+	// » Appel la fonction callback après la validation du dialogue
 	// » Auto-focus sur le bouton Valider
 	this.dialogConfirmation = function (title, text, callback, params, icon) {
 
@@ -315,10 +316,10 @@ function Dialogue() {
 
 
 	// #### Action du bouton Valider ##################### i18n ## debug ## event ## private ### //
-	// = révision : 98
+	// = révision : 100
 	// » Désactive l'action de la touche Échap
 	// » Pour le dialogue de confirmation appel la fonction de rappel (appel différé d'au moins 500 millisecondes)
-	// » Pour le dialogue d'options envoi le formulaire (envoi différé d'au moins 500 millisecondes)
+	// » Pour le dialogue d'options appel la fonction de rappel avant d'envoyer le formulaire (envoi différé d'au moins 500 millisecondes)
 	// » Pour le dialogue d'upload retour sur [TheUpload]
 	this.actionConfirm = function () {
 
@@ -356,7 +357,7 @@ function Dialogue() {
 		// *** Dialogue d'options ******************************* //
 		else if (this.dialogType.indexOf('options') > -1) {
 
-			if (apijs.dialogue.callback(apijs.dialogue.params) === true) {
+			if (apijs.dialogue.callback(apijs.dialogue.clone(apijs.dialogue.params)) === true) {
 
 				this.dialogType += ' lock';
 
@@ -456,7 +457,7 @@ function Dialogue() {
 
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// GESTION DE L'AFFICHAGE DES CONTENEURS PARENTS (7)
+	// GESTION DES CONTENEURS PARENTS ET PLUS (8)
 
 	// #### Prépare le terrain ##################################################### private ### //
 	// = révision : 71
@@ -780,6 +781,25 @@ function Dialogue() {
 			document.getElementById('topho').removeAttribute('class');
 			document.getElementById('topho').setAttribute('src', url);
 		}
+	};
+
+
+	// #### Clone un objet ######################################################### private ### //
+	// = révision : 2
+	// » Clone le paramètre (params) de la fonction de rappel (callback) du dialogue d'option si c'est un objet
+	// » Permet alors à l'utilisateur de pouvoir modifier l'objet reçu sans modifier l'objet original
+	// » En effet, en JavaScript, les objets sont passés par référence, ils ne sont jamais copiés
+	this.clone = function (object) {
+
+		if ((object === null) || (typeof object !== 'object'))
+			return object;
+
+		var key = null, newObject = new object.constructor();
+
+		for (var key in object)
+			newObject[key] = apijs.dialogue.clone(object[key]);
+
+		return newObject;
 	};
 
 

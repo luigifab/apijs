@@ -1,6 +1,6 @@
 /**
  * Created J/19/08/2010
- * Updated D/27/02/2011
+ * Updated J/17/03/2011
  * Version 6
  *
  * Copyright 2008-2011 | Fabrice Creuzot (luigifab) <code~luigifab~info>
@@ -225,7 +225,7 @@ function BBcode() {
 	// » Crée récursivement les différents nœuds à partir du tableau d'objets
 	// » Prend en charge les nœuds éléments et leurs attributs ainsi que les nœuds textes
 	// » À bien noter qu'en JavaScript, les objets sont passés par référence, ils ne sont jamais copiés
-	// » Source http://jsperf.com/create-nested-dom-structure
+	// » http://jsperf.com/create-nested-dom-structure
 	this.createDomFragment = function (data) {
 
 		var tag = null, attr = null, elem = 0;
