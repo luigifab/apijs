@@ -1,7 +1,7 @@
 /**
  * Created J/19/08/2010
- * Updated J/17/03/2011
- * Version 6
+ * Updated S/04/06/2011
+ * Version 7
  *
  * Copyright 2008-2011 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
@@ -22,32 +22,31 @@ function BBcode() {
 	// définition des attributs
 	this.bbcode = null;
 	this.object = null;
+	this.smileys = false;
 	this.fragment = null;
 
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// INITIALISATION (2)
+	// GESTION DES DONNÉES (3)
 
-	// #### Préparation des données ################################################# public ### //
-	// = révision : 6
+	// #### Initialisation ########################################################## public ### //
+	// = révision : 8
 	// » Prépare l'objet de transition
-	// » Ajoute un conteneur p si besoin
-	this.init = function (data) {
+	// » Ajoute un conteneur p lorsque nécessaire
+	this.init = function (data, smileys) {
 
 		this.object = { tag: 'div', content: [] };
 		this.object['class'] = 'bbcode';
 
-		if (data[0] !== '[')
-			this.bbcode = '[p]' + data + '[/p]';
-		else
-			this.bbcode = data;
+		this.bbcode = (data[0] !== '[') ? '[p]' + data + '[/p]' : data;
+		//this.smileys = (typeof smileys === 'boolean') ? smileys : apijs.config.bbcode.smileys;
 	};
 
 
 	// #### Interprétation ########################################################## public ### //
-	// = révision : 1
-	// » Lance l'analyse du bbcode
-	// » Lance la création du fragment DOM
+	// = révision : 2
+	// » Analyse le bbcode
+	// » Génère le fragment DOM
 	this.exec = function () {
 
 		this.readData(this.bbcode, 0);
@@ -57,20 +56,31 @@ function BBcode() {
 	};
 
 
+	// #### Résultat ################################################################ public ### //
+	// = révision : 4
+	// » Renvoie le fragment DOM correspondant au bbcode
+	this.get = function () {
+
+		return this.fragment;
+	};
+
+
 
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// GÉNÉRATION DE L'OBJET (3)
 
-	// #### Création de l'objet représentant le bbcode ############################# private ### //
-	// = révision : 12
+	// #### Création de l'objet de transition ###################################### private ### //
+	// = révision : 14
 	// » Parcours le bbcode récursivement
+	// » Découpe les données avec des expressions régulières
 	// » Sauvegarde chaque élément et chaque bout de texte dans un tableau d'objets
 	// » À bien noter qu'en JavaScript, les objets sont passés par référence, ils ne sont jamais copiés
 	this.readData = function (data, level) {
 
 		var element = null, attributes = null, content = null, text = null, other = null, cut = 0;
 
+		// *** Texte et éléments simples ou doubles ************* //
 		// la chaine contient du texte suivit d'un ou plusieurs éléments
 		// extrait le premier bout de texte, le premier élément et son contenu ainsi que ce qu'il y a après
 		// auto-rappel pour analyser chaque morceau
@@ -101,6 +111,7 @@ function BBcode() {
 				this.readData(other, level);
 		}
 
+		// *** Élément simple *********************************** //
 		// la chaine contient un élément simple en première position
 		// extrait l'élément et ses attributs ainsi que ce qu'il y a après
 		// demande la sauvegarde de l'élément et de ses attributs
@@ -117,6 +128,7 @@ function BBcode() {
 				this.readData(other, level);
 		}
 
+		// *** Élément double *********************************** //
 		// la chaine contient un élément double en première position
 		// extrait l'élément et ses attributs, son contenu ainsi que ce qu'il y a après
 		// demande la sauvegarde de l'élément, de son contenu et de ses attributs
@@ -137,6 +149,7 @@ function BBcode() {
 				this.readData(other, level);
 		}
 
+		// *** Texte ******************************************** //
 		// demande la sauvegarde du bout de texte
 		else {
 			this.addElement(data, null, level);
@@ -145,7 +158,7 @@ function BBcode() {
 
 
 	// #### Ajoute un nœud élément ou un nœud texte ################################ private ### //
-	// = révision : 5
+	// = révision : 6
 	// » Enregistre le nœud élément et ses attributs ou le nœud texte dans le tableau d'objets
 	// » À bien noter qu'en JavaScript, les objets sont passés par référence, ils ne sont jamais copiés
 	this.addElement = function (data, attributes, level) {
@@ -153,7 +166,7 @@ function BBcode() {
 		var directlink = null, attr = null, name = null, value = null;
 		directlink = this.getContentNode(this.object, 0, level);
 
-		// nœud élément
+		// *** Nœud élément ************************************* //
 		if (attributes !== null) {
 
 			if (directlink.hasOwnProperty('content'))
@@ -177,7 +190,7 @@ function BBcode() {
 			}
 		}
 
-		// nœud texte
+		// *** Nœud texte *************************************** //
 		else {
 			if (directlink.hasOwnProperty('content'))
 				directlink.content.push({ text: data });
@@ -187,10 +200,10 @@ function BBcode() {
 	};
 
 
-	// #### Recherche du dernier nœud content ###################################### private ### //
-	// = révision : 2
+	// #### Recherche le dernier nœud content ###################################### private ### //
+	// = révision : 4
 	// » Recherche le dernier nœud content de l'objet
-	// » Ne va pas plus loin que le niveau de profondeur demandé
+	// » Ne va pas plus loin que le niveau maximum demandé
 	this.getContentNode = function (dom, level, maxlevel) {
 
 		if ((dom.content.length < 1) || (maxlevel < 1))
@@ -209,19 +222,10 @@ function BBcode() {
 
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// GÉNÉRATION DE L'ARBRE DOM (2)
+	// GÉNÉRATION DU FRAGMENT DOM (1)
 
-	// #### Résultat ################################################################ public ### //
-	// = révision : 3
-	// » Renvoie le fragment DOM correspondant au bbcode
-	this.getDomFragment = function () {
-
-		return this.fragment;
-	};
-
-
-	// #### Création de l'arbre DOM ################################################ private ### //
-	// = révision : 13
+	// #### Création du fragment DOM ############################################### private ### //
+	// = révision : 14
 	// » Crée récursivement les différents nœuds à partir du tableau d'objets
 	// » Prend en charge les nœuds éléments et leurs attributs ainsi que les nœuds textes
 	// » À bien noter qu'en JavaScript, les objets sont passés par référence, ils ne sont jamais copiés

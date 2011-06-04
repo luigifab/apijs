@@ -320,7 +320,7 @@ function Slideshow() {
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// DÉFINITION DES ACTIONS DES BOUTONS ET DES TOUCHES DU CLAVIER (4)
 
-	// #### Action de la touche début ################################### event ## protected ### //
+	// #### Action de la touche Début ################################### event ## protected ### //
 	// = révision : 3
 	// » Affiche la première photo ou vidéo
 	// » En provenance de la touche début

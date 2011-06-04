@@ -1,7 +1,7 @@
 /**
  * Created J/03/12/2009
- * Updated V/18/03/2011
- * Version 39
+ * Updated S/04/06/2011
+ * Version 42
  *
  * Copyright 2008-2011 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
@@ -18,11 +18,11 @@
  *
  * Configuration de JSLint
  * Internationalization, BBcode, Dialogue, Slideshow, Upload, Map, window, apijs, start
- * openTab, customInit, customInitIE, alert
+ * openTab, customInit, customInitIE, alert, confirm, in_array, uniqid
  */
 
 // #### Paramètres de configuration ######################################### //
-// = révision : 31
+// = révision : 35
 // » Définie la variable globale du programme ainsi que sa configuration
 // » Lance le programme JavaScript
 var apijs = {
@@ -43,8 +43,9 @@ var apijs = {
 			hiddenPage: false,
 			savingDialog: false,
 			savingTime: 2250,
-			showLoader: true,
 			autoPlay: true,
+			showLoader: true,
+			showFullsize: true,
 			savePhoto: true,
 			saveVideo: true,
 			videoWidth: 640,
@@ -52,10 +53,10 @@ var apijs = {
 			imagePrev: null,
 			imageNext: null,
 			imageClose: { src: './images/dialogue/close.png', width: 60, height: 22 },
-			imageUpload: { src: './images/dialogue/progressbar.svg', width: 300, height: 17 },
+			imageUpload: { src: './images/dialogue/progressbar.svg.php', width: 300, height: 17 },
 			filePhoto: './downloadfile.php',
 			fileVideo: './downloadfile.php',
-			fileUpload: './iframe.php'
+			fileUpload: './uploadfile.php'
 		},
 		slideshow: {
 			ids: 'diaporama',
@@ -78,7 +79,7 @@ var apijs = {
 if ((navigator.userAgent.indexOf('MSIE') < 0) || (navigator.userAgent.indexOf('MSIE 9') > -1)) {
 	window.addEventListener('load', start, false);
 }
-else {
+else if (navigator.userAgent.indexOf('MSIE 8') > -1) {
 	apijs.config.navigator = false;
 	apijs.config.transition = false;
 	document.createElement('video');
@@ -88,28 +89,11 @@ else {
 }
 
 
-// #### Mes fonctions ####################################################### //
-// = révision : 3
-// » Fonctions de démonstration pour les dialogues de confirmation et d'options
-// » Pour le dialogue d'options, si le paramètre reçu est un objet, alors c'est une copie et non une référence
-function myFuncA() {
-	apijs.dialogue.dialogInformation('myFuncA', "[pre]Yes, it's myFuncA() in main.js.[/pre]");
-}
-
-function myFuncB(id) {
-	apijs.dialogue.dialogInformation('myFuncB', "[pre]Yes, it's myFuncB(" + id + ') in main.js.[/pre]');
-}
-
-function myFuncC() {
-	return confirm("Yes, it's myFuncC() in main.js, a very important function.\n\nWhat next ?\n» Click confirm to return true.\n» Click cancel to return false.");
-}
-
-
 // #### Lancement du programme ############################################## //
-// = révision : 37
+// = révision : 40
 // » Recherche les liens ayant la classe popup
 // » Vérifie si le navigateur supporte les transitions CSS ou pas
-// » Charge les modules disponibles
+// » Charge les modules disponibles et met en place les gestionnaires d'évènements
 function start() {
 
 	// *** Recherche des liens ************************* //
@@ -145,10 +129,10 @@ function start() {
 				apijs.slideshow = new Slideshow();
 				apijs.slideshow.init();
 			}
-		}
 
-		if (typeof Upload === 'function') {
-			apijs.upload = new Upload();
+			if (typeof Upload === 'function') {
+				apijs.upload = new Upload();
+			}
 		}
 
 		if ((typeof Map === 'function') && document.getElementById('carteInteractive')) {
@@ -170,7 +154,6 @@ function start() {
 // #### Nouvel onglet ####################################################### //
 // = révision : 3
 // » Ouvre le lien dans un nouvel onglet
-// » Fonction pouvant être utilisée par [bbcode]
 // » Annule l'action par défaut
 function openTab(ev) {
 	ev.preventDefault();
@@ -178,9 +161,57 @@ function openTab(ev) {
 }
 
 
+// #### Fonctions de démonstrations ################################ i18n ### //
+// = révision : 17
+// » Exemples de fonctions pour les dialogues de confirmation, d'options et d'upload
+// » Pour le dialogue d'options, si le paramètre reçu est un objet, alors c'est une copie et non une référence
+// » Pour le dialogue de confirmation, le fait que le paramètre reçu soit une référence n'a pas d'importance
+function myFuncA() {
+
+	apijs.i18n.data.en.myFuncA = "[pre]Yes, it's myFuncA() in main.js.[/pre]";
+	apijs.i18n.data.fr.myFuncA = "[pre]Oui, c'est myFuncA() dans main.js.[/pre]";
+
+	apijs.dialogue.dialogInformation('myFuncA', apijs.i18n.translate('myFuncA'));
+}
+
+function myFuncB(id) {
+
+	apijs.i18n.data.en.myFuncB = "[pre]Yes, it's myFuncB(§) in main.js.[/pre]";
+	apijs.i18n.data.fr.myFuncB = "[pre]Oui, c'est myFuncB(§) dans main.js.[/pre]";
+
+	apijs.dialogue.dialogInformation('myFuncB', apijs.i18n.translate('myFuncB', id));
+}
+
+function myFuncC() {
+
+	apijs.i18n.data.en.myFuncC = "Yes, it's myFuncC() in main.js, a very important function.\n\nWhat to do next ?\n» Click confirm to return true.\n» Click cancel to return false.";
+	apijs.i18n.data.fr.myFuncC = "Oui, c'est myFuncC() dans main.js, une fonction très importante.\n\nQue faire ensuite ?\n» Cliquer sur valider pour renvoyer true\n» Cliquer sur annuler pour renvoyer false";
+
+	return confirm(apijs.i18n.translate('myFuncC'));
+}
+
+function myFuncD(key, id) {
+
+	apijs.i18n.data.en.myFuncD = "Image that you sent";
+	apijs.i18n.data.fr.myFuncD = "L'image que vous avez envoyée";
+
+	apijs.config.dialogue.savePhoto = false;
+	apijs.dialogue.dialogPhoto(400, 300, apijs.config.dialogue.fileUpload + '?image=' + key, 'myFuncD(' + id + ')', 'false', apijs.i18n.translate('myFuncD'));
+	apijs.config.dialogue.savePhoto = true;
+}
+
+function myFuncE(id) {
+
+	apijs.i18n.data.en.myFuncA = "[pre]Yes, it's myFuncE(§) in main.js.[/pre]";
+	apijs.i18n.data.fr.myFuncA = "[pre]Oui, c'est myFuncE(§) dans main.js.[/pre]";
+
+	apijs.dialogue.dialogInformation('myFuncE', apijs.i18n.translate('myFuncE', id));
+}
+
+
 // #### Configuration dynamique ############################################# //
-// = révision : 4
-// » Renvoie un booléen, une valeur null ou un objet lorsque nécessaire
+// = révision : 5
+// » Renvoie un booléen, une valeur null, un nombre ou un objet lorsque nécessaire
 // » Renvoie dans tous les cas quelque chose
 function getValue(value) {
 
@@ -192,6 +223,9 @@ function getValue(value) {
 
 	else if (value === 'null')
 		return null;
+
+	else if (/[0-9]+/.test(value))
+		return parseInt(value, 10);
 
 	else if (value === 'specialPrev')
 		return { src: './images/icons/24/gnome-prev.png', width: 24, height: 24 };
@@ -208,7 +242,7 @@ function getValue(value) {
 
 
 // #### Vérification des modules ############################################ //
-// = révision : 36
+// = révision : 39
 // » Recherche les modules presénts
 // » Vérifie la configuration des modules chargés
 // » Ne vérifie pas les dépendances entre les modules
@@ -227,8 +261,9 @@ function checkAll() {
 			hiddenPage: 'boolean',
 			savingDialog: 'boolean',
 			savingTime: 'number',
-			showLoader: 'boolean',
 			autoPlay: 'boolean',
+			showLoader: 'boolean',
+			showFullsize: 'boolean',
 			savePhoto: 'boolean',
 			saveVideo: 'boolean',
 			videoWidth: 'number',
@@ -315,18 +350,17 @@ function checkAll() {
 
 	for (keyA in defaultConf) if (defaultConf.hasOwnProperty(keyA)) {
 
-		// pas de vérification
-		// si le module n'est pas chargé ou s'il n'existe pas
-		if ((keyA === 'dialogue') && ((typeof Dialogue !== 'function') || (apijs.slideshow instanceof Dialogue)))
+		// pas de vérification si le module n'est pas chargé ou s'il n'existe pas
+		if ((keyA === 'dialogue') && ((typeof Dialogue !== 'function') || !(apijs.dialogue instanceof Dialogue)))
 			continue;
 
-		if ((keyA === 'slideshow') && ((typeof Slideshow !== 'function') || (apijs.slideshow instanceof Slideshow)))
+		if ((keyA === 'slideshow') && ((typeof Slideshow !== 'function') || !(apijs.slideshow instanceof Slideshow)))
 			continue;
 
-		if ((keyA === 'upload') && ((typeof Upload !== 'function') || (apijs.upload instanceof Upload)))
+		if ((keyA === 'upload') && ((typeof Upload !== 'function') || !(apijs.upload instanceof Upload)))
 			continue;
 
-		if ((keyA === 'map') && ((typeof Map !== 'function') || (apijs.map instanceof Map)))
+		if ((keyA === 'map') && ((typeof Map !== 'function') || !(apijs.map instanceof Map)))
 			continue;
 
 		// config d'un module
@@ -407,4 +441,5 @@ function checkAll() {
 	// *** Affichage du rapport ************************ //
 	alert(report.join('\n'));
 }
+
 

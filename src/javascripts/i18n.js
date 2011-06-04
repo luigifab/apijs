@@ -1,7 +1,7 @@
 /**
  * Created S/05/06/2010
- * Updated J/17/03/2011
- * Version 16
+ * Updated S/04/06/2011
+ * Version 17
  *
  * Copyright 2008-2011 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
@@ -19,36 +19,7 @@
 
 function Internationalization() {
 
-	// définition des traductions
 	this.data = [];
-
-	// Deutsch
-	// » Dacrydium SARL <contact~dacrydium~fr>
-	this.data.de = {
-		buttonOk: "Ok",
-		buttonCancel: "Abbrechen",
-		buttonConfirm: "Bestätigen",
-		buttonClose: "Ende",
-		buttonPrev: "Previous",
-		buttonNext: "Next",
-
-		downloadLink: "Laden",
-		operationTooLong: "This operation is too long ? ",
-		warningLostChange: "Achtung : alle laufenden änderungen werden verloren.",
-		reloadLink: "Seite nochmal laden",
-		operationInProgress: "Laufende Aktion...",
-		savingInProgress: "Saving...",
-		browserNoVideo: "[p]Your browser doesn't support the <video> element.[br]Remember to upgrade your browser.[/p][ul][li][a href='http://www.google.com/chrome?hl=en' class='popup']Chrome 3.0+[/a][/li][li][a href='http://www.mozilla-europe.org/en/firefox/' class='popup']Firefox 3.5+[/a][/li][li][a href='http://www.konqueror.org/' class='popup']Konqueror 4.4+[/a][/li][li][a href='http://www.opera.com/' class='popup']Opera 10.50+[/a][/li][li][a href='http://www.apple.com/safari/' class='popup']Safari 3.1+[/a][/li][/ul]",
-
-		debugInvalidCall: "(debug) Invalid call",
-		debugInvalidUse: "(debug) Invalid use",
-		debugUnknownAction: "(debug) Unknown action",
-		debugKeyDetected: "(debug) Key detected",
-		debugKeyCode: "Code of the seizure key : §",
-		debugInvalidAltAttribute: "(debug) Invalid alt attribute",
-		debugNotRecognizedAltAttribute: "The alt attribute of the image wasn't recognized",
-		debugNotExist: "doesn't exist (unlikely error)"
-	};
 
 	// English
 	// » Fabrice Creuzot (luigifab) <code~luigifab~info>
@@ -66,8 +37,18 @@ function Internationalization() {
 		warningLostChange: "Warning : all changes in progress will be lost.",
 		reloadLink: "Reload this page",
 		operationInProgress: "Operation in progress...",
+		uploadInProgress: "Upload in progress...",
 		savingInProgress: "Saving...",
-		browserNoVideo: "[p]Your browser doesn't support the <video> element.[br]Remember to upgrade your browser.[/p][ul][li][a href='http://www.google.com/chrome?hl=en' class='popup']Chrome 3.0+[/a][/li][li][a href='http://www.mozilla-europe.org/en/firefox/' class='popup']Firefox 3.5+[/a][/li][li][a href='http://www.konqueror.org/' class='popup']Konqueror 4.4+[/a][/li][li][a href='http://www.opera.com/' class='popup']Opera 10.50+[/a][/li][li][a href='http://www.apple.com/safari/' class='popup']Safari 3.1+[/a][/li][/ul]",
+
+		uploadRate: "§% (§ kB/s)",
+		uploadAllType: "All files are accepted.[br]Maximum size : § [abbr title='Megabyte']MB[/abbr].",
+		uploadOneType: "Accepted file format : §.[br]Maximum size : § [abbr title='Megabyte']MB[/abbr].",
+		uploadMultiType: "Accepted file formats : § and §.[br]Maximum size : § [abbr title='Megabyte']MB[/abbr].",
+		uploadBadOneType: "[p]It is impossible to send the file because the file format proposed isn't allowed.[/p][p]➩ Proposed file : [strong]§[/strong][br]➩ Accepted file format : §.[/p]",
+		uploadBadMultiType: "[p]It is impossible to send the file because the file format proposed isn't allowed.[/p][p]➩ Proposed file : [strong]§[/strong][br]➩ Accepted file formats : § and §.[/p]",
+		deleteNotFound: "Unfortunately, it is currently impossible to delete requested file (Error § : §).",
+
+		browserNoVideo: "[p]Your browser doesn't support the <video> tag.[br]Remember to upgrade your browser.[/p][ul][li][a href='http://www.google.com/chrome?hl=en' class='popup']Chrome 3.0+[/a][/li][li][a href='http://www.mozilla-europe.org/en/firefox/' class='popup']Firefox 3.5+[/a][/li][li][a href='http://windows.microsoft.com/en-US/internet-explorer/products/ie/home' class='popup']Internet Explorer 9.0+[/a][/li][li][a href='http://www.konqueror.org/' class='popup']Konqueror 4.4+[/a][/li][li][a href='http://www.opera.com/' class='popup']Opera 10.50+[/a][/li][li][a href='http://www.apple.com/safari/' class='popup']Safari 3.1+[/a][/li][/ul]",
 
 		debugInvalidCall: "(debug) Invalid call",
 		debugInvalidUse: "(debug) Invalid use",
@@ -94,8 +75,18 @@ function Internationalization() {
 		warningLostChange: "Attention : toutes les modifications en cours seront perdues.",
 		reloadLink: "Rechargez la page",
 		operationInProgress: "Opération en cours...",
+		uploadInProgress: "Envoi du fichier en cours...",
 		savingInProgress: "Enregistrement en cours...",
-		browserNoVideo: "[p]Votre navigateur ne supporte pas l'élément <video>.[br]Pensez à mettre à jour votre navigateur.[/p][ul][li][a href='http://www.google.com/chrome?hl=fr' class='popup']Chrome 3.0+[/a][/li][li][a href='http://www.mozilla-europe.org/fr/firefox/' class='popup']Firefox 3.5+[/a][/li][li][a href='http://www.konqueror.org/' class='popup']Konqueror 4.4+[/a][/li][li][a href='http://www.opera.com/' class='popup']Opera 10.50+[/a][/li][li][a href='http://www.apple.com/fr/safari/' class='popup']Safari 3.1+[/a][/li][/ul]",
+
+		uploadRate: "§% (§ ko/s)",
+		uploadAllType: "Tous les fichiers sont acceptés.[br]Taille maximale : § [abbr title='Mégaoctet']Mo[/abbr].",
+		uploadOneType: "Format de fichier accepté : §.[br]Taille maximale : § [abbr title='Mégaoctet']Mo[/abbr].",
+		uploadMultiType: "Formats de fichier acceptés : § et §.[br]Taille maximale : § [abbr title='Mégaoctet']Mo[/abbr].",
+		uploadBadOneType: "[p]Il est impossible d'envoyer le fichier car le format du fichier proposé n'est pas autorisé.[/p][p]➩ Fichier proposé : [strong]§[/strong][br]➩ Format de fichier accepté : §.[/p]",
+		uploadBadMultiType: "[p]Il est impossible d'envoyer le fichier car le format du fichier proposé n'est pas autorisé.[/p][p]➩ Fichier proposé : [strong]§[/strong][br]➩ Formats de fichier acceptés : § et §.[/p]",
+		deleteNotFound: "Malheureusement, il est actuellement impossible de supprimer le fichier demandé (Erreur § : [span xml:lang='en']§[/span]).",
+
+		browserNoVideo: "[p]Votre navigateur ne supporte pas la balise <video>.[br]Pensez à mettre à jour votre navigateur.[/p][ul][li][a href='http://www.google.com/chrome?hl=fr' class='popup']Chrome 3.0+[/a][/li][li][a href='http://www.mozilla-europe.org/fr/firefox/' class='popup']Firefox 3.5+[/a][/li][li][a href='http://windows.microsoft.com/fr-FR/internet-explorer/products/ie/home' class='popup']Internet Explorer 9.0+[/a][/li][li][a href='http://www.konqueror.org/' class='popup']Konqueror 4.4+[/a][/li][li][a href='http://www.opera.com/' class='popup']Opera 10.50+[/a][/li][li][a href='http://www.apple.com/fr/safari/' class='popup']Safari 3.1+[/a][/li][/ul]",
 
 		debugInvalidCall: "(debug) Appel invalide",
 		debugInvalidUse: "(debug) Utilisation invalide",
@@ -109,79 +100,80 @@ function Internationalization() {
 
 
 	// #### Auto-détection de la langue ############################################# public ### //
-	// = révision : 9
+	// = révision : 13
 	// » Essaye de récupérer la langue utilisée par la page web
 	// » Vérifie ensuite si elle existe dans la liste des langues disponibles
 	// » Prend soin de vérifier que la configuration de la langue est correcte
 	this.init = function () {
 
+		// *** Détection de la langue *************************** //
 		if (apijs.config.autolang) {
 
 			var autolang = null;
 
+			// recherche du nœud html
 			if (document.getElementsByTagName('html')[0].getAttribute('xml:lang'))
 				autolang = document.getElementsByTagName('html')[0].getAttribute('xml:lang').slice(0, 2);
 
 			else if (document.getElementsByTagName('html')[0].getAttribute('lang'))
 				autolang = document.getElementsByTagName('html')[0].getAttribute('lang').slice(0, 2);
 
-			if ((typeof autolang === 'string') && (autolang in this.data))
+			// définition de la langue
+			if ((typeof autolang === 'string') && this.data.hasOwnProperty(autolang))
 				apijs.config.lang = autolang;
 
-			else if ((typeof apijs.config.lang !== 'string') || !(apijs.config.lang in this.data))
+			else if ((typeof apijs.config.lang !== 'string') || !this.data.hasOwnProperty(apijs.config.lang))
 				apijs.config.lang = 'en';
 		}
 
-		else if ((typeof apijs.config.lang !== 'string') || !(apijs.config.lang in this.data)) {
+		// *** Langue par défaut ******************************** //
+		else if ((typeof apijs.config.lang !== 'string') || !this.data.hasOwnProperty(apijs.config.lang)) {
 			apijs.config.lang = 'en';
 		}
 	};
 
 
+	// #### Traduction par mot clef ################################################# public ### //
+	// = révision : 18
+	// » Vérifie si le mot clef existe dans les traductions
+	// » Renvoie la chaine de caractères correspondante à un mot clef
+	this.translate = function (word) {
+
+		// *** Mot clef inexistant ****************************** //
+		if (typeof this.data[apijs.config.lang][word] !== 'string') {
+			return word;
+		}
+
+		// *** Chaine de caractères configurable **************** //
+		else if (arguments.length > 1) {
+
+			var i = 0, arg = 1, translation = '', data = '';
+
+			for (data = this.data[apijs.config.lang][word].split('§'); i < data.length; i++)
+				translation += (arg < arguments.length) ? data[i] + arguments[arg++] : data[i];
+
+			return translation;
+		}
+
+		// *** Chaine de caractères simple ********************** //
+		else {
+			return this.data[apijs.config.lang][word];
+		}
+	};
+
+
 	// #### Changement de langue #################################################### public ### //
-	// = révision : 1
+	// = révision : 2
 	// » Vérifie si la langue demandée existe dans la liste des langues disponibles
 	// » Renvoie true si la langue a été modifiée et false dans le cas contraire
 	this.changeLang = function (lang) {
 
-		if ((typeof lang === 'string') && (lang in this.data)) {
+		if ((typeof lang === 'string') && this.data.hasOwnProperty(lang)) {
 			apijs.config.lang = lang;
 			return true;
 		}
 		else {
 			return false;
-		}
-	};
-
-
-	// #### Traduction par mot clef ################################################# public ### //
-	// = révision : 16
-	// » Vérifie si le mot clef existe dans les traductions
-	// » Renvoie la chaine de caractères correspondante à un mot clef
-	this.translate = function (word) {
-
-		// mot clef inexistant
-		if (typeof this.data[apijs.config.lang][word] !== 'string') {
-			return word;
-		}
-
-		// chaine de caractères configurable
-		else if (arguments.length > 1) {
-
-			for (var data = this.data[apijs.config.lang][word].split('§'), i = 0, arg = 1, translation = ''; i < data.length; i++) {
-
-				if (arg < arguments.length)
-					translation += data[i] + arguments[arg++];
-				else
-					translation += data[i];
-			}
-
-			return translation;
-		}
-
-		// chaine de caractères simple
-		else {
-			return this.data[apijs.config.lang][word];
 		}
 	};
 }

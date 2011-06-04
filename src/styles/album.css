@@ -1,7 +1,7 @@
 /**
  * Created V/08/05/2009
- * Updated D/27/02/2011
- * Version 9
+ * Updated S/14/05/2011
+ * Version 10
  *
  * Copyright 2008-2011 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
@@ -49,11 +49,11 @@ div.album dl:hover dd span.datenum { color:#666; }
 /* ################################################### Mode présentation ### */
 div.presentation {
 	display:inline-block; margin:1.2em 1em; padding:6px 6px 3px; text-align:center; overflow:hidden;
-	background-color:#EEE; border-radius:0.5em; -khtml-border-radius:0.5em; -moz-border-radius:0.5em; -webkit-border-radius:0.5em;
+	background-color:#DEDEDE; border-radius:0.7em; -khtml-border-radius:0.7em; -moz-border-radius:0.7em; -webkit-border-radius:0.7em;
 }
 
 div.presentation a { display:inline-block; }
-div.presentation img { border:1px solid #CCC; }
+div.presentation img { border:1px solid transparent; }
 
 div.presentation ul { margin:1px 0 0; list-style:none; }
 div.presentation ul li { display:inline-block; margin:4px 0; }
