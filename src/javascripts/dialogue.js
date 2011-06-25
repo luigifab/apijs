@@ -1,7 +1,7 @@
 /**
  * Created D/12/04/2009
- * Updated S/04/06/2011
- * Version 110
+ * Updated D/05/06/2011
+ * Version 111
  *
  * Copyright 2008-2011 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
@@ -1361,7 +1361,7 @@ function Dialogue() {
 
 
 	// #### Vidéo et légende ############################################### i18n ## private ### //
-	// = révision : 78
+	// = révision : 79
 	// » Met en place la vidéo et la légende du dialogue vidéo
 	// » Redimensionne la vidéo en fonction de la taille de la fenêtre lorsque nécessaire
 	// » Un message d'information remplace la vidéo lorsque la balise vidéo du langage HTML 5 n'est pas gérée par le navigateur
@@ -1395,7 +1395,7 @@ function Dialogue() {
 				this.elemC.setAttribute('height', infoVideo.height);
 				this.elemC.setAttribute('controls', 'controls');
 
-				if (apijs.config.dialogue.autoPlay)
+				if (apijs.config.dialogue.videoAutoplay)
 					this.elemC.setAttribute('autoplay', 'autoplay');
 
 				// Navigateurs obsolètes

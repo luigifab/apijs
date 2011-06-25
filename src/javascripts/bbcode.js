@@ -1,6 +1,6 @@
 /**
  * Created J/19/08/2010
- * Updated S/04/06/2011
+ * Updated V/10/06/2011
  * Version 7
  *
  * Copyright 2008-2011 | Fabrice Creuzot (luigifab) <code~luigifab~info>
@@ -22,7 +22,6 @@ function BBcode() {
 	// définition des attributs
 	this.bbcode = null;
 	this.object = null;
-	this.smileys = false;
 	this.fragment = null;
 
 
@@ -39,7 +38,6 @@ function BBcode() {
 		this.object['class'] = 'bbcode';
 
 		this.bbcode = (data[0] !== '[') ? '[p]' + data + '[/p]' : data;
-		//this.smileys = (typeof smileys === 'boolean') ? smileys : apijs.config.bbcode.smileys;
 	};
 
 

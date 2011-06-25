@@ -1,7 +1,7 @@
 /**
  * Created J/03/12/2009
- * Updated S/04/06/2011
- * Version 42
+ * Updated V/10/06/2011
+ * Version 43
  *
  * Copyright 2008-2011 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
@@ -22,7 +22,7 @@
  */
 
 // #### Paramètres de configuration ######################################### //
-// = révision : 35
+// = révision : 37
 // » Définie la variable globale du programme ainsi que sa configuration
 // » Lance le programme JavaScript
 var apijs = {
@@ -42,12 +42,12 @@ var apijs = {
 			blocks: [],
 			hiddenPage: false,
 			savingDialog: false,
-			savingTime: 2250,
-			autoPlay: true,
+			savingTime: 2500,
 			showLoader: true,
-			showFullsize: true,
+			showFullsize: false,
 			savePhoto: true,
 			saveVideo: true,
+			videoAutoplay: true,
 			videoWidth: 640,
 			videoHeight: 480,
 			imagePrev: null,
@@ -242,7 +242,7 @@ function getValue(value) {
 
 
 // #### Vérification des modules ############################################ //
-// = révision : 39
+// = révision : 40
 // » Recherche les modules presénts
 // » Vérifie la configuration des modules chargés
 // » Ne vérifie pas les dépendances entre les modules
@@ -261,11 +261,11 @@ function checkAll() {
 			hiddenPage: 'boolean',
 			savingDialog: 'boolean',
 			savingTime: 'number',
-			autoPlay: 'boolean',
 			showLoader: 'boolean',
 			showFullsize: 'boolean',
 			savePhoto: 'boolean',
 			saveVideo: 'boolean',
+			videoAutoplay: 'boolean',
 			videoWidth: 'number',
 			videoHeight: 'number',
 			imagePrev: { src: 'string', width: 'number', height: 'number' },

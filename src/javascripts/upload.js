@@ -1,7 +1,7 @@
 /**
  * Created L/13/04/2009
- * Updated S/04/06/2011
- * Version 22
+ * Updated W/15/06/2011
+ * Version 23
  *
  * Copyright 2008-2011 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
@@ -298,7 +298,7 @@ function Upload() {
 
 
 	// #### Terminus ###################################################### event ## private ### //
-	// = révision : 74
+	// = révision : 75
 	// » Désactive l'animation de la barre de progression
 	// » Récupère le résultat de l'envoi et du traitement du fichier depuis l'iframe (résultat au format XML)
 	// » Termine la barre de progression et appel la fonction de rappel si l'envoi du fichier a réussi (appel différé de 1000 millisecondes)
@@ -345,7 +345,8 @@ function Upload() {
 			}
 
 			// évite le transfère de données inutile sur Firefox (et les autres ? bug ?)
-			if (document.getElementById('progressbar') && (typeof document.getElementById('progressbar').getSVGDocument !== 'undefined')) {
+			if (document.getElementById('progressbar') && (typeof document.getElementById('progressbar').getSVGDocument !== 'undefined') &&
+			    (navigator.userAgent.indexOf('MSIE') < 0)) {
 				document.getElementById('iframeUpload').removeAttribute('onload');
 				document.getElementById('iframeUpload').setAttribute('src', apijs.config.dialogue.imageUpload.src);
 			}
