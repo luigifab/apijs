@@ -1,7 +1,7 @@
 /**
  * Created J/19/08/2010
- * Updated V/10/06/2011
- * Version 7
+ * Updated S/20/08/2011
+ * Version 8
  *
  * Copyright 2008-2011 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
@@ -23,21 +23,25 @@ function BBcode() {
 	this.bbcode = null;
 	this.object = null;
 	this.fragment = null;
+	this.emotes = false;
 
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// GESTION DES DONNÉES (3)
 
 	// #### Initialisation ########################################################## public ### //
-	// = révision : 8
+	// = révision : 11
 	// » Prépare l'objet de transition
 	// » Ajoute un conteneur p lorsque nécessaire
-	this.init = function (data, smileys) {
+	this.init = function (data, emotes) {
 
 		this.object = { tag: 'div', content: [] };
 		this.object['class'] = 'bbcode';
 
 		this.bbcode = (data[0] !== '[') ? '[p]' + data + '[/p]' : data;
+
+		if ((apijs.config.bbcode !== null) && (typeof apijs.config.bbcode === 'object'))
+			this.emotes = (typeof emotes === 'boolean') ? emotes : true;
 	};
 
 
@@ -55,8 +59,9 @@ function BBcode() {
 
 
 	// #### Résultat ################################################################ public ### //
-	// = révision : 4
+	// = révision : 5
 	// » Renvoie le fragment DOM correspondant au bbcode
+	// » Même si celui-ci est null
 	this.get = function () {
 
 		return this.fragment;
@@ -69,7 +74,7 @@ function BBcode() {
 	// GÉNÉRATION DE L'OBJET (3)
 
 	// #### Création de l'objet de transition ###################################### private ### //
-	// = révision : 14
+	// = révision : 15
 	// » Parcours le bbcode récursivement
 	// » Découpe les données avec des expressions régulières
 	// » Sauvegarde chaque élément et chaque bout de texte dans un tableau d'objets
@@ -82,7 +87,7 @@ function BBcode() {
 		// la chaine contient du texte suivit d'un ou plusieurs éléments
 		// extrait le premier bout de texte, le premier élément et son contenu ainsi que ce qu'il y a après
 		// auto-rappel pour analyser chaque morceau
-		if ((data[0] !== '[') && ((cut = data.search(/\[([a-z1-6]+)(?: [a-z:]+=["'][^"']*["'])*\]/)) > -1)) {
+		if ((data[0] !== '[') && ((cut = data.search(/\[([a-z1-6]+)(?: [a-z:]+=["'][^\]]*["'])*\]/)) > -1)) {
 
 			// texte (auto-rappel)
 			text = data.slice(0, cut);
@@ -98,7 +103,7 @@ function BBcode() {
 			}
 
 			// élément simple (auto-rappel)
-			if (/^(\[(?:area|br|col|hr|iframe|img|input|param)(?: [a-z:]+=["'][^"']*["'])*\])/.test(other)) {
+			if (/^(\[(?:area|br|col|hr|iframe|img|input|param)(?: [a-z:]+=["'][^\]]*["'])*\])/.test(other)) {
 				element = other.slice(0, RegExp.$1.length);
 				other = other.slice(RegExp.$1.length);
 				this.readData(element, level);
@@ -114,7 +119,7 @@ function BBcode() {
 		// extrait l'élément et ses attributs ainsi que ce qu'il y a après
 		// demande la sauvegarde de l'élément et de ses attributs
 		// auto-rappel pour analyser ce qu'il y a après
-		else if (/^\[(area|br|col|hr|iframe|img|input|param)((?: [a-z:]+=["'][^"']*["'])*)\]/.test(data)) {
+		else if (/^\[(area|br|col|hr|iframe|img|input|param)((?: [a-z:]+=["'][^\]]*["'])*)\]/.test(data)) {
 
 			element = RegExp.$1;
 			attributes = RegExp.$2;
@@ -131,7 +136,7 @@ function BBcode() {
 		// extrait l'élément et ses attributs, son contenu ainsi que ce qu'il y a après
 		// demande la sauvegarde de l'élément, de son contenu et de ses attributs
 		// auto-rappel pour analyser son contenu et ce qu'il y a après
-		else if (/^\[([a-z1-6]+)((?: [a-z:]+=["'][^"']*["'])*)\]/.test(data)) {
+		else if (/^\[([a-z1-6]+)((?: [a-z:]+=["'][^\]]*["'])*)\]/.test(data)) {
 
 			element = RegExp.$1;
 			attributes = RegExp.$2;
@@ -156,12 +161,13 @@ function BBcode() {
 
 
 	// #### Ajoute un nœud élément ou un nœud texte ################################ private ### //
-	// = révision : 6
+	// = révision : 9
 	// » Enregistre le nœud élément et ses attributs ou le nœud texte dans le tableau d'objets
+	// » Remplace les émoticônes lorsque nécessaire en fonction de la configuration
 	// » À bien noter qu'en JavaScript, les objets sont passés par référence, ils ne sont jamais copiés
 	this.addElement = function (data, attributes, level) {
 
-		var directlink = null, attr = null, name = null, value = null;
+		var directlink = null, attr = null, name = null, value = null, i = 0, hasEmotes = false, dataArray = null;
 		directlink = this.getContentNode(this.object, 0, level);
 
 		// *** Nœud élément ************************************* //
@@ -190,10 +196,40 @@ function BBcode() {
 
 		// *** Nœud texte *************************************** //
 		else {
-			if (directlink.hasOwnProperty('content'))
-				directlink.content.push({ text: data });
-			else
-				directlink.content = [{ text: data }];
+			// recherche des éventuels émoticônes
+			if (this.emotes) {
+
+				dataArray = data.split(' ');
+
+				for (value in dataArray) {
+					if (apijs.config.bbcode.hasOwnProperty(dataArray[value])) {
+						hasEmotes = true;
+						currentEmote = apijs.config.bbcode[dataArray[value]];
+						dataArray[value] = '[img src="' + currentEmote.src + '" width="' + currentEmote.width + '" height="' + currentEmote.height + '" alt="' + dataArray[value] + '" class="emote"]';
+					}
+					else if (apijs.config.bbcode.hasOwnProperty(dataArray[value].slice(0, -1))) {
+						hasEmotes = true;
+						currentEmote = apijs.config.bbcode[dataArray[value].slice(0, -1)];
+						dataArray[value] = '[img src="' + currentEmote.src + '" width="' + currentEmote.width + '" height="' + currentEmote.height + '" alt="' + dataArray[value] + '" class="emote"]' + dataArray[value].slice(-1);
+					}
+				}
+
+				data = dataArray.join(' ');
+
+				if (hasEmotes)
+					this.readData(data, level);
+				else if (directlink.hasOwnProperty('content'))
+					directlink.content.push({ text: data });
+				else
+					directlink.content = [{ text: data }];
+			}
+			// texte seul
+			else {
+				if (directlink.hasOwnProperty('content'))
+					directlink.content.push({ text: data });
+				else
+					directlink.content = [{ text: data }];
+			}
 		}
 	};
 

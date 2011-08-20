@@ -1,6 +1,6 @@
 /**
  * Created S/05/06/2010
- * Updated S/04/06/2011
+ * Updated M/19/07/2011
  * Version 17
  *
  * Copyright 2008-2011 | Fabrice Creuzot (luigifab) <code~luigifab~info>
@@ -134,20 +134,20 @@ function Internationalization() {
 
 
 	// #### Traduction par mot clef ################################################# public ### //
-	// = révision : 18
+	// = révision : 20
 	// » Vérifie si le mot clef existe dans les traductions
 	// » Renvoie la chaine de caractères correspondante à un mot clef
 	this.translate = function (word) {
 
-		// *** Mot clef inexistant ****************************** //
+		// mot clef inexistant
 		if (typeof this.data[apijs.config.lang][word] !== 'string') {
 			return word;
 		}
 
-		// *** Chaine de caractères configurable **************** //
+		// chaine de caractères configurable
 		else if (arguments.length > 1) {
 
-			var i = 0, arg = 1, translation = '', data = '';
+			var i = 0, arg = 1, data = '', translation = '';
 
 			for (data = this.data[apijs.config.lang][word].split('§'); i < data.length; i++)
 				translation += (arg < arguments.length) ? data[i] + arguments[arg++] : data[i];
@@ -155,7 +155,7 @@ function Internationalization() {
 			return translation;
 		}
 
-		// *** Chaine de caractères simple ********************** //
+		// chaine de caractères simple
 		else {
 			return this.data[apijs.config.lang][word];
 		}

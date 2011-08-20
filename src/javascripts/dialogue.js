@@ -1,7 +1,7 @@
 /**
  * Created D/12/04/2009
- * Updated D/05/06/2011
- * Version 111
+ * Updated S/20/08/2011
+ * Version 113
  *
  * Copyright 2008-2011 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
@@ -600,7 +600,7 @@ function Dialogue() {
 
 
 	// #### Supprime le dialogue ################################################### private ### //
-	// = révision : 79
+	// = révision : 80
 	// » Dégage le timer du lien différé
 	// » Annule l'écoute des touches du clavier (eventListener:keydown)
 	// » Supprime totalement ou pas la boite de dialogue avec ou sans transitions
@@ -616,7 +616,6 @@ function Dialogue() {
 			document.removeEventListener('keydown', apijs.dialogue.actionKey, false);
 
 		if (apijs.config.navigator && (document.getElementById('dialogue').getElementsByTagName('video').length > 0)) {
-
 			if (typeof document.getElementById('dialogue').getElementsByTagName('video')[0].pause === 'function')
 				document.getElementById('dialogue').getElementsByTagName('video')[0].pause();
 		}
@@ -627,16 +626,28 @@ function Dialogue() {
 			document.getElementById('dialogue').setAttribute('class', document.getElementById('dialogue').getAttribute('class').replace('actif', 'deleting lock'));
 
 			if (typeof document.getElementById('dialogue').style.transitionDuration === 'string')
-				document.getElementById('dialogue').addEventListener('transitionEnd', function () { document.getElementById('dialogue').parentNode.removeChild(document.getElementById('dialogue')); }, false);
+				document.getElementById('dialogue').addEventListener('transitionEnd', function () {
+					if (document.getElementById('dialogue'))
+						document.getElementById('dialogue').parentNode.removeChild(document.getElementById('dialogue'));
+				}, false);
 
 			else if (typeof document.getElementById('dialogue').style.OTransitionDuration === 'string')
-				document.getElementById('dialogue').addEventListener('OTransitionEnd', function () { document.getElementById('dialogue').parentNode.removeChild(document.getElementById('dialogue')); }, false);
+				document.getElementById('dialogue').addEventListener('OTransitionEnd', function () {
+					if (document.getElementById('dialogue'))
+						document.getElementById('dialogue').parentNode.removeChild(document.getElementById('dialogue'));
+				}, false);
 
 			else if (typeof document.getElementById('dialogue').style.MozTransitionDuration === 'string')
-				document.getElementById('dialogue').addEventListener('transitionend', function () { document.getElementById('dialogue').parentNode.removeChild(document.getElementById('dialogue')); }, false);
+				document.getElementById('dialogue').addEventListener('transitionend', function () {
+					if (document.getElementById('dialogue'))
+						document.getElementById('dialogue').parentNode.removeChild(document.getElementById('dialogue'));
+				}, false);
 
 			else if (typeof document.getElementById('dialogue').style.webkitTransitionDuration === 'string')
-				document.getElementById('dialogue').addEventListener('webkitTransitionEnd', function () { document.getElementById('dialogue').parentNode.removeChild(document.getElementById('dialogue')); }, false);
+				document.getElementById('dialogue').addEventListener('webkitTransitionEnd', function () {
+					if (document.getElementById('dialogue'))
+						document.getElementById('dialogue').parentNode.removeChild(document.getElementById('dialogue'));
+				}, false);
 		}
 		else if (total) {
 			document.getElementById('dialogue').parentNode.removeChild(document.getElementById('dialogue'));
@@ -916,14 +927,14 @@ function Dialogue() {
 
 
 	// #### Texte ################################################################## private ### //
-	// = révision : 63
+	// = révision : 64
 	// » Met en place le paragraphe du dialogue
 	// » Prend en charge le bbcode grâce à [bbcode]
 	// # <div>{data}</div>
 	this.htmlText = function (data) {
 
 		var bbcode = new BBcode();
-		bbcode.init(data);
+		bbcode.init(data, apijs.config.dialogue.emotes);
 		bbcode.exec();
 
 		this.fragment.firstChild.firstChild.appendChild(bbcode.get());

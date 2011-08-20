@@ -1,7 +1,7 @@
 /**
  * Created J/03/12/2009
- * Updated V/10/06/2011
- * Version 43
+ * Updated S/20/08/2011
+ * Version 45
  *
  * Copyright 2008-2011 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
@@ -22,7 +22,7 @@
  */
 
 // #### Paramètres de configuration ######################################### //
-// = révision : 37
+// = révision : 39
 // » Définie la variable globale du programme ainsi que sa configuration
 // » Lance le programme JavaScript
 var apijs = {
@@ -43,6 +43,7 @@ var apijs = {
 			hiddenPage: false,
 			savingDialog: false,
 			savingTime: 2500,
+			emotes: true,
 			showLoader: true,
 			showFullsize: false,
 			savePhoto: true,
@@ -62,6 +63,23 @@ var apijs = {
 			ids: 'diaporama',
 			hiddenPage: false,
 			hoverload: false
+		},
+		bbcode: {
+			'(a)': { src:'./images/icons/emotes/gnome-face-angel.png', width: 16, height: 16 },
+			'(@)': { src:'./images/icons/emotes/gnome-face-angry.png', width: 16, height: 16 },
+			'(k)': { src:'./images/icons/emotes/gnome-face-kiss.png', width: 16, height: 16 },
+			'lol': { src:'./images/icons/emotes/gnome-face-laugh.png', width: 16, height: 16 },
+			"'(": { src:'./images/icons/emotes/gnome-face-crying.png', width: 16, height: 16 },
+			':$': { src:'./images/icons/emotes/gnome-face-embarrassed.png', width: 16, height: 16 },
+			':|': { src:'./images/icons/emotes/gnome-face-plain.png', width: 16, height: 16 },
+			':/': { src:'./images/icons/emotes/gnome-face-uncertain.png', width: 16, height: 16 },
+			':(': { src:'./images/icons/emotes/gnome-face-sad.png', width: 16, height: 16 },
+			':)': { src:'./images/icons/emotes/gnome-face-smile.png', width: 16, height: 16 },
+			';)': { src:'./images/icons/emotes/gnome-face-wink.png', width: 16, height: 16 },
+			':p': { src:'./images/icons/emotes/gnome-face-raspberry.png', width: 16, height: 16 },
+			':D': { src:'./images/icons/emotes/gnome-face-smile-big.png', width: 16, height: 16 },
+			':o': { src:'./images/icons/emotes/gnome-face-surprise.png', width: 16, height: 16 },
+			':s': { src:'./images/icons/emotes/gnome-face-worried.png', width: 16, height: 16 }
 		},
 		map: {
 			width: 580,
@@ -162,30 +180,30 @@ function openTab(ev) {
 
 
 // #### Fonctions de démonstrations ################################ i18n ### //
-// = révision : 17
+// = révision : 18
 // » Exemples de fonctions pour les dialogues de confirmation, d'options et d'upload
 // » Pour le dialogue d'options, si le paramètre reçu est un objet, alors c'est une copie et non une référence
 // » Pour le dialogue de confirmation, le fait que le paramètre reçu soit une référence n'a pas d'importance
 function myFuncA() {
 
-	apijs.i18n.data.en.myFuncA = "[pre]Yes, it's myFuncA() in main.js.[/pre]";
-	apijs.i18n.data.fr.myFuncA = "[pre]Oui, c'est myFuncA() dans main.js.[/pre]";
+	apijs.i18n.data.en.myFuncA = "[pre]Yes, it's myFuncA() of main.js.[/pre]";
+	apijs.i18n.data.fr.myFuncA = "[pre]Oui, c'est myFuncA() du main.js.[/pre]";
 
 	apijs.dialogue.dialogInformation('myFuncA', apijs.i18n.translate('myFuncA'));
 }
 
 function myFuncB(id) {
 
-	apijs.i18n.data.en.myFuncB = "[pre]Yes, it's myFuncB(§) in main.js.[/pre]";
-	apijs.i18n.data.fr.myFuncB = "[pre]Oui, c'est myFuncB(§) dans main.js.[/pre]";
+	apijs.i18n.data.en.myFuncB = "[pre]Yes, it's myFuncB(§) of main.js.[/pre]";
+	apijs.i18n.data.fr.myFuncB = "[pre]Oui, c'est myFuncB(§) du main.js.[/pre]";
 
 	apijs.dialogue.dialogInformation('myFuncB', apijs.i18n.translate('myFuncB', id));
 }
 
 function myFuncC() {
 
-	apijs.i18n.data.en.myFuncC = "Yes, it's myFuncC() in main.js, a very important function.\n\nWhat to do next ?\n» Click confirm to return true.\n» Click cancel to return false.";
-	apijs.i18n.data.fr.myFuncC = "Oui, c'est myFuncC() dans main.js, une fonction très importante.\n\nQue faire ensuite ?\n» Cliquer sur valider pour renvoyer true\n» Cliquer sur annuler pour renvoyer false";
+	apijs.i18n.data.en.myFuncC = "Yes, it's myFuncC() of main.js, a very important function.\n\nWhat to do next ?\n» Click confirm to return true.\n» Click cancel to return false.";
+	apijs.i18n.data.fr.myFuncC = "Oui, c'est myFuncC() du main.js, une fonction très importante.\n\nQue faire ensuite ?\n» Cliquer sur valider pour renvoyer true\n» Cliquer sur annuler pour renvoyer false";
 
 	return confirm(apijs.i18n.translate('myFuncC'));
 }
@@ -202,8 +220,8 @@ function myFuncD(key, id) {
 
 function myFuncE(id) {
 
-	apijs.i18n.data.en.myFuncA = "[pre]Yes, it's myFuncE(§) in main.js.[/pre]";
-	apijs.i18n.data.fr.myFuncA = "[pre]Oui, c'est myFuncE(§) dans main.js.[/pre]";
+	apijs.i18n.data.en.myFuncA = "[pre]Yes, it's myFuncE(§) of main.js.[/pre]";
+	apijs.i18n.data.fr.myFuncA = "[pre]Oui, c'est myFuncE(§) du main.js.[/pre]";
 
 	apijs.dialogue.dialogInformation('myFuncE', apijs.i18n.translate('myFuncE', id));
 }
@@ -242,7 +260,7 @@ function getValue(value) {
 
 
 // #### Vérification des modules ############################################ //
-// = révision : 40
+// = révision : 41
 // » Recherche les modules presénts
 // » Vérifie la configuration des modules chargés
 // » Ne vérifie pas les dépendances entre les modules
@@ -261,6 +279,7 @@ function checkAll() {
 			hiddenPage: 'boolean',
 			savingDialog: 'boolean',
 			savingTime: 'number',
+			emotes: 'boolean',
 			showLoader: 'boolean',
 			showFullsize: 'boolean',
 			savePhoto: 'boolean',
