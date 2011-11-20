@@ -1,7 +1,7 @@
 /**
  * Created V/08/05/2009
- * Updated S/20/08/2011
- * Version 12
+ * Updated D/23/10/2011
+ * Version 15
  *
  * Copyright 2008-2011 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
@@ -24,9 +24,8 @@ div.album {
 }
 
 div.album dl {
-	float:left; margin:4px; padding:5px 5px 4px; width:200px;
-	font-size:0.8em; color:#666; text-align:center;
-	border:1px solid #CCC; background-color:#CCC;
+	float:left; margin:4px; padding:5px 5px 4px; width:200px; text-align:center;
+	font-size:0.8em; color:#666; border:1px solid #CCC; background-color:#CCC;
 	border-radius:0.6em; -khtml-border-radius:0.6em; -moz-border-radius:0.6em; -webkit-border-radius:0.6em;
 	transition-duration:0.3s; -moz-transition-duration:0.3s; -webkit-transition-duration:0.3s;
 	transition-property:border-color; -moz-transition-property:border-color; -webkit-transition-property:border-color;
@@ -34,11 +33,10 @@ div.album dl {
 
 div.album dl dt { margin-bottom:0.4em; min-height:150px; vertical-align:middle; }
 div.album dl dt a { display:block; text-decoration:none; }
-div.album dl dt a img { display:block; margin:auto; }
+div.album dl dt a img { display:block; margin:auto; overflow:hidden; line-height:1.2em; }
 
 div.album dl dd {
-	margin:0 0.5em; overflow:hidden;
-	white-space:nowrap; text-overflow:ellipsis; word-wrap:break-word;
+	margin:0 0.5em; overflow:hidden; white-space:nowrap; text-overflow:ellipsis;
 	transition-duration:0.3s; -moz-transition-duration:0.3s; -webkit-transition-duration:0.3s;
 	transition-property:color; -moz-transition-property:color; -webkit-transition-property:color;
 }
@@ -55,16 +53,17 @@ div.album dl:hover dd span.datenum { color:#666; }
 
 /* ################################################### Mode présentation ### */
 div.presentation {
-	display:inline-block; margin:1.2em 1em; padding:6px 6px 3px; text-align:center; overflow:hidden;
-	background-color:#DEDEDE; border-radius:0.7em; -khtml-border-radius:0.7em; -moz-border-radius:0.7em; -webkit-border-radius:0.7em;
+	display:inline-block; margin:1.2em 1em; padding:6px 6px 3px; overflow:hidden;
+	font-size:0.8em; text-align:center; background-color:#DEDEDE;
+	border-radius:0.7em; -khtml-border-radius:0.7em; -moz-border-radius:0.7em; -webkit-border-radius:0.7em;
 }
 
-div.presentation a { display:inline-block; }
-div.presentation img { border:1px solid transparent; }
+div.presentation a { display:inline-block; text-decoration:none; }
+div.presentation img { display:inline-block; overflow:hidden; line-height:1.2em; border:1px solid white; }
 
-div.presentation ul { margin:1px 0 0; list-style:none; }
-div.presentation ul li { display:inline-block; margin:4px 1px; }
-
-div.presentation ul li a { display:block; margin:0; }
+div.presentation ul { margin:0; list-style:none; }
+div.presentation ul li { display:inline-block; margin:4px 1px; vertical-align:middle; }
+div.presentation ul li a { display:block; }
+div.presentation ul li a img { display:block; }
 div.presentation ul li a img.actif { border:1px solid black; }
 

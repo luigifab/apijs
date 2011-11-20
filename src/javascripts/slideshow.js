@@ -1,7 +1,7 @@
 /**
  * Created J/13/05/2010
- * Updated D/16/01/2011
- * Version 16
+ * Updated S/03/09/2011
+ * Version 17
  *
  * Copyright 2008-2011 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
@@ -20,16 +20,16 @@
 function Slideshow() {
 
 	// définition des attributs
-	this.media = null;
-	this.totals = null;
 	this.presentation = null;
+	this.totals = null;
+	this.media = null;
 
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// GESTION DU DIAPORAMA (5)
 
 	// #### Initialisation ########################################################## public ### //
-	// = révision : 12
+	// = révision : 13
 	// » Recherche les albums et les photos et vidéos de chaque album
 	// » Met en place les gestionnaires d'événements associés lorsque nécessaire
 	// » Seul les albums en mode présentation réagiront au survol si la config le permet
@@ -38,8 +38,8 @@ function Slideshow() {
 	this.init = function () {
 
 		this.media = { album: null, number: null, first: null, prev: null, next: null, last: null };
-		this.totals = [];
 		this.presentation = [];
+		this.totals = [];
 
 		for (var i = 0, j = 0, id = null; document.getElementById(apijs.config.slideshow.ids + '.' + i) !== null; i++) {
 
@@ -91,7 +91,7 @@ function Slideshow() {
 
 
 	// #### Prépare l'affichage du dialogue ############## i18n ## event ## debug ## private ### //
-	// = révision : 35
+	// = révision : 36
 	// » Recherche les informations de la photo ou de la vidéo à afficher
 	// » En mode diaporama, déduit s'il faut mettre à jour l'image principale de l'album, s'il faut afficher un dialogue photo ou vidéo
 	//  ou s'il faut mettre à jour les dialogues photo ou vidéo
@@ -99,85 +99,87 @@ function Slideshow() {
 	this.showMedia = function (ev) {
 
 		// *** Recherche des informations *********************** //
-		var thisMedia = { id: null, url: null, alt: null, num: 0, name: null, date: null, legend: null, width: null, height: null }, tmp = null;
+		var theMedia = { id: null, url: null, conf: null, num: 0, name: null, date: null, legend: null, width: null, height: null }, tmp = null;
 
 		if (typeof ev !== 'string') {
 			ev.preventDefault();
-			thisMedia.id  = this.getAttribute('id');
-			thisMedia.url = this.getAttribute('href');
-			thisMedia.alt = this.firstChild.getAttribute('alt').split('|');
+			theMedia.id  = this.getAttribute('id');
+			theMedia.url = this.getAttribute('href');
+			theMedia.conf = this.getElementsByTagName('input')[0].getAttribute('value').split('|');
 
-			tmp = thisMedia.id.split('.');
-			thisMedia.album = parseInt(tmp[1], 10);
-			thisMedia.number = parseInt(tmp[2], 10);
+			tmp = theMedia.id.split('.');
+			theMedia.album = parseInt(tmp[1], 10);
+			theMedia.number = parseInt(tmp[2], 10);
 		}
 		else {
-			thisMedia.id  = ev;
-			thisMedia.url = document.getElementById(thisMedia.id).getAttribute('href');
-			thisMedia.alt = document.getElementById(thisMedia.id).firstChild.getAttribute('alt').split('|');
+			theMedia.id  = ev;
+			theMedia.url = document.getElementById(theMedia.id).getAttribute('href');
+			theMedia.conf = document.getElementById(theMedia.id).getElementsByTagName('input')[0].getAttribute('value').split('|');
 
-			tmp = thisMedia.id.split('.');
-			thisMedia.album = parseInt(tmp[1], 10);
-			thisMedia.number = parseInt(tmp[2], 10);
+			tmp = theMedia.id.split('.');
+			theMedia.album = parseInt(tmp[1], 10);
+			theMedia.number = parseInt(tmp[2], 10);
 		}
 
 		// *** Affichage du dialogue (mode présentation) ******** //
-		if ((apijs.slideshow.presentation[thisMedia.album] !== false) && ((thisMedia.alt.length > 1) || (thisMedia.alt.length < 7))) {
+		if ((apijs.slideshow.presentation[theMedia.album] !== false) && ((theMedia.conf.length > 1) || (theMedia.conf.length < 7))) {
 
 			// annulation si l'élément possède la classe actif
 			// survol ou clic
-			if ((typeof ev !== 'string') && this.firstChild.hasAttribute('class') && (this.firstChild.getAttribute('class').indexOf('actif') > -1))
+			if ((typeof ev !== 'string') && this.getElementsByTagName('img')[0].hasAttribute('class') &&
+			    (this.getElementsByTagName('img')[0].getAttribute('class').indexOf('actif') > -1))
 				return;
 
 			// mise à jour de l'image principale
 			// survol ou clic
-			if ((apijs.dialogue.dialogType === null) && ((thisMedia.alt.length === 6) || (thisMedia.alt.length === 4)))
-				apijs.slideshow.updatePresentation(thisMedia);
+			if ((apijs.dialogue.dialogType === null) && ((theMedia.conf.length === 6) || (theMedia.conf.length === 4))) {
+				apijs.slideshow.updatePresentation(theMedia);
+			}
 
 			// affichage du dialogue
 			// clic sur l'image principale
-			else if ((apijs.dialogue.dialogType === null) && ((thisMedia.alt.length === 5) || (thisMedia.alt.length === 3))) {
-				thisMedia.number = apijs.slideshow.presentation[thisMedia.album];
-				apijs.slideshow.showDialogue(thisMedia);
+			else if ((apijs.dialogue.dialogType === null) && ((theMedia.conf.length === 5) || (theMedia.conf.length === 3))) {
+				theMedia.number = apijs.slideshow.presentation[theMedia.album];
+				apijs.slideshow.showDialogue(theMedia);
 			}
 
 			// changement de photo ou de vidéo depuis le dialogue
 			// touches droite gauche début fin et boutons précédent suivant
 			else {
-				apijs.slideshow.updatePresentation(thisMedia);
-				apijs.slideshow.showDialogue(thisMedia);
+				apijs.slideshow.updatePresentation(theMedia);
+				apijs.slideshow.showDialogue(theMedia);
 			}
 		}
 
 		// *** Affichage du dialogue **************************** //
-		else if ((thisMedia.alt.length === 5) || (thisMedia.alt.length === 3))
-			apijs.slideshow.showDialogue(thisMedia);
+		else if ((theMedia.conf.length === 5) || (theMedia.conf.length === 3))
+			apijs.slideshow.showDialogue(theMedia);
 
 		// *** Message de debug ********************************* //
 		else if (apijs.config.debug)
-			apijs.dialogue.dialogInformation(apijs.i18n.translate('debugInvalidUse'), '[pre]TheSlideshow » showMedia[br]' + apijs.i18n.translate('debugNotRecognizedAltAttribute') + '[/pre]');
+			apijs.dialogue.dialogInformation(apijs.i18n.translate('debugInvalidUse'), '[pre]TheSlideshow » showMedia[br]' + apijs.i18n.translate('debugNotRecognizedConfig') + '[/pre]');
 	};
 
 
 	// #### Gestion du mode présentation ########################## i18n ## debug ## private ### //
-	// = révision : 14
+	// = révision : 15
 	// » Extrait et vérifie les données nécessaires à la modification des attributs de l'image principale de l'album
 	// » Se base sur le lien de l'image qui vient d'être cliqué ou survolé
 	// » Ajoute l'attribut classe actif sur l'image du lien en question
 	// » Enregistre le numéro de l'image en question
-	this.updatePresentation = function (thisMedia) {
+	this.updatePresentation = function (theMedia) {
 
 		var id = null, tag = null, i = 0;
 
 		// *** Image principale (photo) ************************* //
-		if ((thisMedia.alt.length === 6) && (thisMedia.alt[0].length > 0) && (thisMedia.alt[1].length > 0) && (thisMedia.alt[2].length > 0) &&
-		    (thisMedia.alt[3].length > 0) && (thisMedia.alt[4].length > 0)) {
+		if ((theMedia.conf.length === 6) && (theMedia.conf[0].length > 0) && (theMedia.conf[1].length > 0) && (theMedia.conf[2].length > 0) &&
+		    (theMedia.conf[3].length > 0) && (theMedia.conf[4].length > 0)) {
 
 			// mise à jour des attributs
-			id = apijs.config.slideshow.ids + '.' + thisMedia.album;
-			document.getElementById(id + '.999').setAttribute('href', document.getElementById(thisMedia.id).getAttribute('href'));
-			document.getElementById(id + '.999').firstChild.setAttribute('src', thisMedia.alt.shift());
-			document.getElementById(id + '.999').firstChild.setAttribute('alt', thisMedia.alt.join('|'));
+			id = apijs.config.slideshow.ids + '.' + theMedia.album;
+			document.getElementById(id + '.999').setAttribute('href', document.getElementById(theMedia.id).getAttribute('href'));
+			document.getElementById(id + '.999').getElementsByTagName('img')[0].setAttribute('src', theMedia.conf.shift());
+			document.getElementById(id + '.999').getElementsByTagName('input')[0].setAttribute('value', theMedia.conf.join('|'));
 
 			// classe actif
 			for (tag = document.getElementById(id).getElementsByTagName('img'), i = 0; i < tag.length; i++) {
@@ -186,24 +188,25 @@ function Slideshow() {
 					tag[i].removeAttribute('class');
 			}
 
-			document.getElementById(thisMedia.id).firstChild.setAttribute('class', 'actif');
-			this.presentation[thisMedia.album] = thisMedia.number;
+			document.getElementById(theMedia.id).getElementsByTagName('img')[0].setAttribute('class', 'actif');
+			this.presentation[theMedia.album] = theMedia.number;
 		}
 
 		// *** Message de debug ********************************* //
-		else if (apijs.config.debug && (thisMedia.alt.length === 6)) {
+		else if (apijs.config.debug && (theMedia.conf.length === 6)) {
 
-			apijs.dialogue.dialogInformation(apijs.i18n.translate('debugInvalidAltAttribute'), '[pre]TheSlideshow » changePhoto[br]➩ (string) url : ' + thisMedia.alt[0] + '[br]➩ (number) width : ' + thisMedia.alt[1] + '[br]➩ (number) height : ' + thisMedia.alt[2] + '[br]➩ (string) date : ' + thisMedia.alt[3] + '[br]➩ (string) legend : ' + thisMedia.alt[4] + '[/pre]');
+			apijs.dialogue.dialogInformation(apijs.i18n.translate('debugInvalidConfig'), '[pre]TheSlideshow » changePhoto[br]➩ (string) url : ' + theMedia.conf[0] + '[br]➩ (number) width : ' + theMedia.conf[1] + '[br]➩ (number) height : ' + theMedia.conf[2] + '[br]➩ (string) date : ' + theMedia.conf[3] + '[br]➩ (string) legend : ' + theMedia.conf[4] + '[/pre]');
 		}
 
 		// *** Image principale (vidéo) ************************* //
-		else if ((thisMedia.alt.length === 4) && (thisMedia.alt[0].length > 0) && (thisMedia.alt[1].length > 0) && (thisMedia.alt[2].length > 0)) {
+		else if ((theMedia.conf.length === 4) && (theMedia.conf[0].length > 0) && (theMedia.conf[1].length > 0) &&
+		         (theMedia.conf[2].length > 0)) {
 
 			// mise à jour des attributs
-			id = apijs.config.slideshow.ids + '.' + thisMedia.album;
-			document.getElementById(id + '.999').setAttribute('href', document.getElementById(thisMedia.id).getAttribute('href'));
-			document.getElementById(id + '.999').firstChild.setAttribute('src', thisMedia.alt.shift());
-			document.getElementById(id + '.999').firstChild.setAttribute('alt', thisMedia.alt.join('|'));
+			id = apijs.config.slideshow.ids + '.' + theMedia.album;
+			document.getElementById(id + '.999').setAttribute('href', document.getElementById(theMedia.id).getAttribute('href'));
+			document.getElementById(id + '.999').getElementsByTagName('img')[0].setAttribute('src', theMedia.conf.shift());
+			document.getElementById(id + '.999').getElementsByTagName('input')[0].setAttribute('value', theMedia.conf.join('|'));
 
 			// classe actif
 			for (tag = document.getElementById(id).getElementsByTagName('img'), i = 0; i < tag.length; i++) {
@@ -212,72 +215,72 @@ function Slideshow() {
 					tag[i].removeAttribute('class');
 			}
 
-			document.getElementById(thisMedia.id).firstChild.setAttribute('class', 'actif');
-			this.presentation[thisMedia.album] = thisMedia.number;
+			document.getElementById(theMedia.id).getElementsByTagName('img')[0].setAttribute('class', 'actif');
+			this.presentation[theMedia.album] = theMedia.number;
 		}
 
 		// *** Message de debug ********************************* //
-		else if (apijs.config.debug && (thisMedia.alt.length === 4)) {
+		else if (apijs.config.debug && (theMedia.conf.length === 4)) {
 
-			apijs.dialogue.dialogInformation(apijs.i18n.translate('debugInvalidAltAttribute'), '[pre]TheSlideshow » changePhoto[br]➩ (string) url : ' + thisMedia.alt[0] + '[br]➩ (string) date : ' + thisMedia.alt[1] + '[br]➩ (string) legend : ' + thisMedia.alt[2] + '[/pre]');
+			apijs.dialogue.dialogInformation(apijs.i18n.translate('debugInvalidConfig'), '[pre]TheSlideshow » changePhoto[br]➩ (string) url : ' + theMedia.conf[0] + '[br]➩ (string) date : ' + theMedia.conf[1] + '[br]➩ (string) legend : ' + theMedia.conf[2] + '[/pre]');
 		}
 	};
 
 
 	// #### Affichage du dialogue ################################# i18n ## debug ## private ### //
-	// = révision : 17
+	// = révision : 19
 	// » Extrait et vérifie les données nécessaires à l'affichage de la photo ou vidéo
 	// » Affiche une photo ou une vidéo grâce aux dialogues photo ou vidéo de [TheDialogue]
 	// » Dans tout les cas remplace l'ancien dialogue par un nouveau
-	this.showDialogue = function (thisMedia) {
+	this.showDialogue = function (theMedia) {
 
 		// *** Dialogue photo *********************************** //
-		if ((thisMedia.alt.length === 5) && (thisMedia.alt[0].length > 0) && (thisMedia.alt[1].length > 0) && (thisMedia.alt[2].length > 0) &&
-		    (thisMedia.alt[3].length > 0)) {
+		if ((theMedia.conf.length === 5) && (theMedia.conf[0].length > 0) && (theMedia.conf[1].length > 0) && (theMedia.conf[2].length > 0) &&
+		    (theMedia.conf[3].length > 0)) {
 
 			// extraction des données
-			thisMedia.name   = thisMedia.alt[2];
-			thisMedia.date   = thisMedia.alt[3];
-			thisMedia.legend = thisMedia.alt[4];
-			thisMedia.width  = parseInt(thisMedia.alt[0], 10);
-			thisMedia.height = parseInt(thisMedia.alt[1], 10);
+			theMedia.name   = theMedia.conf[2];
+			theMedia.date   = theMedia.conf[3];
+			theMedia.legend = theMedia.conf[4];
+			theMedia.width  = parseInt(theMedia.conf[0], 10);
+			theMedia.height = parseInt(theMedia.conf[1], 10);
 
 			// suppression de l'ancien dialogue
 			if (apijs.dialogue.dialogType !== null)
 				apijs.dialogue.actionClose(false);
 
 			// mise en place du dialogue photo
-			apijs.dialogue.dialogPhoto(thisMedia.width, thisMedia.height, thisMedia.url, thisMedia.name, thisMedia.date, thisMedia.legend, true);
-			this.showNavigation(thisMedia.album, thisMedia.number);
+			apijs.dialogue.dialogPhoto(theMedia.width, theMedia.height, theMedia.url, theMedia.name, theMedia.date, theMedia.legend, true);
+			this.showNavigation(theMedia.album, theMedia.number);
 		}
 
 		// *** Message de debug ********************************* //
-		else if (apijs.config.debug && (thisMedia.alt.length === 5)) {
+		else if (apijs.config.debug && (theMedia.conf.length === 5)) {
 
-			apijs.dialogue.dialogInformation(apijs.i18n.translate('debugInvalidAltAttribute'), '[pre]TheSlideshow » showMedia[br]➩ (number) width : ' + thisMedia.alt[0] + '[br]➩ (number) height : ' + thisMedia.alt[1] + '[br]➩ (string) date : ' + thisMedia.alt[2] + '[br]➩ (string) legend : ' + thisMedia.alt[3] + '[/pre]');
+			apijs.dialogue.dialogInformation(apijs.i18n.translate('debugInvalidConfig'), '[pre]TheSlideshow » showMedia[br]➩ (number) width : ' + theMedia.conf[0] + '[br]➩ (number) height : ' + theMedia.conf[1] + '[br]➩ (string) date : ' + theMedia.conf[2] + '[br]➩ (string) legend : ' + theMedia.conf[3] + '[/pre]');
 		}
 
 		// *** Dialogue vidéo *********************************** //
-		else if ((thisMedia.alt.length === 3) && (thisMedia.alt[0].length > 0) && (thisMedia.alt[1].length > 0)) {
+		else if ((theMedia.conf.length === 3) && (theMedia.conf[0].length > 0) && (theMedia.conf[1].length > 0)) {
 
 			// extraction des données
-			thisMedia.name   = thisMedia.alt[0];
-			thisMedia.date   = thisMedia.alt[1];
-			thisMedia.legend = thisMedia.alt[2];
+			theMedia.name   = theMedia.conf[0];
+			theMedia.date   = theMedia.conf[1];
+			theMedia.legend = theMedia.conf[2];
 
 			// suppression de l'ancien dialogue
 			if (apijs.dialogue.dialogType !== null)
 				apijs.dialogue.actionClose(false);
 
 			// mise en place du dialogue vidéo
-			apijs.dialogue.dialogVideo(thisMedia.url, thisMedia.name, thisMedia.date, thisMedia.legend, true);
-			this.showNavigation(thisMedia.album, thisMedia.number);
+			apijs.dialogue.dialogVideo(theMedia.url, theMedia.name, theMedia.date, theMedia.legend, true);
+			this.showNavigation(theMedia.album, theMedia.number);
 		}
 
 		// *** Message de debug ********************************* //
-		else if (apijs.config.debug && (thisMedia.alt.length === 3)) {
+		else if (apijs.config.debug && (theMedia.conf.length === 3)) {
 
-			apijs.dialogue.dialogInformation(apijs.i18n.translate('debugInvalidAltAttribute'), '[pre]TheSlideshow » showMedia[br]➩ (string) date : ' + thisMedia.alt[0] + '[br]➩ (string) legend : ' + thisMedia.alt[1] + '[/pre]');
+			apijs.dialogue.dialogInformation(apijs.i18n.translate('debugInvalidConfig'), '[pre]TheSlideshow » showMedia[br]➩ (string) date : ' + theMedia.conf[0] + '[br]➩ (string) legend : ' + theMedia.conf[1] + '[/pre]');
 		}
 	};
 
@@ -320,8 +323,8 @@ function Slideshow() {
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// DÉFINITION DES ACTIONS DES BOUTONS ET DES TOUCHES DU CLAVIER (4)
 
-	// #### Action de la touche Début ################################### event ## protected ### //
-	// = révision : 3
+	// #### Action de la touche Début ###################################### event ## public ### //
+	// = révision : 4
 	// » Affiche la première photo ou vidéo
 	// » En provenance de la touche début
 	this.actionFirst = function () {
@@ -331,8 +334,8 @@ function Slideshow() {
 	};
 
 
-	// #### Action du bouton Précédent ################################## event ## protected ### //
-	// = révision : 13
+	// #### Action du bouton Précédent ##################################### event ## public ### //
+	// = révision : 14
 	// » Affiche la photo ou vidéo précédente
 	// » En provenance du dialogue photo/vidéo ou de la touche gauche
 	this.actionPrev = function () {
@@ -342,8 +345,8 @@ function Slideshow() {
 	};
 
 
-	// #### Action du bouton Suivant #################################### event ## protected ### //
-	// = révision : 12
+	// #### Action du bouton Suivant ####################################### event ## public ### //
+	// = révision : 13
 	// » Affiche la photo ou vidéo suivante
 	// » En provenance du dialogue photo/vidéo ou de la touche droite
 	this.actionNext = function () {
@@ -353,8 +356,8 @@ function Slideshow() {
 	};
 
 
-	// #### Action de la touche Fin ##################################### event ## protected ### //
-	// = révision : 3
+	// #### Action de la touche Fin ######################################## event ## public ### //
+	// = révision : 4
 	// » Affiche la dernière photo ou vidéo
 	// » En provenance de la touche fin
 	this.actionLast = function () {

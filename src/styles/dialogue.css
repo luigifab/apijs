@@ -1,7 +1,7 @@
 /**
  * Created V/08/05/2009
- * Updated D/17/07/2011
- * Version 27
+ * Updated V/18/11/2011
+ * Version 35
  *
  * Copyright 2008-2011 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
@@ -20,41 +20,41 @@
 /* ################################################ Conteneurs (thème 1) ### */
 #dialogue {
 	position:fixed; top:0; right:0; bottom:0; left:0; width:100%; height:100%; z-index:9000; opacity:0;
-	transition-duration:1s, 0.3s; -moz-transition-duration:1s, 0.3s; -webkit-transition-duration:1s, 0.3s;
+	transition-duration:0.8s, 0.3s; -moz-transition-duration:0.8s, 0.3s; -webkit-transition-duration:0.8s, 0.3s;
 	transition-property:background-color, opacity; -moz-transition-property:background-color, opacity;
 	-webkit-transition-property:background-color, opacity;
 	color:black; background-color:transparent;
 }
 
 #box {
-	position:relative; top:27%; margin:auto; padding:0.6em 0.8em 2.4em; width:33em; min-height:9em; overflow:hidden; opacity:0.85;
+	position:relative; top:27%; margin:auto; padding:0.6em 0.8em 2.4em; width:33em; min-height:9em; overflow:hidden; opacity:0.9;
 	background-color:white; border-radius:0.8em; -khtml-border-radius:0.8em; -moz-border-radius:0.8em; -webkit-border-radius:0.8em;
-	box-shadow:0 0 2.5em #111; -moz-box-shadow:0 0 2.5em #111; -webkit-box-shadow:0 0 2.5em #111;
-	transition-duration:0.9s; -moz-transition-duration:0.9s; -webkit-transition-duration:0.9s;
+	box-shadow:0 0 30px #111; -moz-box-shadow:0 0 30px #111; -webkit-box-shadow:0 0 30px #111;
+	transition-duration:0.5s; -moz-transition-duration:0.5s; -webkit-transition-duration:0.5s;
 	transition-property:top; -moz-transition-property:top; -webkit-transition-property:top;
 }
 
 #box.photo, #box.video { top:50%; left:50%; padding:10px 10px 5px; width:auto; min-height:inherit; overflow:visible; opacity:1; }
 #box.upload, #box.eeupload, #box.progress { min-height:12em; }
-#box.download, #box.options { top:24%; }
+#box.download, #box.options { top:21%; }
 
 #box.photo.slideshow, #box.video.slideshow { border:2px solid #999; box-shadow:none; -moz-box-shadow:none; -webkit-box-shadow:none; }
 #dialogue.slideshow { background-color:black !important; }
 
 #dialogue.actif { background-color:black; background-color:rgba(0, 0, 0, 0.65); opacity:1; }
-#dialogue.actif #box.download, #dialogue.actif #box.options { top:25.5% !important; }
-#dialogue.actif #box:not(.photo):not(.video) { top:28.5%; }
+#dialogue.actif #box.download, #dialogue.actif #box.options { top:22% !important; }
+#dialogue.actif #box:not(.photo):not(.video) { top:28%; }
 
 #dialogue.deleting { transition-duration:0.4s, 0.3s; -moz-transition-duration:0.4s, 0.3s; -webkit-transition-duration:0.4s, 0.3s; }
 #dialogue.deleting #box { transition-duration:0.4s; -moz-transition-duration:0.4s; -webkit-transition-duration:0.4s; }
-#dialogue.deleting #box.download, #dialogue.deleting #box.options { top:27% !important; }
+#dialogue.deleting #box.download, #dialogue.deleting #box.options { top:24% !important; }
 #dialogue.deleting #box:not(.photo):not(.video) { top:30%; }
 
 
 /* ################################################ Conteneurs (thème 2) ### **
 #dialogue {
 	position:fixed; top:0; right:0; bottom:0; left:0; width:100%; height:100%; z-index:9000; opacity:0;
-	transition-duration:1s, 0.3s; -moz-transition-duration:1s, 0.3s; -webkit-transition-duration:1s, 0.3s;
+	transition-duration:0.8s, 0.3s; -moz-transition-duration:0.8s, 0.3s; -webkit-transition-duration:0.8s, 0.3s;
 	transition-property:background, opacity; -moz-transition-property:background, opacity;
 	-webkit-transition-property:background, opacity;
 	color:black; background:none;
@@ -63,48 +63,32 @@
 #box {
 	position:relative; top:27%; margin:auto; padding:0.6em 0.8em 2.4em; width:33em; min-height:9em; overflow:hidden;
 	background-color:white; border-radius:0.8em; -khtml-border-radius:0.8em; -moz-border-radius:0.8em; -webkit-border-radius:0.8em;
-	box-shadow:0 0 2.5em #BBB; -moz-box-shadow:0 0 2.5em #BBB; -webkit-box-shadow:0 0 2.5em #BBB;
-	transition-duration:0.9s; -moz-transition-duration:0.9s; -webkit-transition-duration:0.9s;
+	box-shadow:0 0 30px #BBB; -moz-box-shadow:0 0 30px #BBB; -webkit-box-shadow:0 0 30px #BBB;
+	transition-duration:0.5s; -moz-transition-duration:0.5s; -webkit-transition-duration:0.5s;
 	transition-property:top; -moz-transition-property:top; -webkit-transition-property:top;
 }
 
 #box.photo, #box.video { top:50%; left:50%; padding:10px 10px 5px; width:auto; min-height:inherit; overflow:visible; }
 #box.upload, #box.eeupload, #box.progress { min-height:12em; }
-#box.download, #box.options { top:24%; }
+#box.download, #box.options { top:21%; }
 
 #box.photo.slideshow, #box.video.slideshow { border:2px solid #999; box-shadow:none; -moz-box-shadow:none; -webkit-box-shadow:none; }
 
 #dialogue.actif { background:#DDD url("../images/dialogue/background.png") no-repeat; opacity:1; }
-#dialogue.actif #box.download, #dialogue.actif #box.options { top:25.5% !important; }
-#dialogue.actif #box:not(.photo):not(.video) { top:28.5%; }
+#dialogue.actif #box.download, #dialogue.actif #box.options { top:22% !important; }
+#dialogue.actif #box:not(.photo):not(.video) { top:28%; }
 
 #dialogue.deleting { transition-duration:0.4s, 0.3s; -moz-transition-duration:0.4s, 0.3s; -webkit-transition-duration:0.4s, 0.3s; }
 #dialogue.deleting #box { transition-duration:0.4s; -moz-transition-duration:0.4s; -webkit-transition-duration:0.4s; }
-#dialogue.deleting #box.download, #dialogue.deleting #box.options { top:27% !important; }
+#dialogue.deleting #box.download, #dialogue.deleting #box.options { top:24% !important; }
 #dialogue.deleting #box:not(.photo):not(.video) { top:30%; } */
-
-
-/* ############################################################## Icônes ### */
-#box.information  h1 { background-image:url("../images/icons/32/gnome-dialog-information.png"); }
-#box.confirmation h1 { background-image:url("../images/icons/32/gnome-dialog-question.png"); }
-#box.options  h1 { background-image:url("../images/icons/32/gnome-preferences-other.png"); }
-#box.waiting  h1 { background-image:url("../images/icons/32/gnome-appointment-soon.png"); }
-#box.upload   h1 { background-image:url("../images/icons/32/gnome-mail-new.png"); }
-#box.eeupload h1 { background-image:url("../images/icons/32/gnome-dialog-error.png"); }
-#box.progress h1 { background-image:url("../images/icons/32/gnome-appointment-soon.png"); }
-
-#box.delete   h1 { background-image:url("../images/icons/32/gnome-delete.png"); }
-#box.download h1 { background-image:url("../images/icons/32/gnome-save.png"); }
-#box.error    h1 { background-image:url("../images/icons/32/gnome-dialog-error.png"); }
-#box.print    h1 { background-image:url("../images/icons/32/gnome-document-print.png"); }
-#box.warning  h1 { background-image:url("../images/icons/32/gnome-dialog-warning.png"); }
 
 
 /* ############################################################### Texte ### */
 #box h1 {
-	margin:0.15em 0 0.7em; padding-left:41px; line-height:32px;
+	margin:0.15em 0 0.7em; padding-left:41px; height:32px; line-height:32px;
 	font-size:1.6em; font-weight:bold; color:black;
-	background-repeat:no-repeat; background-position:center left;
+	background-image:url("../images/icons/32/sprites.png"); background-repeat:no-repeat;
 }
 
 #box p {
@@ -138,6 +122,36 @@
 #box ul { margin:-0.4em auto 1em; }
 
 
+/* ############################################################## Icônes ### */
+#box.information  h1 { background-position:0 -99px; }
+#box.confirmation h1 { background-position:0 -132px; }
+#box.options  h1 { background-position:0 -264px; }
+#box.waiting  h1 { background-position:0 0; }
+#box.upload   h1 { background-position:0 -231px; }
+#box.eeupload h1 { background-position:0 -66px; }
+#box.progress h1 { background-position:0 0; }
+
+#box.delete   h1 { background-position:0 -33px; }
+#box.download h1 { background-position:0 -297px; }
+#box.error    h1 { background-position:0 -66px; }
+#box.print    h1 { background-position:0 -198px; }
+#box.warning  h1 { background-position:0 -165px; }
+
+/* #box.information  h1 { background-image:url("../images/icons/32/gnome-dialog-information.png"); }
+#box.confirmation h1 { background-image:url("../images/icons/32/gnome-dialog-question.png"); }
+#box.options  h1 { background-image:url("../images/icons/32/gnome-preferences-other.png"); }
+#box.waiting  h1 { background-image:url("../images/icons/32/gnome-appointment-soon.png"); }
+#box.upload   h1 { background-image:url("../images/icons/32/gnome-mail-new.png"); }
+#box.eeupload h1 { background-image:url("../images/icons/32/gnome-dialog-error.png"); }
+#box.progress h1 { background-image:url("../images/icons/32/gnome-appointment-soon.png"); }
+
+#box.delete   h1 { background-image:url("../images/icons/32/gnome-delete.png"); }
+#box.download h1 { background-image:url("../images/icons/32/gnome-save.png"); }
+#box.error    h1 { background-image:url("../images/icons/32/gnome-dialog-error.png"); }
+#box.print    h1 { background-image:url("../images/icons/32/gnome-document-print.png"); }
+#box.warning  h1 { background-image:url("../images/icons/32/gnome-dialog-warning.png"); } */
+
+
 /* ################################################# Boutons de contrôle ### */
 #box div.control { position:absolute; right:0.8em; bottom:0.6em; }
 
@@ -154,20 +168,19 @@
 #box div.control button.cancel  { float:left; background-image:url("../images/icons/16/silk-cancel.png"); }
 #box div.control button.confirm { background-image:url("../images/icons/16/silk-accept.png"); }
 
-#box div.control button:hover, #box div.control button:active, #box div.control button:focus { border:1px solid #AAA; background-color:#EFEFEF; }
+#box div.control button:hover, #box div.control button:active, #box div.control button:focus { border:1px solid #AAA; background-color:#F2F2F2; }
 
 
 /* ############################################### Boutons de navigation ### */
 #box div.navigation.txt button {
 	position:absolute; top:42%; padding:0.4em 0; width:7em; opacity:0.3;
-	font-size:0.8em; color:#CCC; text-align:center; cursor:pointer;
-	border:none; background-color:#444;
+	font-size:0.8em; color:#CCC; text-align:center; cursor:pointer; border:none; background-color:#444;
 	transition-duration:0.5s; -moz-transition-duration:0.5s; -webkit-transition-duration:0.5s;
 	transition-property:opacity; -moz-transition-property:opacity; -webkit-transition-property:opacity;
 }
 
 #box div.navigation.txt button#prev {
-	left:-4.8em;
+	left:-4.75em;
 	border-radius:1em 1em 0.4em 0.4em; -khtml-border-radius:1em 1em 0.4em 0.4em;
 	-moz-border-radius:1em 1em 0.4em 0.4em; -webkit-border-radius:1em 1em 0.4em 0.4em;
 	transform:rotate(-90deg); -khtml-transform:rotate(-90deg); -moz-transform:rotate(-90deg); -ms-transform:rotate(-90deg);
@@ -175,7 +188,7 @@
 }
 
 #box div.navigation.txt button#next {
-	right:-4.9em;
+	right:-4.8em;
 	border-radius:1em 1em 0.4em 0.4em; -khtml-border-radius:1em 1em 0.4em 0.4em;
 	-moz-border-radius:1em 1em 0.4em 0.4em; -webkit-border-radius:1em 1em 0.4em 0.4em;
 	transform:rotate(90deg); -khtml-transform:rotate(90deg); -moz-transform:rotate(90deg); -ms-transform:rotate(90deg);
@@ -184,14 +197,13 @@
 
 #box div.navigation.img button {
 	position:absolute; top:40%; padding:0; width:25px; height:50px; opacity:0.3;
-	font-size:0.85em; color:#CCC; cursor:pointer;
-	border:none; background-color:transparent;
+	font-size:0.85em; color:#CCC; cursor:pointer; border:none; background-color:transparent;
 	transition-duration:0.5s; -moz-transition-duration:0.5s; -webkit-transition-duration:0.5s;
 	transition-property:opacity; -moz-transition-property:opacity; -webkit-transition-property:opacity;
 }
 
-#box div.navigation.img button#prev { left:-2.9em; }
-#box div.navigation.img button#next { right:-2.9em; }
+#box div.navigation.img button#prev { left:-32px; }
+#box div.navigation.img button#next { right:-32px; }
 
 #box div.navigation button[disabled] { display:none; }
 
@@ -209,10 +221,6 @@
 
 
 /* ############################################ Dialogues photo et vidéo ### */
-#box.video dl dt video { display:block; color:white; background-color:black; }
-#box.video dl dt video p { margin:0; padding:1em; line-height:1.2em; }
-#box.video dl dt video a { display:inline; padding:0; min-height:inherit; color:yellow; background:none; }
-
 #box.photo dl dt a { display:block; position:relative; }
 
 #box.photo dl dt a span {
@@ -226,9 +234,12 @@
 
 #box.photo dl dt img { display:block; }
 #box.photo dl dt img.loading  { background:white url("../images/dialogue/loading.png") no-repeat center; }
-#box.photo dl dt img.error_de { background:white url("../images/dialogue/error/de.png") no-repeat center; }
-#box.photo dl dt img.error_en { background:white url("../images/dialogue/error/en.png") no-repeat center; }
-#box.photo dl dt img.error_fr { background:white url("../images/dialogue/error/fr.png") no-repeat center; }
+#box.photo dl dt img.error_en { background:white url("../images/dialogue/404fr.png") no-repeat center; }
+#box.photo dl dt img.error_fr { background:white url("../images/dialogue/404fr.png") no-repeat center; }
+
+#box.video dl dt video { display:block; color:white; background-color:black; }
+#box.video dl dt video p { margin:0; padding:1em; line-height:1.35em; }
+#box.video dl dt video a { display:inline; padding:0; min-height:inherit; color:yellow; background:none; }
 
 /* &&&&&&&&&&&&&&&&&&&&&&&&&& lien de téléchargement &&& */
 #box dl dd a.download {

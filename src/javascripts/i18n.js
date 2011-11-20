@@ -1,7 +1,7 @@
 /**
  * Created S/05/06/2010
- * Updated M/19/07/2011
- * Version 17
+ * Updated J/22/09/2011
+ * Version 19
  *
  * Copyright 2008-2011 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
@@ -21,6 +21,7 @@ function Internationalization() {
 
 	this.data = [];
 
+	// #### Définition des traductions ############################################## public ### //
 	// English
 	// » Fabrice Creuzot (luigifab) <code~luigifab~info>
 	// » Brian Legrand <brianyouhouy~live~fr>
@@ -40,7 +41,7 @@ function Internationalization() {
 		uploadInProgress: "Upload in progress...",
 		savingInProgress: "Saving...",
 
-		uploadRate: "§% (§ kB/s)",
+		uploadRate: "§% (§ KB/s)",
 		uploadAllType: "All files are accepted.[br]Maximum size : § [abbr title='Megabyte']MB[/abbr].",
 		uploadOneType: "Accepted file format : §.[br]Maximum size : § [abbr title='Megabyte']MB[/abbr].",
 		uploadMultiType: "Accepted file formats : § and §.[br]Maximum size : § [abbr title='Megabyte']MB[/abbr].",
@@ -55,8 +56,8 @@ function Internationalization() {
 		debugUnknownAction: "(debug) Unknown action",
 		debugKeyDetected: "(debug) Key detected",
 		debugKeyCode: "Code of the seizure key : §",
-		debugInvalidAltAttribute: "(debug) Invalid alt attribute",
-		debugNotRecognizedAltAttribute: "The alt attribute of the image wasn't recognized",
+		debugInvalidConfig: "(debug) Invalid configuration",
+		debugNotRecognizedConfig: "Image configuration wasn't recognized",
 		debugNotExist: "doesn't exist (unlikely error)"
 	};
 
@@ -78,7 +79,7 @@ function Internationalization() {
 		uploadInProgress: "Envoi du fichier en cours...",
 		savingInProgress: "Enregistrement en cours...",
 
-		uploadRate: "§% (§ ko/s)",
+		uploadRate: "§% (§ Ko/s)",
 		uploadAllType: "Tous les fichiers sont acceptés.[br]Taille maximale : § [abbr title='Mégaoctet']Mo[/abbr].",
 		uploadOneType: "Format de fichier accepté : §.[br]Taille maximale : § [abbr title='Mégaoctet']Mo[/abbr].",
 		uploadMultiType: "Formats de fichier acceptés : § et §.[br]Taille maximale : § [abbr title='Mégaoctet']Mo[/abbr].",
@@ -93,8 +94,8 @@ function Internationalization() {
 		debugUnknownAction: "(debug) Action inconnue",
 		debugKeyDetected: "(debug) Touche détectée",
 		debugKeyCode: "Code de la touche saisie : §",
-		debugInvalidAltAttribute: "(debug) Attribut alt invalide",
-		debugNotRecognizedAltAttribute: "L'attribut alt de l'image n'a pas été reconnu",
+		debugInvalidConfig: "(debug) Configuration invalide",
+		debugNotRecognizedConfig: "La configuration de l'image n'a pas été reconnue",
 		debugNotExist: "n'existe pas (erreur improbable)"
 	};
 

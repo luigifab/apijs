@@ -1,7 +1,7 @@
 /**
  * Created D/12/04/2009
- * Updated S/20/08/2011
- * Version 113
+ * Updated V/18/11/2011
+ * Version 115
  *
  * Copyright 2008-2011 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
@@ -145,7 +145,7 @@ function Dialogue() {
 
 
 	// #### Dialogue d'upload ###################################### i18n ## debug ## public ### //
-	// = révision : 83
+	// = révision : 84
 	// » Permet à l'utilisateur l'envoi de fichier sans avoir à recharger la page
 	// » Composé d'un formulaire, d'un titre, d'un paragraphe, d'un champ fichier, et de deux boutons de dialogue (Annuler et Valider)
 	// » Fermeture par bouton Annuler ou touche Échap tant que le formulaire n'est pas validé
@@ -164,8 +164,8 @@ function Dialogue() {
 			this.htmlButtonConfirm('submit');
 
 			this.showDialogue();
-			//document.getElementById('box').getElementsByTagName('input')[1].focus(); (ne fonctionne plus sur Firefox 4)
-			window.setTimeout(function () { document.getElementById('box').getElementsByTagName('input')[1].focus(); }, 0);
+			//document.getElementById('box').getElementsByTagName('input')[1].focus(); (ne fonctionne plus à partir de Firefox 4)
+			window.setTimeout(function () { document.getElementById('box').getElementsByTagName('input')[1].focus(); }, 10);
 		}
 
 		// *** Message de debug ********************************* //
@@ -324,11 +324,11 @@ function Dialogue() {
 
 
 	// #### Action du bouton Valider ##################### i18n ## debug ## event ## private ### //
-	// = révision : 106
+	// = révision : 107
 	// » Désactive l'action de la touche Échap
 	// » Pour le dialogue de confirmation appel la fonction de rappel (appel différé d'au moins 500 millisecondes)
-	// » Pour le dialogue d'options appel la fonction de rappel avant d'envoyer le formulaire (envoi différé d'au moins 500 millisecondes)
-	// » Pour le dialogue d'upload retour sur la fonction actionConfirm de [TheUpload]
+	// » Pour le dialogue d'options appel la fonction de rappel avant de soumettre le formulaire (envoi différé d'au moins 500 millisecondes)
+	// » Pour le dialogue d'upload appel la fonction actionConfirm de [TheUpload]
 	this.actionConfirm = function () {
 
 		var result = false;

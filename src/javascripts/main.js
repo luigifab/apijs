@@ -1,7 +1,7 @@
 /**
  * Created J/03/12/2009
- * Updated S/20/08/2011
- * Version 45
+ * Updated V/18/11/2011
+ * Version 46
  *
  * Copyright 2008-2011 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
@@ -22,7 +22,7 @@
  */
 
 // #### Paramètres de configuration ######################################### //
-// = révision : 39
+// = révision : 43
 // » Définie la variable globale du programme ainsi que sa configuration
 // » Lance le programme JavaScript
 var apijs = {
@@ -64,6 +64,11 @@ var apijs = {
 			hiddenPage: false,
 			hoverload: false
 		},
+		map: {
+			ids: 'map',
+			defaultCoords: { lon: 1.9, lat: 46.3, zoom: 5 },
+			imageMarker: { src: './images/map/marker.png', width: 26, height: 32 }
+		},
 		bbcode: {
 			'(a)': { src:'./images/icons/emotes/gnome-face-angel.png', width: 16, height: 16 },
 			'(@)': { src:'./images/icons/emotes/gnome-face-angry.png', width: 16, height: 16 },
@@ -80,24 +85,11 @@ var apijs = {
 			':D': { src:'./images/icons/emotes/gnome-face-smile-big.png', width: 16, height: 16 },
 			':o': { src:'./images/icons/emotes/gnome-face-surprise.png', width: 16, height: 16 },
 			':s': { src:'./images/icons/emotes/gnome-face-worried.png', width: 16, height: 16 }
-		},
-		map: {
-			width: 580,
-			height: 400,
-			initLatitude: 1.9,
-			initLongitude: 46.3,
-			imageMarker: './images/map/marker.png',
-			zoomInitial: 5,
-			zoomCenter: 14,
-			zoomSynchro: 15
 		}
 	}
 };
 
-if ((navigator.userAgent.indexOf('MSIE') < 0) || (navigator.userAgent.indexOf('MSIE 9') > -1)) {
-	window.addEventListener('load', start, false);
-}
-else if (navigator.userAgent.indexOf('MSIE 8') > -1) {
+if (navigator.userAgent.indexOf('MSIE 8') > -1) {
 	apijs.config.navigator = false;
 	apijs.config.transition = false;
 	document.createElement('video');
@@ -105,10 +97,13 @@ else if (navigator.userAgent.indexOf('MSIE 8') > -1) {
 	window.innerHeight = document.documentElement.clientHeight;
 	window.attachEvent('onload', start);
 }
+else {
+	window.addEventListener('load', start, false);
+}
 
 
 // #### Lancement du programme ############################################## //
-// = révision : 40
+// = révision : 42
 // » Recherche les liens ayant la classe popup
 // » Vérifie si le navigateur supporte les transitions CSS ou pas
 // » Charge les modules disponibles et met en place les gestionnaires d'évènements
@@ -116,11 +111,13 @@ function start() {
 
 	// *** Recherche des liens ************************* //
 	if (apijs.config.navigator) {
-		for (var tag = document.getElementsByClassName('popup'), i = 0; i < tag.length; i++)
-			tag[i].addEventListener('click', openTab, false);
+		for (var tag = document.getElementsByTagName('a'), i = 0; i < tag.length; i++) {
+			if (tag[i].hasAttribute('class') && (tag[i].getAttribute('class').indexOf('popup') > -1))
+				tag[i].addEventListener('click', openTab, false);
+		}
 	}
 	else {
-		for (var tag = document.getElementsByTagName('a'), i = 0; i < document.getElementsByTagName('a').length; i++) {
+		for (var tag = document.getElementsByTagName('a'), i = 0; i < tag.length; i++) {
 			if (tag[i].hasAttribute('class') && (tag[i].getAttribute('class').indexOf('popup') > -1))
 				tag[i].setAttribute('onclick', 'window.open(this.href); return false;');
 		}
@@ -153,7 +150,7 @@ function start() {
 			}
 		}
 
-		if ((typeof Map === 'function') && document.getElementById('carteInteractive')) {
+		if ((typeof Map === 'function') && document.getElementById('mapBtnClose')) {
 			apijs.map = new Map();
 			apijs.map.init();
 		}
@@ -460,5 +457,4 @@ function checkAll() {
 	// *** Affichage du rapport ************************ //
 	alert(report.join('\n'));
 }
-
 

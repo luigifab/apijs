@@ -1,6 +1,6 @@
 /**
  * Created S/06/02/2009
- * Updated L/09/08/2010
+ * Updated L/17/10/2011
  * Version 4
  *
  * Copyright 2008-2011 | Fabrice Creuzot (luigifab) <code~luigifab~info>
@@ -18,55 +18,47 @@
  */
 
 /* ########################################################## Conteneurs ### */
-#carteInteractive {
-	position:relative; display:none; margin:20px auto 15px; padding:21px 0 0; width:580px; height:400px; overflow:hidden;
-	border:1px solid #DDD; background:white url("../images/map/background.png") no-repeat left bottom;
-	box-shadow:2px 2px 12px #DDD; -moz-box-shadow:2px 2px 12px #DDD; -webkit-box-shadow:2px 2px 12px #DDD;
+#mapWrapper {
+	position:relative; margin:1.4em auto 2em; width:580px; height:400px; overflow:hidden;
+	border:1px solid #DDD; box-shadow:2px 2px 12px #DDD; -moz-box-shadow:2px 2px 12px #DDD; -webkit-box-shadow:2px 2px 12px #DDD;
 }
 
-#carteControl {
-	position:absolute; top:0; right:0; margin:0; padding:3px 6px 0 0; width:100%; height:17px; overflow:hidden;
-	font-size:0.8em; text-align:right;
-	border-bottom:1px solid #AEAEAE; background-color:#DEDEDE;
+#map { padding-top:22px; width:100%; height:100%; background:white url("../images/map/background.png") no-repeat left bottom; }
+#map.fullscreen { position:fixed; top:0; right:0; bottom:0; left:0; padding-top:23px; z-index:8000; }
+
+#mapGeoportal, #mapGoogle {
+	position:relative; width:100%; height:100%; overflow:hidden;
+	border:none; background-color:#EEE;
 }
 
-#mapGeoportail, #mapGoogle {
-	position:relative; display:none; overflow:hidden;
-	border:none; background-color:white;
-}
-
-#carteIntro, #carteFatal {
-	position:relative; top:50%; margin-top:-4.4em; padding:1px;
+#mapIntro {
+	position:relative; top:50%; margin-top:-4.4em; padding:0.5em;
 	background-color:rgb(240, 240, 240); background-color:rgba(240, 240, 240, 0.7);
 }
 
-#carteIntro p, #carteFatal p {
-	margin:5px auto; padding:0; width:26em;
+#mapIntro p {
+	margin:auto; padding:0; width:26em;
 	text-align:center; color:#888;
 }
 
-#mapGeoportailInfoCell, #carteFatal { display:none; }
-#mapGeoportailMapCell { border:none; }
-div.gpControlLabelClass { padding:1px 1px 0 !important; }
+div.gpMainMap { border:none; }
 
 
 /* ############################################################# Boutons ### */
-#carteControl button {
-	margin:0 5px; padding:0;
-	font-size:1em; font-weight:bold; cursor:pointer;
-	border:none; color:#36648B; background:none;
+#map div.control {
+	position:absolute; top:0; right:0; margin:0; padding-top:4px; width:100%; height:17px; overflow:hidden;
+	font-size:0.8em; text-align:right; border-bottom:1px solid #AEAEAE; background-color:#DEDEDE;
 }
 
-#carteControl button.bis { font-weight:normal; color:#824681; }
+#map.fullscreen div.control { padding-top:5px; }
 
-#carteControl button:focus, #carteControl button:hover, #carteControl button:active { color:black; }
+#map div.control button { padding:0; font-size:1em; cursor:pointer; border:none; color:purple; background:none; }
+#map div.control button.map { margin:0 0 0 7px; font-weight:bold; }
+#map div.control button.close { margin:0 7px 0 10px; }
+#map div.control button.other { margin:0 4px; }
 
-#carteControl button[disabled], #carteControl button[disabled]:focus,
-#carteControl button[disabled]:hover, #carteControl button[disabled]:active { color:#8D8D8D; cursor:default; }
+#map div.control button.actif, #map div.control button:hover, #map div.control button:active, #map div.control button:focus { color:black; }
 
-#carteControl button[disabled].bis, #carteControl button[disabled].bis:focus,
-#carteControl button[disabled].bis:hover, #carteControl button[disabled].bis:active { color:#ADADAD; }
-
-#carteControl button[disabled].actif, #carteControl button[disabled].actif:focus,
-#carteControl button[disabled].actif:hover, #carteControl button[disabled].actif:active { color:black; }
+#map div.control button[disabled], #map div.control button[disabled]:hover,
+#map div.control button[disabled]:active, #map div.control button[disabled]:focus { color:#8D8D8D; cursor:default; }
 

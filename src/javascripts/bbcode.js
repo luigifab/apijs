@@ -1,7 +1,7 @@
 /**
  * Created J/19/08/2010
- * Updated S/20/08/2011
- * Version 8
+ * Updated J/13/10/2011
+ * Version 9
  *
  * Copyright 2008-2011 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
@@ -161,7 +161,7 @@ function BBcode() {
 
 
 	// #### Ajoute un nœud élément ou un nœud texte ################################ private ### //
-	// = révision : 9
+	// = révision : 10
 	// » Enregistre le nœud élément et ses attributs ou le nœud texte dans le tableau d'objets
 	// » Remplace les émoticônes lorsque nécessaire en fonction de la configuration
 	// » À bien noter qu'en JavaScript, les objets sont passés par référence, ils ne sont jamais copiés
@@ -202,6 +202,8 @@ function BBcode() {
 				dataArray = data.split(' ');
 
 				for (value in dataArray) {
+					if (typeof dataArray[value] !== 'string')
+						continue;
 					if (apijs.config.bbcode.hasOwnProperty(dataArray[value])) {
 						hasEmotes = true;
 						currentEmote = apijs.config.bbcode[dataArray[value]];

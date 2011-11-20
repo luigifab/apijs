@@ -1,7 +1,7 @@
 /**
  * Created L/13/04/2009
- * Updated W/15/06/2011
- * Version 23
+ * Updated V/18/11/2011
+ * Version 25
  *
  * Copyright 2008-2011 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
@@ -24,6 +24,8 @@ function Upload() {
 	this.callback = null;
 	this.params = null;
 	this.key = null;
+
+	this.percent = 0;
 
 	this.svgTimer = null;
 	this.svgDirection = 0;
@@ -119,48 +121,6 @@ function Upload() {
 	};
 
 
-	// #### Vérification du formulaire ################################### i18n ## protected ### //
-	// = révision : 55
-	// » Vérifie si un fichier a été proposé et si son extension est autorisée
-	// » Fait bien attention à ne pas modifier la liste des extensions originale
-	// » Valide le formulaire et demande l'affichage du dialogue de progression si tout semble correct
-	// » Afin de permettre l'envoi du formulaire l'affichage du dialogue est différée dans le temps (1 milliseconde)
-	this.actionConfirm = function () {
-
-		var filename = document.getElementById('box').getElementsByTagName('input')[1].value;
-		var result = false, extensions = null, lastExtension = null;
-
-		extensions = apijs.dialogue.clone(this.extensions);
-		lastExtension = extensions.pop();
-
-		// *** Aucun fichier ************************************ //
-		if (filename.length < 1) {
-			document.getElementById('box').getElementsByTagName('input')[1].focus();
-		}
-
-		// *** Extension invalide ******************************* //
-		else if ((lastExtension !== '*') && !in_array(filename.slice(filename.lastIndexOf('.') + 1).toLowerCase(), this.extensions)) {
-
-			if (extensions.length < 1) {
-				apijs.dialogue.dialogInformation(document.getElementById('box').firstChild.firstChild.nodeValue, apijs.i18n.translate('uploadBadOneType', filename, lastExtension), 'eeupload');
-			}
-			else {
-				extensions = extensions.join(', ');
-				apijs.dialogue.dialogInformation(document.getElementById('box').firstChild.firstChild.nodeValue, apijs.i18n.translate('uploadBadMultiType', filename, extensions, lastExtension), 'eeupload');
-			}
-		}
-
-		// *** Validation du formulaire ************************* //
-		else {
-			result = true;
-			document.getElementById('iframeUpload').setAttribute('onload', 'apijs.upload.endUpload();');
-			window.setTimeout(apijs.upload.startUpload, 1);
-		}
-
-		return result;
-	};
-
-
 	// #### Suppression d'un fichier ####################################### i18n ## private ### //
 	// = révision : 10
 	// » Demande la suppression d'un fichier en appelant le serveur via XMLHttpRequest (réponse au format XML)
@@ -209,42 +169,89 @@ function Upload() {
 	};
 
 
+	// #### Vérification du formulaire ################################### i18n ## protected ### //
+	// = révision : 56
+	// » Vérifie si un fichier a été proposé et si son extension est autorisée
+	// » Fait bien attention à ne pas modifier la liste des extensions originale
+	// » Valide le formulaire et demande l'affichage du dialogue de progression si tout semble correct
+	// » Afin de permettre l'envoi du formulaire l'affichage du dialogue est différée dans le temps (1 milliseconde)
+	this.actionConfirm = function () {
+
+		var filename = document.getElementById('box').getElementsByTagName('input')[1].value;
+		var result = false, extensions = null, lastExtension = null;
+
+		extensions = apijs.dialogue.clone(this.extensions);
+		lastExtension = extensions.pop();
+
+		// *** Aucun fichier ************************************ //
+		if (filename.length < 1) {
+			document.getElementById('box').getElementsByTagName('input')[1].focus();
+		}
+
+		// *** Extension invalide ******************************* //
+		else if ((lastExtension !== '*') && !in_array(filename.slice(filename.lastIndexOf('.') + 1).toLowerCase(), this.extensions)) {
+
+			if (filename.lastIndexOf('/') > 0)
+				filename = filename.slice(filename.lastIndexOf('/') + 1);
+			else if (filename.lastIndexOf('\\') > 0)
+				filename = filename.slice(filename.lastIndexOf('\\') + 1);
+
+			if (extensions.length < 1) {
+				apijs.dialogue.dialogInformation(document.getElementById('box').firstChild.firstChild.nodeValue, apijs.i18n.translate('uploadBadOneType', filename, lastExtension), 'eeupload');
+			}
+			else {
+				extensions = extensions.join(', ');
+				apijs.dialogue.dialogInformation(document.getElementById('box').firstChild.firstChild.nodeValue, apijs.i18n.translate('uploadBadMultiType', filename, extensions, lastExtension), 'eeupload');
+			}
+		}
+
+		// *** Validation du formulaire ************************* //
+		else {
+			result = true;
+			document.getElementById('iframeUpload').setAttribute('onload', 'apijs.upload.endUpload();');
+			window.setTimeout(apijs.upload.startUpload, 1);
+		}
+
+		return result;
+	};
+
+
 
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// GESTION DE L'ENVOI DU FICHIER (3)
 
 	// #### Lancement ########################################### i18n ## timeout ## private ### //
-	// = révision : 10
+	// = révision : 13
 	// » Affiche le dialogue de progression de [TheDialogue]
-	// » Prépare et lance l'animation de la barre de progression
+	// » Prépare et lance l'animation de la barre de progression (appels différés de 50 et 1000 millisecondes)
 	this.startUpload = function () {
 
 		apijs.dialogue.dialogProgress(document.getElementById('box').firstChild.firstChild.nodeValue, apijs.i18n.translate('uploadInProgress'));
 
+		apijs.upload.percent = 0;
 		apijs.upload.svgDirection = 0;
 		apijs.upload.svgWaiting = 10;
-		apijs.upload.apcWaiting = 10;
+		apijs.upload.apcWaiting = 15;
 		apijs.upload.svgTimer = window.setInterval(apijs.upload.animGeneric, 50);
 		apijs.upload.apcTimer = window.setTimeout(apijs.upload.uploadRealTime, 1000);
 	};
 
 
 	// #### Suivi en temps réel ################################ debug ## timeout ## private ### //
-	// = révision : 16
+	// = révision : 23
 	// » Auto-rappel toutes les 1000 millisecondes
 	// » Récupère l'avancement de l'envoi du fichier en appelant le serveur via XMLHttpRequest (réponse au format XML)
 	// » Fait avancer la barre de progression en fonction de l'avancement de l'envoi du fichier
-	// » Se termine si l'extension APC n'est pas disponible, lorsque le temps d'attente a expiré et lorsque l'envoi est terminé
 	this.uploadRealTime = function () {
 
 		// *** Annulation *************************************** //
-		// Temps d'attente dépassé
+		// Temps d'attente dépassé ou envoi terminé
 		if (apijs.upload.apcWaiting < 1)
 			return;
 
 		// *** Appel du serveur ********************************* //
-		// Temps d'attente non dépassé, extension APC disponible ou pas
+		// Temps d'attente non dépassé ou envoi en cours / extension APC disponible ou pas
 		var xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function () {
 
@@ -270,15 +277,20 @@ function Upload() {
 						rate = parseInt(result.getElementsByTagName('rate')[0].firstChild.nodeValue, 10);
 						percent = parseInt(result.getElementsByTagName('percent')[0].firstChild.nodeValue, 10);
 
-						if ((percent > 0) && (percent < 100)) {
+						if ((percent > 0) && (percent < 100) && (percent > this.percent)) {
+							this.percent = percent;
 							apijs.upload.animToValue(percent, rate);
+							apijs.upload.apcTimer = window.setTimeout(apijs.upload.uploadRealTime, 1000);
+						}
+						else if (percent < 1) {
+							apijs.upload.apcWaiting -= 1;
 							apijs.upload.apcTimer = window.setTimeout(apijs.upload.uploadRealTime, 1000);
 						}
 					}
 
 					// attente du serveur
 					// extension APC disponible mais réception du fichier pas encore commencée
-					else if ((status === 'false') && (apijs.upload.apcWaiting > 0)) {
+					else if ((status === 'pending') && (apijs.upload.apcWaiting > 0)) {
 						apijs.upload.apcWaiting -= 1;
 						apijs.upload.apcTimer = window.setTimeout(apijs.upload.uploadRealTime, 1000);
 					}
@@ -300,7 +312,7 @@ function Upload() {
 	// #### Terminus ###################################################### event ## private ### //
 	// = révision : 75
 	// » Désactive l'animation de la barre de progression
-	// » Récupère le résultat de l'envoi et du traitement du fichier depuis l'iframe (résultat au format XML)
+	// » Récupère le résultat de l'envoi ET du traitement du fichier depuis l'iframe (réponse au format XML)
 	// » Termine la barre de progression et appel la fonction de rappel si l'envoi du fichier a réussi (appel différé de 1000 millisecondes)
 	// » Affiche un message d'erreur détaillé dans le cas contraire
 	this.endUpload = function () {
@@ -345,8 +357,7 @@ function Upload() {
 			}
 
 			// évite le transfère de données inutile sur Firefox (et les autres ? bug ?)
-			if (document.getElementById('progressbar') && (typeof document.getElementById('progressbar').getSVGDocument !== 'undefined') &&
-			    (navigator.userAgent.indexOf('MSIE') < 0)) {
+			if (document.getElementById('progressbar') && (navigator.userAgent.indexOf('MSIE') < 0)) {
 				document.getElementById('iframeUpload').removeAttribute('onload');
 				document.getElementById('iframeUpload').setAttribute('src', apijs.config.dialogue.imageUpload.src);
 			}
@@ -375,31 +386,34 @@ function Upload() {
 	// GESTION DE LA BARRE DE PROGRESSION (2)
 
 	// #### Avancement générique ####################################### interval ## private ### //
-	// = révision : 68
-	// » Appel automatique toutes les 50 millisecondes histoire que l'animation soit fluide
+	// = révision : 75
 	// » Fait bouger la barre de progression de gauche à droite et de droite à gauche
-	// » Se termine lorsque le temps d'attente a expiré, lorsque le graphique n'existe plus et lorsque l'envoi est terminé
-	// » Aussi étonnant que cela puisse paraître, sous IE8, getSVGDocument n'est jamais une fonction, c'est soit undefined, soit unknown
+	// » Appel automatique toutes les 50 millisecondes histoire que l'animation soit fluide
+	// » Aussi étonnant que cela puisse paraître, sous IE8, getSVGDocument est soit undefined, soit unknown
+	// » Recherche silencieusement l'accès au graphique SVG
 	this.animGeneric = function () {
 
 		// *** Annulation *************************************** //
-		// Temps d'attente dépassé ou graphique inexistant
+		// Temps d'attente dépassé ou envoi terminé / graphique inexistant
 		if ((apijs.upload.svgWaiting < 1) || !document.getElementById('progressbar')) {
 			clearInterval(apijs.upload.svgTimer);
 		}
 
-		// *** Attente du graphique ***************************** //
-		// Temps d'attente non dépassé, graphique existant mais pas encore prêt
-		else if (document.getElementById('progressbar') && (typeof document.getElementById('progressbar').getSVGDocument === 'undefined')) {
-			apijs.upload.svgWaiting -= 1;
-		}
-
 		// *** Animation du grapĥique *************************** //
-		// Temps d'attente non dépassé, Graphique existant et prêt à l'emploi
-		else if (document.getElementById('progressbar') && (typeof document.getElementById('progressbar').getSVGDocument !== 'undefined') && (document.getElementById('progressbar').getSVGDocument().getElementsByTagName('rect')[0] || document.getElementById('progressbar').getSVGDocument().rootElement)) {
+		// Temps d'attente non dépassé ou envoi en cours / graphique existant et prêt à l'emploi
+		else if (document.getElementById('progressbar') && (typeof document.getElementById('progressbar').getSVGDocument !== 'undefined')) {
 
-			var rect = (apijs.config.navigator) ? document.getElementById('progressbar').getSVGDocument().getElementsByTagName('rect')[0] : document.getElementById('progressbar').getSVGDocument().rootElement.getElementsByTagName('rect').item(0);
+			var rect = null, ee = null;
 
+			// recherche silentieuse
+			try {
+				rect = (apijs.config.navigator) ? document.getElementById('progressbar').getSVGDocument().getElementsByTagName('rect')[0] : document.getElementById('progressbar').getSVGDocument().rootElement.getElementsByTagName('rect').item(0);
+			}
+			catch (ee) {
+				return;
+			}
+
+			// animation
 			if (apijs.upload.svgDirection === 0) {
 				rect.setAttribute('x', parseInt(rect.getAttribute('x'), 10) + 5);
 
@@ -413,41 +427,49 @@ function Upload() {
 					apijs.upload.svgDirection = 0;
 			}
 		}
+
+		// *** Attente du graphique ***************************** //
+		// Temps d'attente non dépassé ou envoi en cours / graphique existant mais pas encore prêt
+		else if (document.getElementById('progressbar')) {
+			apijs.upload.svgWaiting -= 1;
+		}
 	};
 
 
 	// #### Avancement de la barre de progression ########################## i18n ## private ### //
-	// = révision : 55
-	// » Vérifie si le graphique existe et est prêt
+	// = révision : 63
 	// » Fait avancer la barre de progression jusqu'à une certaine valeur
-	// » Avancement générique ou temps réel
+	// » Recherche silencieusement l'accès au graphique SVG
 	this.animToValue = function (value, rate) {
 
 		if (document.getElementById('progressbar') && (typeof document.getElementById('progressbar').getSVGDocument !== 'undefined')) {
 
 			var rect = null, text = null;
 
-			rect = (apijs.config.navigator) ? document.getElementById('progressbar').getSVGDocument().getElementsByTagName('rect')[0] : document.getElementById('progressbar').getSVGDocument().rootElement.getElementsByTagName('rect').item(0);
+			// recherche silentieuse
+			try {
+				rect = (apijs.config.navigator) ? document.getElementById('progressbar').getSVGDocument().getElementsByTagName('rect')[0] : document.getElementById('progressbar').getSVGDocument().rootElement.getElementsByTagName('rect').item(0);
 
-			text = (apijs.config.navigator) ? document.getElementById('progressbar').getSVGDocument().getElementsByTagName('text')[0] : document.getElementById('progressbar').getSVGDocument().rootElement.getElementsByTagName('text').item(0);
+				text = (apijs.config.navigator) ? document.getElementById('progressbar').getSVGDocument().getElementsByTagName('text')[0] : document.getElementById('progressbar').getSVGDocument().rootElement.getElementsByTagName('text').item(0);
+			}
+			catch (ee) {
+				return;
+			}
 
-			// avancement en temps réel
-			if ((typeof rate === 'number') && (value < 100)) {
+			// animation (XX%)
+			if (value < 100) {
 
 				if (rect.getAttribute('x') !== '0')
 					rect.setAttribute('x', '0');
 
 				rect.setAttribute('width', value * 3);
-				text.firstChild.replaceData(0, text.firstChild.length, apijs.i18n.translate('uploadRate', value, rate));
-			}
 
-			// avancement générique
-			else if (value < 100) {
-				rect.setAttribute('width', value * 3);
-				text.firstChild.replaceData(0, text.firstChild.length, value + '%');
+				if (typeof rate === 'number')
+					text.firstChild.replaceData(0, text.firstChild.length, apijs.i18n.translate('uploadRate', value, rate));
+				else
+					text.firstChild.replaceData(0, text.firstChild.length, value + '%');
 			}
-
-			// terminus
+			// terminus (100%)
 			else {
 				rect.setAttribute('x', '0');
 				rect.setAttribute('width', '301');
