@@ -1,7 +1,7 @@
 /**
  * Created S/05/06/2010
- * Updated J/22/09/2011
- * Version 19
+ * Updated L/21/11/2011
+ * Version 20
  *
  * Copyright 2008-2011 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
@@ -41,7 +41,9 @@ function Internationalization() {
 		uploadInProgress: "Upload in progress...",
 		savingInProgress: "Saving...",
 
+		uploadTime: "§% (§)",
 		uploadRate: "§% (§ KB/s)",
+		uploadRateTime: "§% (§ KB/s - §)",
 		uploadAllType: "All files are accepted.[br]Maximum size : § [abbr title='Megabyte']MB[/abbr].",
 		uploadOneType: "Accepted file format : §.[br]Maximum size : § [abbr title='Megabyte']MB[/abbr].",
 		uploadMultiType: "Accepted file formats : § and §.[br]Maximum size : § [abbr title='Megabyte']MB[/abbr].",
@@ -79,7 +81,9 @@ function Internationalization() {
 		uploadInProgress: "Envoi du fichier en cours...",
 		savingInProgress: "Enregistrement en cours...",
 
+		uploadTime: "§% (§)",
 		uploadRate: "§% (§ Ko/s)",
+		uploadRateTime: "§% (§ Ko/s - §)",
 		uploadAllType: "Tous les fichiers sont acceptés.[br]Taille maximale : § [abbr title='Mégaoctet']Mo[/abbr].",
 		uploadOneType: "Format de fichier accepté : §.[br]Taille maximale : § [abbr title='Mégaoctet']Mo[/abbr].",
 		uploadMultiType: "Formats de fichier acceptés : § et §.[br]Taille maximale : § [abbr title='Mégaoctet']Mo[/abbr].",

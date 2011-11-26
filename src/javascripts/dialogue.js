@@ -1,7 +1,7 @@
 /**
  * Created D/12/04/2009
- * Updated V/18/11/2011
- * Version 115
+ * Updated W/23/11/2011
+ * Version 116
  *
  * Copyright 2008-2011 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
@@ -41,9 +41,9 @@ function Dialogue() {
 	// DÉFINITION DES BOITES DE DIALOGUE (8)
 
 	// #### Dialogue d'information ################################# i18n ## debug ## public ### //
-	// = révision : 73
+	// = révision : 75
 	// » Permet d'afficher un message d'information à l'intention de l'utilisateur
-	// » Composé d'un titre, d'un paragraphe, et d'un bouton de dialogue (Ok)
+	// » Composé d'un titre, d'un paragraphe et d'un bouton de dialogue
 	// » Fermeture par bouton Ok ou touche Échap
 	// » Auto-focus sur le bouton Ok
 	this.dialogInformation = function (title, text, icon) {
@@ -71,10 +71,10 @@ function Dialogue() {
 
 
 	// #### Dialogue de confirmation ############################### i18n ## debug ## public ### //
-	// = révision : 80
+	// = révision : 83
 	// » Permet de demander une confirmation à l'utilisateur
-	// » Composé d'un titre, d'un paragraphe, et de deux boutons de dialogue (Annuler et Valider)
-	// » Par la suite peut également être composé d'un lien différé de 6 secondes
+	// » Composé d'un titre, d'un paragraphe et de deux boutons de dialogue
+	// » Par la suite peut également être composé d'un lien différé de 10 secondes
 	// » Fermeture par bouton Annuler ou touche Échap tant que le dialogue n'est pas validé
 	// » Appel la fonction callback après la validation du dialogue
 	// » Auto-focus sur le bouton Valider
@@ -109,10 +109,10 @@ function Dialogue() {
 
 
 	// #### Dialogue d'options ##################################### i18n ## debug ## public ### //
-	// = révision : 14
+	// = révision : 17
 	// » Permet à l'utilisateur de modifier des options
-	// » Composé d'un formulaire, d'un titre, d'un paragraphe, et de deux boutons de dialogue (Annuler et Valider)
-	// » Par la suite peut également être composé d'un lien différé de 6 secondes
+	// » Composé d'un formulaire, d'un titre, d'un paragraphe et de deux boutons de dialogue
+	// » Par la suite peut également être composé d'un lien différé de 10 secondes
 	// » Validation du formulaire uniquement si la fonction callback renvoie true
 	// » Fermeture par bouton Annuler ou touche Échap tant que le formulaire n'est pas validé
 	this.dialogFormOptions = function (title, text, callback, params, action, icon) {
@@ -145,9 +145,9 @@ function Dialogue() {
 
 
 	// #### Dialogue d'upload ###################################### i18n ## debug ## public ### //
-	// = révision : 84
+	// = révision : 86
 	// » Permet à l'utilisateur l'envoi de fichier sans avoir à recharger la page
-	// » Composé d'un formulaire, d'un titre, d'un paragraphe, d'un champ fichier, et de deux boutons de dialogue (Annuler et Valider)
+	// » Composé d'un formulaire, d'un titre, d'un paragraphe, d'un champ fichier et de deux boutons de dialogue
 	// » Fermeture par bouton Annuler ou touche Échap tant que le formulaire n'est pas validé
 	// » Auto-focus sur le champ fichier
 	this.dialogFormUpload = function (title, text, data, key, icon) {
@@ -177,10 +177,10 @@ function Dialogue() {
 
 
 	// #### Dialogue de progression ################################ i18n ## debug ## public ### //
-	// = révision : 86
+	// = révision : 91
 	// » Permet de faire patienter l'utilisateur en affichant une barre de progression
-	// » Composé d'un titre, d'un paragraphe, d'une barre de progression, et d'un lien différé de 30 secondes
-	// » Fermeture automatique et touche Échap désactivée
+	// » Composé d'un titre, d'un paragraphe et d'une barre de progression
+	// » Fermeture automatique ou pas et touche Échap désactivée
 	this.dialogProgress = function (title, text) {
 
 		// *** Création de la boite de dialogue ***************** //
@@ -194,7 +194,6 @@ function Dialogue() {
 			this.htmlProgressBar();
 
 			this.showDialogue();
-			this.timer = window.setTimeout(apijs.dialogue.htmlLinkReload, 30000);
 		}
 
 		// *** Message de debug ********************************* //
@@ -206,9 +205,9 @@ function Dialogue() {
 
 
 	// #### Dialogue d'attente ##################################### i18n ## debug ## public ### //
-	// = révision : 74
+	// = révision : 78
 	// » Permet de faire patienter l'utilisateur en affichant un message d'attente
-	// » Composé d'un titre, d'un paragraphe, et d'un lien différé de 6 secondes
+	// » Composé d'un titre, d'un paragraphe et d'un lien différé de 10 secondes
 	// » Fermeture automatique ou pas et touche Échap désactivée
 	this.dialogWaiting = function (title, text, time) {
 
@@ -222,7 +221,7 @@ function Dialogue() {
 			this.htmlText(text);
 
 			this.showDialogue();
-			this.timer = window.setTimeout(apijs.dialogue.htmlLinkReload, (typeof time === 'number') ? time : 6000);
+			this.timer = window.setTimeout(apijs.dialogue.htmlLinkReload, (typeof time === 'number') ? time : 10000);
 		}
 
 		// *** Message de debug ********************************* //
@@ -234,9 +233,9 @@ function Dialogue() {
 
 
 	// #### Dialogue photo ######################################### i18n ## debug ## public ### //
-	// = révision : 111
+	// = révision : 113
 	// » Permet d'afficher une photo en plein écran au premier plan
-	// » Composé d'une photo, d'une définition, et de trois boutons de dialogue (Précédent Suivant et Fermer)
+	// » Composé d'une photo, d'une définition et de trois boutons de dialogue
 	// » Fermeture par bouton Fermer ou touche Échap
 	this.dialogPhoto = function (width, height, url, name, date, legend, slideshow) {
 
@@ -269,9 +268,9 @@ function Dialogue() {
 
 
 	// #### Dialogue vidéo ######################################### i18n ## debug ## public ### //
-	// = révision : 70
+	// = révision : 72
 	// » Permet d'afficher une vidéo en plein écran au premier plan
-	// » Composé d'une vidéo, d'une définition, et de trois boutons de dialogue (Précédent Suivant et Fermer)
+	// » Composé d'une vidéo, d'une définition et de trois boutons de dialogue
 	// » Fermeture par bouton Fermer ou touche Échap
 	this.dialogVideo = function (url, name, date, legend, slideshow) {
 
@@ -324,7 +323,7 @@ function Dialogue() {
 
 
 	// #### Action du bouton Valider ##################### i18n ## debug ## event ## private ### //
-	// = révision : 107
+	// = révision : 110
 	// » Désactive l'action de la touche Échap
 	// » Pour le dialogue de confirmation appel la fonction de rappel (appel différé d'au moins 500 millisecondes)
 	// » Pour le dialogue d'options appel la fonction de rappel avant de soumettre le formulaire (envoi différé d'au moins 500 millisecondes)
@@ -349,7 +348,7 @@ function Dialogue() {
 				document.getElementById('box').lastChild.setAttribute('class', 'novisible');
 				document.getElementById('box').appendChild(this.elemA);
 
-				this.timer = window.setTimeout(apijs.dialogue.htmlLinkReload, 6000);
+				this.timer = window.setTimeout(apijs.dialogue.htmlLinkReload, 10000);
 			}
 			else {
 				this.dialogWaiting(document.getElementById('box').firstChild.firstChild.nodeValue, apijs.i18n.translate('operationInProgress'));
@@ -386,7 +385,7 @@ function Dialogue() {
 				document.getElementById('box').lastChild.setAttribute('class', 'novisible');
 				document.getElementById('box').appendChild(this.elemA);
 
-				this.timer = window.setTimeout(apijs.dialogue.htmlLinkReload, 6000);
+				this.timer = window.setTimeout(apijs.dialogue.htmlLinkReload, 10000);
 
 				// envoi du formulaire différé ou immédiat
 				if (apijs.config.dialogue.savingTime > 500) {
@@ -425,8 +424,8 @@ function Dialogue() {
 
 
 	// #### Action des touches du clavier ################ i18n ## debug ## event ## private ### //
-	// = révision : 80
-	// » Ferme la boite de dialogue lors de l'appui sur la touche Échap sauf pour les dialogues d'attente, de progression et ceux ayant un verrou
+	// = révision : 82
+	// » Ferme la boite de dialogue lors de l'appui sur la touche Échap sauf pour les dialogues d'attente et de progression ainsi que ceux ayant un verrou
 	// » En mode diaporama demande l'affichage du média précédent ou suivant lors de l'appui sur les touches gauche ou droite
 	// » En mode diaporama demande l'affichage du premier ou du dernier média lors de l'appui sur les touches début ou fin
 	this.actionKey = function (ev) {
@@ -483,9 +482,9 @@ function Dialogue() {
 	// GESTION DES CONTENEURS PARENTS (8)
 
 	// #### Prépare le terrain ##################################################### private ### //
-	// = révision : 71
-	// » Supprime l'ancien dialogue, cache ou affiche le site lorsque nécessaire
-	// » Prend en compte la configuration de [TheSlideshow] si nécessaire
+	// = révision : 72
+	// » Supprime l'ancien dialogue puis cache ou affiche le site lorsque nécessaire
+	// » Prend en compte la configuration de [TheSlideshow] si besoin
 	// » Met en place l'écoute des touches du clavier (eventListener:keydown)
 	this.setupDialogue = function (type, icon) {
 
@@ -716,12 +715,12 @@ function Dialogue() {
 	};
 
 
-	// #### Recherche de la taille idéale ########################################## private ### //
-	// = révision : 23
+	// #### Recherche la taille idéale du dialogue ################################# private ### //
+	// = révision : 24
 	// » Vérifie si la largeur de la boite de dialogue ne dépassera pas la largeur de la fenêtre
 	// » Vérifie si la hauteur de la boite de dialogue ne dépassera pas la hauteur de la fenêtre
 	// » Adapte la taille du dialogue et de son contenu en conséquence
-	// » Logique de calcul de Lytebox 3.2 (http://www.dolem.com/lytebox)
+	// » Logique de calcul inspirée de Lytebox 3.2 (http://www.dolem.com/lytebox)
 	this.updateSize = function (width, height, url) {
 
 		// *** Préparation des variables ************************ //
@@ -1127,8 +1126,8 @@ function Dialogue() {
 
 
 	// #### Lien différé ######################################## i18n ## timeout ## private ### //
-	// = révision : 70
-	// » Met en place le lien différé des dialogues de confirmation, d'options, d'attente et de progression
+	// = révision : 71
+	// » Met en place le lien différé des dialogues de confirmation, d'options et d'attente
 	// » Appel différé dans le temps comme son nom le suggère
 	// # <p class="reload">{i18n.operationTooLong} <a href="{location.href}">{i18n.reloadLink}</a>.
 	// # <br />{i18n.warningLostChange}</p>

@@ -1,7 +1,7 @@
 /**
  * Created J/03/12/2009
- * Updated V/18/11/2011
- * Version 46
+ * Updated W/23/11/2011
+ * Version 50
  *
  * Copyright 2008-2011 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
@@ -22,7 +22,7 @@
  */
 
 // #### Paramètres de configuration ######################################### //
-// = révision : 43
+// = révision : 51
 // » Définie la variable globale du programme ainsi que sa configuration
 // » Lance le programme JavaScript
 var apijs = {
@@ -54,7 +54,7 @@ var apijs = {
 			imagePrev: null,
 			imageNext: null,
 			imageClose: { src: './images/dialogue/close.png', width: 60, height: 22 },
-			imageUpload: { src: './images/dialogue/progressbar.svg.php', width: 300, height: 17 },
+			imageUpload: { src: './images/dialogue/progress2.svg.php', width: 300, height: 17 },
 			filePhoto: './downloadfile.php',
 			fileVideo: './downloadfile.php',
 			fileUpload: './uploadfile.php'
@@ -225,7 +225,7 @@ function myFuncE(id) {
 
 
 // #### Configuration dynamique ############################################# //
-// = révision : 5
+// = révision : 6
 // » Renvoie un booléen, une valeur null, un nombre ou un objet lorsque nécessaire
 // » Renvoie dans tous les cas quelque chose
 function getValue(value) {
@@ -250,6 +250,15 @@ function getValue(value) {
 
 	else if (value === 'specialClose')
 		return { src: './images/dialogue/close.png', width: 60, height: 22 };
+
+	else if (value === 'specialUploadA')
+		return { src: './images/dialogue/progress1.svg.php', width: 300, height: 17 };
+
+	else if (value === 'specialUploadB')
+		return { src: './images/dialogue/progress2.svg.php', width: 300, height: 17 };
+
+	else if (value === 'specialUploadC')
+		return { src: './images/dialogue/progress3.svg.php', width: 300, height: 17 };
 
 	else
 		return value;
