@@ -1,7 +1,7 @@
 /**
  * Created L/13/04/2009
- * Updated S/26/11/2011
- * Version 26
+ * Updated M/29/11/2011
+ * Version 27
  *
  * Copyright 2008-2011 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
@@ -444,7 +444,7 @@ function Upload() {
 
 
 	// #### Avancement de la barre de progression ########################## i18n ## private ### //
-	// = révision : 72
+	// = révision : 73
 	// » Fait avancer la barre de progression jusqu'à une certaine valeur
 	// » Affiche en fonction des données : 5% (25 Ko/s) / 5% (15 secondes restantes) / 5% (25 Ko/s - 15 secondes restantes) / 100%
 	// » Recherche silencieusement l'accès au graphique SVG
@@ -483,7 +483,7 @@ function Upload() {
 		}
 		else {
 			rect.setAttribute('x', '0');
-			rect.setAttribute('width', '100%');
+			rect.setAttribute('width', '101%');
 			text.firstChild.replaceData(0, text.firstChild.length, '100%');
 		}
 	};
