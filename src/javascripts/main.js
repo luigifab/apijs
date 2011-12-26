@@ -1,7 +1,7 @@
 /**
  * Created J/03/12/2009
- * Updated W/23/11/2011
- * Version 50
+ * Updated S/17/12/2011
+ * Version 52
  *
  * Copyright 2008-2011 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
@@ -17,12 +17,12 @@
  * GNU General Public License (GPL) for more details.
  *
  * Configuration de JSLint
- * Internationalization, BBcode, Dialogue, Slideshow, Upload, Map, window, apijs, start
+ * Internationalization, BBcode, Dialogue, Slideshow, Upload, window, apijs, start
  * openTab, customInit, customInitIE, alert, confirm, in_array, uniqid
  */
 
 // #### Paramètres de configuration ######################################### //
-// = révision : 51
+// = révision : 52
 // » Définie la variable globale du programme ainsi que sa configuration
 // » Lance le programme JavaScript
 var apijs = {
@@ -30,7 +30,6 @@ var apijs = {
 	dialogue: null,
 	slideshow: null,
 	upload: null,
-	map: null,
 	config: {
 		lang: 'fr',
 		debug: true,
@@ -63,11 +62,6 @@ var apijs = {
 			ids: 'diaporama',
 			hiddenPage: false,
 			hoverload: false
-		},
-		map: {
-			ids: 'map',
-			defaultCoords: { lon: 1.9, lat: 46.3, zoom: 5 },
-			imageMarker: { src: './images/map/marker.png', width: 26, height: 32 }
 		},
 		bbcode: {
 			'(a)': { src:'./images/icons/emotes/gnome-face-angel.png', width: 16, height: 16 },
@@ -103,7 +97,7 @@ else {
 
 
 // #### Lancement du programme ############################################## //
-// = révision : 42
+// = révision : 43
 // » Recherche les liens ayant la classe popup
 // » Vérifie si le navigateur supporte les transitions CSS ou pas
 // » Charge les modules disponibles et met en place les gestionnaires d'évènements
@@ -149,11 +143,6 @@ function start() {
 				apijs.upload = new Upload();
 			}
 		}
-
-		if ((typeof Map === 'function') && document.getElementById('mapBtnClose')) {
-			apijs.map = new Map();
-			apijs.map.init();
-		}
 	}
 
 	// *** Code utilisateur **************************** //
@@ -177,7 +166,7 @@ function openTab(ev) {
 
 
 // #### Fonctions de démonstrations ################################ i18n ### //
-// = révision : 18
+// = révision : 19
 // » Exemples de fonctions pour les dialogues de confirmation, d'options et d'upload
 // » Pour le dialogue d'options, si le paramètre reçu est un objet, alors c'est une copie et non une référence
 // » Pour le dialogue de confirmation, le fait que le paramètre reçu soit une référence n'a pas d'importance
@@ -199,7 +188,7 @@ function myFuncB(id) {
 
 function myFuncC() {
 
-	apijs.i18n.data.en.myFuncC = "Yes, it's myFuncC() of main.js, a very important function.\n\nWhat to do next ?\n» Click confirm to return true.\n» Click cancel to return false.";
+	apijs.i18n.data.en.myFuncC = "Yes, it's myFuncC() of main.js, a very important function.\n\nWhat to do next?\n» Click confirm to return true.\n» Click cancel to return false.";
 	apijs.i18n.data.fr.myFuncC = "Oui, c'est myFuncC() du main.js, une fonction très importante.\n\nQue faire ensuite ?\n» Cliquer sur valider pour renvoyer true\n» Cliquer sur annuler pour renvoyer false";
 
 	return confirm(apijs.i18n.translate('myFuncC'));
@@ -266,7 +255,7 @@ function getValue(value) {
 
 
 // #### Vérification des modules ############################################ //
-// = révision : 41
+// = révision : 42
 // » Recherche les modules presénts
 // » Vérifie la configuration des modules chargés
 // » Ne vérifie pas les dépendances entre les modules
@@ -357,16 +346,6 @@ function checkAll() {
 		module++;
 	}
 
-	// [TheMap]
-	if ((typeof Map === 'function') && (apijs.map instanceof Map)) {
-		report.push(' ➩ TheMap is here and loaded');
-		module++;
-	}
-	else if (typeof Map === 'function') {
-		report.push(' ➩ TheMap is here');
-		module++;
-	}
-
 	if (module < 1)
 		report.push(' ➩ no module present');
 
@@ -383,9 +362,6 @@ function checkAll() {
 			continue;
 
 		if ((keyA === 'upload') && ((typeof Upload !== 'function') || !(apijs.upload instanceof Upload)))
-			continue;
-
-		if ((keyA === 'map') && ((typeof Map !== 'function') || !(apijs.map instanceof Map)))
 			continue;
 
 		// config d'un module

@@ -1,7 +1,7 @@
 /**
  * Created S/05/06/2010
- * Updated L/21/11/2011
- * Version 20
+ * Updated S/17/12/2011
+ * Version 21
  *
  * Copyright 2008-2011 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
@@ -22,6 +22,9 @@ function Internationalization() {
 	this.data = [];
 
 	// #### Définition des traductions ############################################## public ### //
+	// » révision : 50
+	// » Translations are published under the terms of the BSD license
+
 	// English
 	// » Fabrice Creuzot (luigifab) <code~luigifab~info>
 	// » Brian Legrand <brianyouhouy~live~fr>
@@ -35,7 +38,7 @@ function Internationalization() {
 
 		downloadLink: "Download",
 		operationTooLong: "This operation is too long ? ",
-		warningLostChange: "Warning : all changes in progress will be lost.",
+		warningLostChange: "Warning: all changes in progress will be lost.",
 		reloadLink: "Reload this page",
 		operationInProgress: "Operation in progress...",
 		uploadInProgress: "Upload in progress...",
@@ -44,12 +47,12 @@ function Internationalization() {
 		uploadTime: "§% (§)",
 		uploadRate: "§% (§ KB/s)",
 		uploadRateTime: "§% (§ KB/s - §)",
-		uploadAllType: "All files are accepted.[br]Maximum size : § [abbr title='Megabyte']MB[/abbr].",
-		uploadOneType: "Accepted file format : §.[br]Maximum size : § [abbr title='Megabyte']MB[/abbr].",
-		uploadMultiType: "Accepted file formats : § and §.[br]Maximum size : § [abbr title='Megabyte']MB[/abbr].",
-		uploadBadOneType: "[p]It is impossible to send the file because the file format proposed isn't allowed.[/p][p]➩ Proposed file : [strong]§[/strong][br]➩ Accepted file format : §.[/p]",
-		uploadBadMultiType: "[p]It is impossible to send the file because the file format proposed isn't allowed.[/p][p]➩ Proposed file : [strong]§[/strong][br]➩ Accepted file formats : § and §.[/p]",
-		deleteNotFound: "Unfortunately, it is currently impossible to delete requested file (Error § : §).",
+		uploadAllType: "All files are accepted.[br]Maximum size: § [abbr title='Megabyte']MB[/abbr].",
+		uploadOneType: "Accepted file format: §.[br]Maximum size: § [abbr title='Megabyte']MB[/abbr].",
+		uploadMultiType: "Accepted file formats: § and §.[br]Maximum size: § [abbr title='Megabyte']MB[/abbr].",
+		uploadBadOneType: "[p]It is impossible to send the file because the file format proposed isn't allowed.[/p][p]➩ Proposed file: [strong]§[/strong][br]➩ Accepted file format: §.[/p]",
+		uploadBadMultiType: "[p]It is impossible to send the file because the file format proposed isn't allowed.[/p][p]➩ Proposed file: [strong]§[/strong][br]➩ Accepted file formats: § and §.[/p]",
+		deleteNotFound: "Unfortunately, it is currently impossible to delete requested file (Error §: §).",
 
 		browserNoVideo: "[p]Your browser doesn't support the <video> tag.[br]Remember to upgrade your browser.[/p][ul][li][a href='http://www.google.com/chrome?hl=en' class='popup']Chrome 3.0+[/a][/li][li][a href='http://www.mozilla-europe.org/en/firefox/' class='popup']Firefox 3.5+[/a][/li][li][a href='http://windows.microsoft.com/en-US/internet-explorer/products/ie/home' class='popup']Internet Explorer 9.0+[/a][/li][li][a href='http://www.konqueror.org/' class='popup']Konqueror 4.4+[/a][/li][li][a href='http://www.opera.com/' class='popup']Opera 10.50+[/a][/li][li][a href='http://www.apple.com/safari/' class='popup']Safari 3.1+[/a][/li][/ul]",
 
@@ -57,7 +60,7 @@ function Internationalization() {
 		debugInvalidUse: "(debug) Invalid use",
 		debugUnknownAction: "(debug) Unknown action",
 		debugKeyDetected: "(debug) Key detected",
-		debugKeyCode: "Code of the seizure key : §",
+		debugKeyCode: "Code of the seizure key: §",
 		debugInvalidConfig: "(debug) Invalid configuration",
 		debugNotRecognizedConfig: "Image configuration wasn't recognized",
 		debugNotExist: "doesn't exist (unlikely error)"

@@ -1,7 +1,7 @@
 /**
  * Created D/12/04/2009
- * Updated W/23/11/2011
- * Version 116
+ * Updated V/23/12/2011
+ * Version 117
  *
  * Copyright 2008-2011 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
@@ -177,16 +177,16 @@ function Dialogue() {
 
 
 	// #### Dialogue de progression ################################ i18n ## debug ## public ### //
-	// = révision : 91
+	// = révision : 92
 	// » Permet de faire patienter l'utilisateur en affichant une barre de progression
 	// » Composé d'un titre, d'un paragraphe et d'une barre de progression
 	// » Fermeture automatique ou pas et touche Échap désactivée
-	this.dialogProgress = function (title, text) {
+	this.dialogProgress = function (title, text, icon) {
 
 		// *** Création de la boite de dialogue ***************** //
 		if ((typeof title === 'string') && (typeof text === 'string')) {
 
-			this.setupDialogue('progress');
+			this.setupDialogue('progress', icon);
 
 			this.htmlParent(false);
 			this.htmlTitle(title);
@@ -199,35 +199,37 @@ function Dialogue() {
 		// *** Message de debug ********************************* //
 		else if (apijs.config.debug) {
 
-			this.dialogInformation(apijs.i18n.translate('debugInvalidCall'), '[pre]TheDialogue » dialogProgress[br]➩ (string) title : ' + title + '[br]➩ (string) text : ' + text + '[/pre]');
+			this.dialogInformation(apijs.i18n.translate('debugInvalidCall'), '[pre]TheDialogue » dialogProgress[br]➩ (string) title : ' + title + '[br]➩ (string) text : ' + text + '[br]➩ (string) icon : ' + icon + '[/pre]');
 		}
 	};
 
 
 	// #### Dialogue d'attente ##################################### i18n ## debug ## public ### //
-	// = révision : 78
+	// = révision : 79
 	// » Permet de faire patienter l'utilisateur en affichant un message d'attente
-	// » Composé d'un titre, d'un paragraphe et d'un lien différé de 10 secondes
+	// » Composé d'un titre, d'un paragraphe et d'un lien différé de 10 secondes ou plus si time est un nombre et si nolink est différent de false
 	// » Fermeture automatique ou pas et touche Échap désactivée
-	this.dialogWaiting = function (title, text, time) {
+	this.dialogWaiting = function (title, text, time, nolink, icon) {
 
 		// *** Création de la boite de dialogue ***************** //
 		if ((typeof title === 'string') && (typeof text === 'string')) {
 
-			this.setupDialogue('waiting');
+			this.setupDialogue('waiting', icon);
 
 			this.htmlParent(false);
 			this.htmlTitle(title);
 			this.htmlText(text);
 
 			this.showDialogue();
-			this.timer = window.setTimeout(apijs.dialogue.htmlLinkReload, (typeof time === 'number') ? time : 10000);
+
+			if (nolink !== false)
+				this.timer = window.setTimeout(apijs.dialogue.htmlLinkReload, (typeof time === 'number') ? time : 10000);
 		}
 
 		// *** Message de debug ********************************* //
 		else if (apijs.config.debug) {
 
-			this.dialogInformation(apijs.i18n.translate('debugInvalidCall'), '[pre]TheDialogue » dialogWaiting[br]➩ (string) title : ' + title + '[br]➩ (string) text : ' + text + '[br]➩ (number) time : ' + time + '[/pre]');
+			this.dialogInformation(apijs.i18n.translate('debugInvalidCall'), '[pre]TheDialogue » dialogWaiting[br]➩ (string) title : ' + title + '[br]➩ (string) text : ' + text + '[br]➩ (number) time : ' + time + '[br]➩ (boolean) nolink : ' + nolink + '[br]➩ (string) icon : ' + icon + '[/pre]');
 		}
 	};
 
@@ -323,7 +325,7 @@ function Dialogue() {
 
 
 	// #### Action du bouton Valider ##################### i18n ## debug ## event ## private ### //
-	// = révision : 110
+	// = révision : 111
 	// » Désactive l'action de la touche Échap
 	// » Pour le dialogue de confirmation appel la fonction de rappel (appel différé d'au moins 500 millisecondes)
 	// » Pour le dialogue d'options appel la fonction de rappel avant de soumettre le formulaire (envoi différé d'au moins 500 millisecondes)
@@ -351,7 +353,7 @@ function Dialogue() {
 				this.timer = window.setTimeout(apijs.dialogue.htmlLinkReload, 10000);
 			}
 			else {
-				this.dialogWaiting(document.getElementById('box').firstChild.firstChild.nodeValue, apijs.i18n.translate('operationInProgress'));
+				this.dialogWaiting(document.getElementById('box').firstChild.firstChild.nodeValue, apijs.i18n.translate('operationInProgress'), true, true, this.dialogType.replace(/confirmation | lock/g, ''));
 			}
 
 			// fonction de rappel différée ou immédiate

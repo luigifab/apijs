@@ -1,7 +1,7 @@
 /**
  * Created L/13/04/2009
- * Updated M/29/11/2011
- * Version 27
+ * Updated V/23/12/2011
+ * Version 28
  *
  * Copyright 2008-2011 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
@@ -126,7 +126,7 @@ function Upload() {
 	// GESTION DE L'ENVOI DU FICHIER (4)
 
 	// #### Vérification du formulaire ################################### i18n ## protected ### //
-	// = révision : 57
+	// = révision : 58
 	// » Vérifie si un fichier a été proposé et si son extension est autorisée
 	// » Fait bien attention à ne pas modifier la liste des extensions originale
 	// » Valide le formulaire et affiche le dialogue de progression de [TheDialogue] si tout semble correct
@@ -177,7 +177,7 @@ function Upload() {
 			this.apcTimer = window.setTimeout(apijs.upload.uploadRealTime, 1000);
 
 			window.setTimeout(function () {
-				apijs.dialogue.dialogProgress(document.getElementById('box').firstChild.firstChild.nodeValue, apijs.i18n.translate('uploadInProgress'));
+				apijs.dialogue.dialogProgress(document.getElementById('box').firstChild.firstChild.nodeValue, apijs.i18n.translate('uploadInProgress'), apijs.dialogue.dialogType.replace(/upload | lock/g, ''));
 			}, 1);
 		}
 

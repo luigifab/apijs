@@ -1,7 +1,7 @@
 /**
  * Created V/08/05/2009
- * Updated V/18/11/2011
- * Version 35
+ * Updated V/23/12/2011
+ * Version 36
  *
  * Copyright 2008-2011 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
@@ -188,7 +188,7 @@
 }
 
 #box div.navigation.txt button#next {
-	right:-4.8em;
+	right:-4.75em;
 	border-radius:1em 1em 0.4em 0.4em; -khtml-border-radius:1em 1em 0.4em 0.4em;
 	-moz-border-radius:1em 1em 0.4em 0.4em; -webkit-border-radius:1em 1em 0.4em 0.4em;
 	transform:rotate(90deg); -khtml-transform:rotate(90deg); -moz-transform:rotate(90deg); -ms-transform:rotate(90deg);
@@ -201,6 +201,8 @@
 	transition-duration:0.5s; -moz-transition-duration:0.5s; -webkit-transition-duration:0.5s;
 	transition-property:opacity; -moz-transition-property:opacity; -webkit-transition-property:opacity;
 }
+
+#box div.navigation.txt button#next, x:-moz-any-link { right:-4.85em; }
 
 #box div.navigation.img button#prev { left:-32px; }
 #box div.navigation.img button#next { right:-32px; }
