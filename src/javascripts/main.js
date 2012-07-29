@@ -1,9 +1,9 @@
 /**
  * Created J/03/12/2009
- * Updated S/17/12/2011
- * Version 52
+ * Updated W/18/07/2012
+ * Version 56
  *
- * Copyright 2008-2011 | Fabrice Creuzot (luigifab) <code~luigifab~info>
+ * Copyright 2008-2012 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
  *
  * This program is free software, you can redistribute it or modify
@@ -17,19 +17,15 @@
  * GNU General Public License (GPL) for more details.
  *
  * Configuration de JSLint
- * Internationalization, BBcode, Dialogue, Slideshow, Upload, window, apijs, start
- * openTab, customInit, customInitIE, alert, confirm, in_array, uniqid
+ * apijs, startApijs, window, openTab, alert, confirm, str_shuffle, in_array, ucwords, uniqid
  */
 
 // #### Paramètres de configuration ######################################### //
-// = révision : 52
+// = révision : 58
 // » Définie la variable globale du programme ainsi que sa configuration
 // » Lance le programme JavaScript
 var apijs = {
-	i18n: null,
-	dialogue: null,
-	slideshow: null,
-	upload: null,
+	core: {},
 	config: {
 		lang: 'fr',
 		debug: true,
@@ -37,9 +33,10 @@ var apijs = {
 		navigator: true,
 		transition: true,
 		autolang: true,
-		dialogue: {
+		dialog: {
 			blocks: [],
 			hiddenPage: false,
+			closeOnClic: false,
 			savingDialog: false,
 			savingTime: 2500,
 			emotes: true,
@@ -52,8 +49,8 @@ var apijs = {
 			videoHeight: 480,
 			imagePrev: null,
 			imageNext: null,
-			imageClose: { src: './images/dialogue/close.png', width: 60, height: 22 },
-			imageUpload: { src: './images/dialogue/progress2.svg.php', width: 300, height: 17 },
+			imageClose: null,
+			imageUpload: { src: './images/dialog/progress2.svg.php', width: 300, height: 17 },
 			filePhoto: './downloadfile.php',
 			fileVideo: './downloadfile.php',
 			fileUpload: './uploadfile.php'
@@ -89,19 +86,19 @@ if (navigator.userAgent.indexOf('MSIE 8') > -1) {
 	document.createElement('video');
 	window.innerWidth = document.documentElement.clientWidth;
 	window.innerHeight = document.documentElement.clientHeight;
-	window.attachEvent('onload', start);
+	window.attachEvent('onload', startApijs);
 }
 else {
-	window.addEventListener('load', start, false);
+	window.addEventListener('load', startApijs, false);
 }
 
 
 // #### Lancement du programme ############################################## //
-// = révision : 43
+// = révision : 50
 // » Recherche les liens ayant la classe popup
 // » Vérifie si le navigateur supporte les transitions CSS ou pas
 // » Charge les modules disponibles et met en place les gestionnaires d'évènements
-function start() {
+function startApijs() {
 
 	// *** Recherche des liens ************************* //
 	if (apijs.config.navigator) {
@@ -119,327 +116,34 @@ function start() {
 
 	// *** Support des transitions CSS ***************** //
 	if ((typeof document.getElementsByTagName('body')[0].style.transitionDuration !== 'string') &&
+	    (typeof document.getElementsByTagName('body')[0].style.OTransitionDuration !== 'string') &&
 	    (typeof document.getElementsByTagName('body')[0].style.MozTransitionDuration !== 'string') &&
 	    (typeof document.getElementsByTagName('body')[0].style.webkitTransitionDuration !== 'string')) {
 		apijs.config.transition = false;
 	}
 
 	// *** Chargement des modules ********************** //
-	if (typeof Internationalization === 'function') {
+	if ((typeof apijs.core.i18n === 'function') && (typeof apijs.core.bbcode === 'function') && (typeof apijs.core.dialog === 'function') &&
+	    (typeof apijs.core.slideshow === 'function') && (typeof apijs.core.upload === 'function')) {
 
-		apijs.i18n = new Internationalization();
+		apijs.i18n = new apijs.core.i18n();
 		apijs.i18n.init();
 
-		if ((typeof Dialogue === 'function') && (typeof BBcode === 'function')) {
+		apijs.dialog = new apijs.core.dialog();
 
-			apijs.dialogue = new Dialogue();
+		apijs.slideshow = new apijs.core.slideshow();
+		apijs.slideshow.init();
 
-			if (typeof Slideshow === 'function') {
-				apijs.slideshow = new Slideshow();
-				apijs.slideshow.init();
-			}
-
-			if (typeof Upload === 'function') {
-				apijs.upload = new Upload();
-			}
-		}
+		apijs.upload = new apijs.core.upload();
 	}
-
-	// *** Code utilisateur **************************** //
-	// voir le fichier custom.js pour plus d'informations
-	if (apijs.config.navigator && (typeof customInit === 'function'))
-		customInit();
-
-	else if (!apijs.config.navigator && (typeof customInitIE === 'function'))
-		customInitIE();
 }
 
 
 // #### Nouvel onglet ####################################################### //
-// = révision : 3
+// = révision : 4
 // » Ouvre le lien dans un nouvel onglet
 // » Annule l'action par défaut
 function openTab(ev) {
 	ev.preventDefault();
 	window.open(this.href);
 }
-
-
-// #### Fonctions de démonstrations ################################ i18n ### //
-// = révision : 19
-// » Exemples de fonctions pour les dialogues de confirmation, d'options et d'upload
-// » Pour le dialogue d'options, si le paramètre reçu est un objet, alors c'est une copie et non une référence
-// » Pour le dialogue de confirmation, le fait que le paramètre reçu soit une référence n'a pas d'importance
-function myFuncA() {
-
-	apijs.i18n.data.en.myFuncA = "[pre]Yes, it's myFuncA() of main.js.[/pre]";
-	apijs.i18n.data.fr.myFuncA = "[pre]Oui, c'est myFuncA() du main.js.[/pre]";
-
-	apijs.dialogue.dialogInformation('myFuncA', apijs.i18n.translate('myFuncA'));
-}
-
-function myFuncB(id) {
-
-	apijs.i18n.data.en.myFuncB = "[pre]Yes, it's myFuncB(§) of main.js.[/pre]";
-	apijs.i18n.data.fr.myFuncB = "[pre]Oui, c'est myFuncB(§) du main.js.[/pre]";
-
-	apijs.dialogue.dialogInformation('myFuncB', apijs.i18n.translate('myFuncB', id));
-}
-
-function myFuncC() {
-
-	apijs.i18n.data.en.myFuncC = "Yes, it's myFuncC() of main.js, a very important function.\n\nWhat to do next?\n» Click confirm to return true.\n» Click cancel to return false.";
-	apijs.i18n.data.fr.myFuncC = "Oui, c'est myFuncC() du main.js, une fonction très importante.\n\nQue faire ensuite ?\n» Cliquer sur valider pour renvoyer true\n» Cliquer sur annuler pour renvoyer false";
-
-	return confirm(apijs.i18n.translate('myFuncC'));
-}
-
-function myFuncD(key, id) {
-
-	apijs.i18n.data.en.myFuncD = "Image that you sent";
-	apijs.i18n.data.fr.myFuncD = "L'image que vous avez envoyée";
-
-	apijs.config.dialogue.savePhoto = false;
-	apijs.dialogue.dialogPhoto(400, 300, apijs.config.dialogue.fileUpload + '?image=' + key, 'myFuncD(' + id + ')', 'false', apijs.i18n.translate('myFuncD'));
-	apijs.config.dialogue.savePhoto = true;
-}
-
-function myFuncE(id) {
-
-	apijs.i18n.data.en.myFuncA = "[pre]Yes, it's myFuncE(§) of main.js.[/pre]";
-	apijs.i18n.data.fr.myFuncA = "[pre]Oui, c'est myFuncE(§) du main.js.[/pre]";
-
-	apijs.dialogue.dialogInformation('myFuncE', apijs.i18n.translate('myFuncE', id));
-}
-
-
-// #### Configuration dynamique ############################################# //
-// = révision : 6
-// » Renvoie un booléen, une valeur null, un nombre ou un objet lorsque nécessaire
-// » Renvoie dans tous les cas quelque chose
-function getValue(value) {
-
-	if (value === 'true')
-		return true;
-
-	else if (value === 'false')
-		return false;
-
-	else if (value === 'null')
-		return null;
-
-	else if (/[0-9]+/.test(value))
-		return parseInt(value, 10);
-
-	else if (value === 'specialPrev')
-		return { src: './images/icons/24/gnome-prev.png', width: 24, height: 24 };
-
-	else if (value === 'specialNext')
-		return { src: './images/icons/24/gnome-next.png', width: 24, height: 24 };
-
-	else if (value === 'specialClose')
-		return { src: './images/dialogue/close.png', width: 60, height: 22 };
-
-	else if (value === 'specialUploadA')
-		return { src: './images/dialogue/progress1.svg.php', width: 300, height: 17 };
-
-	else if (value === 'specialUploadB')
-		return { src: './images/dialogue/progress2.svg.php', width: 300, height: 17 };
-
-	else if (value === 'specialUploadC')
-		return { src: './images/dialogue/progress3.svg.php', width: 300, height: 17 };
-
-	else
-		return value;
-}
-
-
-// #### Vérification des modules ############################################ //
-// = révision : 42
-// » Recherche les modules presénts
-// » Vérifie la configuration des modules chargés
-// » Ne vérifie pas les dépendances entre les modules
-function checkAll() {
-
-	var module = 0, error = 0, report = [], defaultConf = null, keyA = null, keyB = null, keyC = null;
-	defaultConf = {
-		lang: 'string',
-		debug: 'boolean',
-		debugkey: 'boolean',
-		navigator: 'boolean',
-		transition: 'boolean',
-		autolang: 'boolean',
-		dialogue: {
-			blocks: 'object',
-			hiddenPage: 'boolean',
-			savingDialog: 'boolean',
-			savingTime: 'number',
-			emotes: 'boolean',
-			showLoader: 'boolean',
-			showFullsize: 'boolean',
-			savePhoto: 'boolean',
-			saveVideo: 'boolean',
-			videoAutoplay: 'boolean',
-			videoWidth: 'number',
-			videoHeight: 'number',
-			imagePrev: { src: 'string', width: 'number', height: 'number' },
-			imageNext: { src: 'string', width: 'number', height: 'number' },
-			imageClose: { src: 'string', width: 'number', height: 'number' },
-			imageUpload: { src: 'string', width: 'number', height: 'number' },
-			filePhoto: 'string',
-			fileVideo: 'string',
-			fileUpload: 'string'
-		},
-		slideshow: {
-			ids: 'string',
-			hiddenPage: 'boolean',
-			hoverload: 'boolean'
-		}
-	};
-
-	// *** Recherche des modules *********************** //
-	report.push('Checking modules');
-
-	// [bbcode]
-	if (typeof BBcode === 'function') {
-		report.push(' ➩ BBcode is here');
-		module++;
-	}
-
-	// [i18n]
-	if ((typeof Internationalization === 'function') && (apijs.i18n instanceof Internationalization)) {
-		report.push(' ➩ Internationalization is here and loaded');
-		module++;
-	}
-	else if (typeof Internationalization === 'function') {
-		report.push(' ➩ Internationalization is here');
-		module++;
-	}
-
-	// [TheDialogue]
-	if ((typeof Dialogue === 'function') && (apijs.dialogue instanceof Dialogue)) {
-		report.push(' ➩ TheDialogue is here and loaded');
-		module++;
-	}
-	else if (typeof Dialogue === 'function') {
-		report.push(' ➩ TheDialogue is here');
-		module++;
-	}
-
-	// [TheSlideshow]
-	if ((typeof Slideshow === 'function') && (apijs.slideshow instanceof Slideshow)) {
-		report.push(' ➩ TheSlideshow is here and loaded');
-		module++;
-	}
-	else if (typeof Slideshow === 'function') {
-		report.push(' ➩ TheSlideshow is here');
-		module++;
-	}
-
-	// [TheUpload]
-	if ((typeof Upload === 'function') && (apijs.upload instanceof Upload)) {
-		report.push(' ➩ TheUpload is here and loaded');
-		module++;
-	}
-	else if (typeof Upload === 'function') {
-		report.push(' ➩ TheUpload is here');
-		module++;
-	}
-
-	if (module < 1)
-		report.push(' ➩ no module present');
-
-	// *** Vérification de la configuration ************ //
-	report.push('\nChecking configuration');
-
-	for (keyA in defaultConf) if (defaultConf.hasOwnProperty(keyA)) {
-
-		// pas de vérification si le module n'est pas chargé ou s'il n'existe pas
-		if ((keyA === 'dialogue') && ((typeof Dialogue !== 'function') || !(apijs.dialogue instanceof Dialogue)))
-			continue;
-
-		if ((keyA === 'slideshow') && ((typeof Slideshow !== 'function') || !(apijs.slideshow instanceof Slideshow)))
-			continue;
-
-		if ((keyA === 'upload') && ((typeof Upload !== 'function') || !(apijs.upload instanceof Upload)))
-			continue;
-
-		// config d'un module
-		if (typeof defaultConf[keyA] === 'object') {
-
-			for (keyB in defaultConf[keyA]) if (defaultConf[keyA].hasOwnProperty(keyB)) {
-
-				// objet
-				if (typeof defaultConf[keyA][keyB] === 'object') {
-
-					for (keyC in defaultConf[keyA][keyB]) if (defaultConf[keyA][keyB].hasOwnProperty(keyC)) {
-
-						// config non spécifiée
-						if (apijs.config[keyA][keyB] === null) {
-							report.push(' ⚠ apijs.config.' + keyA + '.' + keyB + ' is null');
-							break;
-						}
-
-						// config manquante
-						else if (apijs.config[keyA][keyB][keyC] === undefined) {
-							report.push(' ☠ apijs.config.' + keyA + '.' + keyB + '.' + keyC + ' is missing');
-							error++;
-						}
-
-						// config vide
-						else if (apijs.config[keyA][keyB][keyC] === null) {
-							report.push(' ⚠ apijs.config.' + keyA + '.' + keyB + '.' + keyC + ' is null');
-						}
-
-						// config invalide
-						else if (typeof apijs.config[keyA][keyB][keyC] !== defaultConf[keyA][keyB][keyC]) {
-							report.push(' ☠ apijs.config.' + keyA + '.' + keyB + '.' + keyC + ' isn\'t a ' + defaultConf[keyA][keyB][keyC]);
-							error++;
-						}
-					}
-				}
-
-				// config manquante
-				else if (apijs.config[keyA][keyB] === undefined) {
-					report.push(' ☠ apijs.config.' + keyA + '.' + keyB + ' is missing');
-					error++;
-				}
-
-				// config vide
-				else if (apijs.config[keyA][keyB] === null) {
-					report.push(' ⚠ apijs.config.' + keyA + '.' + keyB + ' is null');
-				}
-
-				// config invalide
-				else if (typeof apijs.config[keyA][keyB] !== defaultConf[keyA][keyB]) {
-					report.push(' ☠ apijs.config.' + keyA + '.' + keyB + ' isn\'t a ' + defaultConf[keyA][keyB]);
-					error++;
-				}
-			}
-		}
-
-		// config manquante
-		else if (apijs.config[keyA] === undefined) {
-			report.push(' ☠ apijs.config.' + keyA + ' is missing');
-			error++;
-		}
-
-		// config vide
-		else if (apijs.config[keyA] === null) {
-			report.push(' ⚠ apijs.config.' + keyA + ' is null');
-		}
-
-		// config invalide
-		else if (typeof apijs.config[keyA] !== defaultConf[keyA]) {
-			report.push(' ☠ apijs.config.' + keyA + ' isn\'t a ' + defaultConf[keyA]);
-			error++;
-		}
-	}
-
-	if (error < 1)
-		report.push(' ➩ no error found');
-
-	// *** Affichage du rapport ************************ //
-	alert(report.join('\n'));
-}
-

@@ -1,9 +1,9 @@
 /**
  * Created J/13/05/2010
- * Updated S/03/09/2011
- * Version 17
+ * Updated J/24/05/2012
+ * Version 20
  *
- * Copyright 2008-2011 | Fabrice Creuzot (luigifab) <code~luigifab~info>
+ * Copyright 2008-2012 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
  *
  * This program is free software, you can redistribute it or modify
@@ -17,7 +17,7 @@
  * GNU General Public License (GPL) for more details.
  */
 
-function Slideshow() {
+apijs.core.slideshow = function () {
 
 	// définition des attributs
 	this.presentation = null;
@@ -29,7 +29,7 @@ function Slideshow() {
 	// GESTION DU DIAPORAMA (5)
 
 	// #### Initialisation ########################################################## public ### //
-	// = révision : 13
+	// = révision : 14
 	// » Recherche les albums et les photos et vidéos de chaque album
 	// » Met en place les gestionnaires d'événements associés lorsque nécessaire
 	// » Seul les albums en mode présentation réagiront au survol si la config le permet
@@ -91,7 +91,7 @@ function Slideshow() {
 
 
 	// #### Prépare l'affichage du dialogue ############## i18n ## event ## debug ## private ### //
-	// = révision : 36
+	// = révision : 37
 	// » Recherche les informations de la photo ou de la vidéo à afficher
 	// » En mode diaporama, déduit s'il faut mettre à jour l'image principale de l'album, s'il faut afficher un dialogue photo ou vidéo
 	//  ou s'il faut mettre à jour les dialogues photo ou vidéo
@@ -132,37 +132,37 @@ function Slideshow() {
 
 			// mise à jour de l'image principale
 			// survol ou clic
-			if ((apijs.dialogue.dialogType === null) && ((theMedia.conf.length === 6) || (theMedia.conf.length === 4))) {
+			if ((apijs.dialog.dialogType === null) && ((theMedia.conf.length === 6) || (theMedia.conf.length === 4))) {
 				apijs.slideshow.updatePresentation(theMedia);
 			}
 
 			// affichage du dialogue
 			// clic sur l'image principale
-			else if ((apijs.dialogue.dialogType === null) && ((theMedia.conf.length === 5) || (theMedia.conf.length === 3))) {
+			else if ((apijs.dialog.dialogType === null) && ((theMedia.conf.length === 5) || (theMedia.conf.length === 3))) {
 				theMedia.number = apijs.slideshow.presentation[theMedia.album];
-				apijs.slideshow.showDialogue(theMedia);
+				apijs.slideshow.showDialog(theMedia);
 			}
 
 			// changement de photo ou de vidéo depuis le dialogue
 			// touches droite gauche début fin et boutons précédent suivant
 			else {
 				apijs.slideshow.updatePresentation(theMedia);
-				apijs.slideshow.showDialogue(theMedia);
+				apijs.slideshow.showDialog(theMedia);
 			}
 		}
 
 		// *** Affichage du dialogue **************************** //
 		else if ((theMedia.conf.length === 5) || (theMedia.conf.length === 3))
-			apijs.slideshow.showDialogue(theMedia);
+			apijs.slideshow.showDialog(theMedia);
 
 		// *** Message de debug ********************************* //
 		else if (apijs.config.debug)
-			apijs.dialogue.dialogInformation(apijs.i18n.translate('debugInvalidUse'), '[pre]TheSlideshow » showMedia[br]' + apijs.i18n.translate('debugNotRecognizedConfig') + '[/pre]');
+			apijs.dialog.dialogInformation(apijs.i18n.translate('debugInvalidUse'), '[pre]TheSlideshow » showMedia[br]' + apijs.i18n.translate('debugNotRecognizedConfig') + '[/pre]');
 	};
 
 
 	// #### Gestion du mode présentation ########################## i18n ## debug ## private ### //
-	// = révision : 15
+	// = révision : 16
 	// » Extrait et vérifie les données nécessaires à la modification des attributs de l'image principale de l'album
 	// » Se base sur le lien de l'image qui vient d'être cliqué ou survolé
 	// » Ajoute l'attribut classe actif sur l'image du lien en question
@@ -195,7 +195,7 @@ function Slideshow() {
 		// *** Message de debug ********************************* //
 		else if (apijs.config.debug && (theMedia.conf.length === 6)) {
 
-			apijs.dialogue.dialogInformation(apijs.i18n.translate('debugInvalidConfig'), '[pre]TheSlideshow » changePhoto[br]➩ (string) url : ' + theMedia.conf[0] + '[br]➩ (number) width : ' + theMedia.conf[1] + '[br]➩ (number) height : ' + theMedia.conf[2] + '[br]➩ (string) date : ' + theMedia.conf[3] + '[br]➩ (string) legend : ' + theMedia.conf[4] + '[/pre]');
+			apijs.dialog.dialogInformation(apijs.i18n.translate('debugInvalidConfig'), '[pre]TheSlideshow » changePhoto[br]➩ (string) url : ' + theMedia.conf[0] + '[br]➩ (number) width : ' + theMedia.conf[1] + '[br]➩ (number) height : ' + theMedia.conf[2] + '[br]➩ (string) date : ' + theMedia.conf[3] + '[br]➩ (string) legend : ' + theMedia.conf[4] + '[/pre]');
 		}
 
 		// *** Image principale (vidéo) ************************* //
@@ -222,17 +222,17 @@ function Slideshow() {
 		// *** Message de debug ********************************* //
 		else if (apijs.config.debug && (theMedia.conf.length === 4)) {
 
-			apijs.dialogue.dialogInformation(apijs.i18n.translate('debugInvalidConfig'), '[pre]TheSlideshow » changePhoto[br]➩ (string) url : ' + theMedia.conf[0] + '[br]➩ (string) date : ' + theMedia.conf[1] + '[br]➩ (string) legend : ' + theMedia.conf[2] + '[/pre]');
+			apijs.dialog.dialogInformation(apijs.i18n.translate('debugInvalidConfig'), '[pre]TheSlideshow » changePhoto[br]➩ (string) url : ' + theMedia.conf[0] + '[br]➩ (string) date : ' + theMedia.conf[1] + '[br]➩ (string) legend : ' + theMedia.conf[2] + '[/pre]');
 		}
 	};
 
 
 	// #### Affichage du dialogue ################################# i18n ## debug ## private ### //
-	// = révision : 19
+	// = révision : 20
 	// » Extrait et vérifie les données nécessaires à l'affichage de la photo ou vidéo
-	// » Affiche une photo ou une vidéo grâce aux dialogues photo ou vidéo de [TheDialogue]
+	// » Affiche une photo ou une vidéo grâce aux dialogues photo ou vidéo de [TheDialog]
 	// » Dans tout les cas remplace l'ancien dialogue par un nouveau
-	this.showDialogue = function (theMedia) {
+	this.showDialog = function (theMedia) {
 
 		// *** Dialogue photo *********************************** //
 		if ((theMedia.conf.length === 5) && (theMedia.conf[0].length > 0) && (theMedia.conf[1].length > 0) && (theMedia.conf[2].length > 0) &&
@@ -246,18 +246,18 @@ function Slideshow() {
 			theMedia.height = parseInt(theMedia.conf[1], 10);
 
 			// suppression de l'ancien dialogue
-			if (apijs.dialogue.dialogType !== null)
-				apijs.dialogue.actionClose(false);
+			if (apijs.dialog.dialogType !== null)
+				apijs.dialog.actionClose(false);
 
 			// mise en place du dialogue photo
-			apijs.dialogue.dialogPhoto(theMedia.width, theMedia.height, theMedia.url, theMedia.name, theMedia.date, theMedia.legend, true);
+			apijs.dialog.dialogPhoto(theMedia.width, theMedia.height, theMedia.url, theMedia.name, theMedia.date, theMedia.legend, true);
 			this.showNavigation(theMedia.album, theMedia.number);
 		}
 
 		// *** Message de debug ********************************* //
 		else if (apijs.config.debug && (theMedia.conf.length === 5)) {
 
-			apijs.dialogue.dialogInformation(apijs.i18n.translate('debugInvalidConfig'), '[pre]TheSlideshow » showMedia[br]➩ (number) width : ' + theMedia.conf[0] + '[br]➩ (number) height : ' + theMedia.conf[1] + '[br]➩ (string) date : ' + theMedia.conf[2] + '[br]➩ (string) legend : ' + theMedia.conf[3] + '[/pre]');
+			apijs.dialog.dialogInformation(apijs.i18n.translate('debugInvalidConfig'), '[pre]TheSlideshow » showMedia[br]➩ (number) width : ' + theMedia.conf[0] + '[br]➩ (number) height : ' + theMedia.conf[1] + '[br]➩ (string) date : ' + theMedia.conf[2] + '[br]➩ (string) legend : ' + theMedia.conf[3] + '[/pre]');
 		}
 
 		// *** Dialogue vidéo *********************************** //
@@ -269,30 +269,30 @@ function Slideshow() {
 			theMedia.legend = theMedia.conf[2];
 
 			// suppression de l'ancien dialogue
-			if (apijs.dialogue.dialogType !== null)
-				apijs.dialogue.actionClose(false);
+			if (apijs.dialog.dialogType !== null)
+				apijs.dialog.actionClose(false);
 
 			// mise en place du dialogue vidéo
-			apijs.dialogue.dialogVideo(theMedia.url, theMedia.name, theMedia.date, theMedia.legend, true);
+			apijs.dialog.dialogVideo(theMedia.url, theMedia.name, theMedia.date, theMedia.legend, true);
 			this.showNavigation(theMedia.album, theMedia.number);
 		}
 
 		// *** Message de debug ********************************* //
 		else if (apijs.config.debug && (theMedia.conf.length === 3)) {
 
-			apijs.dialogue.dialogInformation(apijs.i18n.translate('debugInvalidConfig'), '[pre]TheSlideshow » showMedia[br]➩ (string) date : ' + theMedia.conf[0] + '[br]➩ (string) legend : ' + theMedia.conf[1] + '[/pre]');
+			apijs.dialog.dialogInformation(apijs.i18n.translate('debugInvalidConfig'), '[pre]TheSlideshow » showMedia[br]➩ (string) date : ' + theMedia.conf[0] + '[br]➩ (string) legend : ' + theMedia.conf[1] + '[/pre]');
 		}
 	};
 
 
 	// #### Affichage des boutons de navigation #################################### private ### //
-	// = révision : 24
+	// = révision : 25
 	// » Affiche les boutons précédent et suivant si nécessaire
 	// » Vérifie au préalable s'il existe une photo ou vidéo précédente et s'il existe une photo ou vidéo suivante
 	// » S'assure qu'un dialogue photo ou vidéo est présent avant de faire n'importe quoi
 	this.showNavigation = function (album, number) {
 
-		if ((apijs.dialogue.dialogType.indexOf('photo') > -1) || (apijs.dialogue.dialogType.indexOf('video') > -1)) {
+		if ((apijs.dialog.dialogType.indexOf('photo') > -1) || (apijs.dialog.dialogType.indexOf('video') > -1)) {
 
 			// préparation des variables
 			this.media.album = album;
@@ -324,7 +324,7 @@ function Slideshow() {
 	// DÉFINITION DES ACTIONS DES BOUTONS ET DES TOUCHES DU CLAVIER (4)
 
 	// #### Action de la touche Début ###################################### event ## public ### //
-	// = révision : 4
+	// = révision : 5
 	// » Affiche la première photo ou vidéo
 	// » En provenance de la touche début
 	this.actionFirst = function () {
@@ -335,7 +335,7 @@ function Slideshow() {
 
 
 	// #### Action du bouton Précédent ##################################### event ## public ### //
-	// = révision : 14
+	// = révision : 15
 	// » Affiche la photo ou vidéo précédente
 	// » En provenance du dialogue photo/vidéo ou de la touche gauche
 	this.actionPrev = function () {
@@ -346,7 +346,7 @@ function Slideshow() {
 
 
 	// #### Action du bouton Suivant ####################################### event ## public ### //
-	// = révision : 13
+	// = révision : 14
 	// » Affiche la photo ou vidéo suivante
 	// » En provenance du dialogue photo/vidéo ou de la touche droite
 	this.actionNext = function () {
@@ -357,7 +357,7 @@ function Slideshow() {
 
 
 	// #### Action de la touche Fin ######################################## event ## public ### //
-	// = révision : 4
+	// = révision : 5
 	// » Affiche la dernière photo ou vidéo
 	// » En provenance de la touche fin
 	this.actionLast = function () {
@@ -365,4 +365,4 @@ function Slideshow() {
 		if ((this.media !== null) && (this.media.number >= 0) && (this.media.number < this.totals[this.media.album]))
 			this.showMedia(this.media.last);
 	};
-}
+};

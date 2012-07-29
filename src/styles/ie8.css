@@ -1,0 +1,47 @@
+/**
+ * Created L/20/09/2010
+ * Updated D/27/01/2013
+ * Version 21
+ *
+ * Copyright 2008-2012 | Fabrice Creuzot (luigifab) <code~luigifab~info>
+ * http://www.luigifab.info/apijs
+ *
+ * This program is free software, you can redistribute it or modify
+ * it under the terms of the GNU General Public License (GPL) as published
+ * by the free software foundation, either version 2 of the license, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but without any warranty, without even the implied warranty of
+ * merchantability or fitness for a particular purpose. See the
+ * GNU General Public License (GPL) for more details.
+ */
+
+/* ########################################################## dialog.css ### */
+#dialog, #dialog.actif { background:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAA1JREFUCNdjYGBgWAYAAKsAp/91VKUAAAAASUVORK5CYII="); }
+
+#dialog.slideshow.cblack { background:black; }
+
+#box.photo, #box.video { border:none; }
+#box div.novisible { visibility:hidden; }
+#box dl dd { margin-bottom:0.3em; }
+
+#box.photo dl dt a span { filter:alpha(opacity=0); }
+#box.photo dl dt a:hover span, #box.photo dt a:active span, #box.photo dt a:focus span { filter:alpha(opacity=75); }
+
+#box div.close { background:url("data:image/gif;base64,AAAA"); }
+#box div.close.txt button.close { padding-bottom:0.1em; }
+
+#box div.navigation.txt button { top:38%; }
+#box div.navigation.txt button#prev { left:-24px; filter:progid:DXImageTransform.Microsoft.BasicImage(rotation=3) alpha(opacity=70); }
+#box div.navigation.txt button#next { right:-73px; filter:progid:DXImageTransform.Microsoft.BasicImage(rotation=1) alpha(opacity=70); }
+
+#box div.navigation.txt button#prev:hover, #box div.navigation.txt button#prev:active,
+#box div.navigation.txt button#prev:focus { filter:progid:DXImageTransform.Microsoft.BasicImage(rotation=3); }
+#box div.navigation.txt button#next:hover, #box div.navigation.txt button#next:active,
+#box div.navigation.txt button#next:focus { filter:progid:DXImageTransform.Microsoft.BasicImage(rotation=1); }
+
+#dialog.slideshow.cblack div.navigation button { filter:alpha(opacity=40); }
+#dialog.slideshow.cblack div.navigation button:hover, #dialog.slideshow.cblack div.navigation button:active,
+#dialog.slideshow.cblack div.navigation button:focus { filter:alpha(opacity=80); }
+

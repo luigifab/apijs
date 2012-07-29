@@ -1,9 +1,9 @@
 /**
  * Created S/05/06/2010
- * Updated S/17/12/2011
- * Version 21
+ * Updated J/24/05/2012
+ * Version 23
  *
- * Copyright 2008-2011 | Fabrice Creuzot (luigifab) <code~luigifab~info>
+ * Copyright 2008-2012 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
  *
  * This program is free software, you can redistribute it or modify
@@ -17,17 +17,14 @@
  * GNU General Public License (GPL) for more details.
  */
 
-function Internationalization() {
+apijs.core.i18n = function () {
 
 	this.data = [];
 
 	// #### Définition des traductions ############################################## public ### //
-	// » révision : 50
 	// » Translations are published under the terms of the BSD license
-
-	// English
-	// » Fabrice Creuzot (luigifab) <code~luigifab~info>
-	// » Brian Legrand <brianyouhouy~live~fr>
+	// = English
+	// » Fabrice Creuzot (luigifab) <code~luigifab~info> & Brian Legrand <brianyouhouy~live~fr>
 	this.data.en = {
 		buttonOk: "Ok",
 		buttonCancel: "Cancel",
@@ -50,11 +47,11 @@ function Internationalization() {
 		uploadAllType: "All files are accepted.[br]Maximum size: § [abbr title='Megabyte']MB[/abbr].",
 		uploadOneType: "Accepted file format: §.[br]Maximum size: § [abbr title='Megabyte']MB[/abbr].",
 		uploadMultiType: "Accepted file formats: § and §.[br]Maximum size: § [abbr title='Megabyte']MB[/abbr].",
-		uploadBadOneType: "[p]It is impossible to send the file because the file format proposed isn't allowed.[/p][p]➩ Proposed file: [strong]§[/strong][br]➩ Accepted file format: §.[/p]",
-		uploadBadMultiType: "[p]It is impossible to send the file because the file format proposed isn't allowed.[/p][p]➩ Proposed file: [strong]§[/strong][br]➩ Accepted file formats: § and §.[/p]",
-		deleteNotFound: "Unfortunately, it is currently impossible to delete requested file (Error §: §).",
+		uploadBadOneType: "[p]It's impossible to send the file because the file format proposed isn't allowed.[/p][p]➩ Proposed file: [strong]§[/strong][br]➩ Accepted file format: §.[/p]",
+		uploadBadMultiType: "[p]It's impossible to send the file because the file format proposed isn't allowed.[/p][p]➩ Proposed file: [strong]§[/strong][br]➩ Accepted file formats: § and §.[/p]",
+		deleteNotFound: "Unfortunately, it's currently impossible to delete requested file (Error §: §).",
 
-		browserNoVideo: "[p]Your browser doesn't support the <video> tag.[br]Remember to upgrade your browser.[/p][ul][li][a href='http://www.google.com/chrome?hl=en' class='popup']Chrome 3.0+[/a][/li][li][a href='http://www.mozilla-europe.org/en/firefox/' class='popup']Firefox 3.5+[/a][/li][li][a href='http://windows.microsoft.com/en-US/internet-explorer/products/ie/home' class='popup']Internet Explorer 9.0+[/a][/li][li][a href='http://www.konqueror.org/' class='popup']Konqueror 4.4+[/a][/li][li][a href='http://www.opera.com/' class='popup']Opera 10.50+[/a][/li][li][a href='http://www.apple.com/safari/' class='popup']Safari 3.1+[/a][/li][/ul]",
+		browserNoVideo: "[p]Your browser doesn't support the <video> tag.[br]Please upgrade your browser.[/p][ul][li][a href='http://www.google.com/chrome?hl=en' class='popup']Chrome 3.0+[/a][/li][li][a href='http://www.mozilla-europe.org/en/firefox/' class='popup']Firefox 3.5+[/a][/li][li][a href='http://windows.microsoft.com/en-US/internet-explorer/products/ie/home' class='popup']Internet Explorer 9.0+[/a][/li][li][a href='http://www.konqueror.org/' class='popup']Konqueror 4.4+[/a][/li][li][a href='http://www.opera.com/' class='popup']Opera 10.50+[/a][/li][li][a href='http://www.apple.com/safari/' class='popup']Safari 3.1+[/a][/li][/ul]",
 
 		debugInvalidCall: "(debug) Invalid call",
 		debugInvalidUse: "(debug) Invalid use",
@@ -65,8 +62,7 @@ function Internationalization() {
 		debugNotRecognizedConfig: "Image configuration wasn't recognized",
 		debugNotExist: "doesn't exist (unlikely error)"
 	};
-
-	// Français
+	// = Français
 	// » Fabrice Creuzot (luigifab) <code~luigifab~info>
 	this.data.fr = {
 		buttonOk: "Ok",
@@ -94,7 +90,7 @@ function Internationalization() {
 		uploadBadMultiType: "[p]Il est impossible d'envoyer le fichier car le format du fichier proposé n'est pas autorisé.[/p][p]➩ Fichier proposé : [strong]§[/strong][br]➩ Formats de fichier acceptés : § et §.[/p]",
 		deleteNotFound: "Malheureusement, il est actuellement impossible de supprimer le fichier demandé (Erreur § : [span xml:lang='en']§[/span]).",
 
-		browserNoVideo: "[p]Votre navigateur ne supporte pas la balise <video>.[br]Pensez à mettre à jour votre navigateur.[/p][ul][li][a href='http://www.google.com/chrome?hl=fr' class='popup']Chrome 3.0+[/a][/li][li][a href='http://www.mozilla-europe.org/fr/firefox/' class='popup']Firefox 3.5+[/a][/li][li][a href='http://windows.microsoft.com/fr-FR/internet-explorer/products/ie/home' class='popup']Internet Explorer 9.0+[/a][/li][li][a href='http://www.konqueror.org/' class='popup']Konqueror 4.4+[/a][/li][li][a href='http://www.opera.com/' class='popup']Opera 10.50+[/a][/li][li][a href='http://www.apple.com/fr/safari/' class='popup']Safari 3.1+[/a][/li][/ul]",
+		browserNoVideo: "[p]Votre navigateur ne supporte pas la balise <video>.[br]Veuillez mettre à jour votre navigateur.[/p][ul][li][a href='http://www.google.com/chrome?hl=fr' class='popup']Chrome 3.0+[/a][/li][li][a href='http://www.mozilla-europe.org/fr/firefox/' class='popup']Firefox 3.5+[/a][/li][li][a href='http://windows.microsoft.com/fr-FR/internet-explorer/products/ie/home' class='popup']Internet Explorer 9.0+[/a][/li][li][a href='http://www.konqueror.org/' class='popup']Konqueror 4.4+[/a][/li][li][a href='http://www.opera.com/' class='popup']Opera 10.50+[/a][/li][li][a href='http://www.apple.com/fr/safari/' class='popup']Safari 3.1+[/a][/li][/ul]",
 
 		debugInvalidCall: "(debug) Appel invalide",
 		debugInvalidUse: "(debug) Utilisation invalide",
@@ -184,4 +180,4 @@ function Internationalization() {
 			return false;
 		}
 	};
-}
+};

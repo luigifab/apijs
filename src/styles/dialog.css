@@ -1,9 +1,9 @@
 /**
  * Created V/08/05/2009
- * Updated V/23/12/2011
- * Version 36
+ * Updated J/14/06/2012
+ * Version 39
  *
- * Copyright 2008-2011 | Fabrice Creuzot (luigifab) <code~luigifab~info>
+ * Copyright 2008-2012 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
  *
  * This program is free software, you can redistribute it or modify
@@ -18,20 +18,22 @@
  */
 
 /* ################################################ Conteneurs (thème 1) ### */
-#dialogue {
+#dialog {
 	position:fixed; top:0; right:0; bottom:0; left:0; width:100%; height:100%; z-index:9000; opacity:0;
-	transition-duration:0.8s, 0.3s; -moz-transition-duration:0.8s, 0.3s; -webkit-transition-duration:0.8s, 0.3s;
-	transition-property:background-color, opacity; -moz-transition-property:background-color, opacity;
-	-webkit-transition-property:background-color, opacity;
+	transition-duration:0.8s, 0.3s; -moz-transition-duration:0.8s, 0.3s;
+	-ms-transition-duration:0.8s, 0.3s; -o-transition-duration:0.8s, 0.3s; -webkit-transition-duration:0.8s, 0.3s;
+	transition-property:background-color, opacity; -moz-transition-property:background-color, opacity; -ms-transition-property:background-color, opacity;
+	-o-transition-property:background-color, opacity; -webkit-transition-property:background-color, opacity;
 	color:black; background-color:transparent;
 }
 
 #box {
 	position:relative; top:27%; margin:auto; padding:0.6em 0.8em 2.4em; width:33em; min-height:9em; overflow:hidden; opacity:0.9;
 	background-color:white; border-radius:0.8em; -khtml-border-radius:0.8em; -moz-border-radius:0.8em; -webkit-border-radius:0.8em;
+	background-clip:padding-box; -moz-background-clip:padding; -webkit-background-clip:padding-box;
 	box-shadow:0 0 30px #111; -moz-box-shadow:0 0 30px #111; -webkit-box-shadow:0 0 30px #111;
-	transition-duration:0.5s; -moz-transition-duration:0.5s; -webkit-transition-duration:0.5s;
-	transition-property:top; -moz-transition-property:top; -webkit-transition-property:top;
+	transition-duration:0.5s; -moz-transition-duration:0.5s; -ms-transition-duration:0.5s; -o-transition-duration:0.5s; -webkit-transition-duration:0.5s;
+	transition-property:top; -moz-transition-property:top; -ms-transition-property:top; -o-transition-property:top; -webkit-transition-property:top;
 }
 
 #box.photo, #box.video { top:50%; left:50%; padding:10px 10px 5px; width:auto; min-height:inherit; overflow:visible; opacity:1; }
@@ -39,33 +41,43 @@
 #box.download, #box.options { top:21%; }
 
 #box.photo.slideshow, #box.video.slideshow { border:2px solid #999; box-shadow:none; -moz-box-shadow:none; -webkit-box-shadow:none; }
-#dialogue.slideshow { background-color:black !important; }
+#dialog.slideshow { background-color:black !important; }
 
-#dialogue.actif { background-color:black; background-color:rgba(0, 0, 0, 0.65); opacity:1; }
-#dialogue.actif #box.download, #dialogue.actif #box.options { top:22% !important; }
-#dialogue.actif #box:not(.photo):not(.video) { top:28%; }
+#dialog.actif { background-color:black; background-color:rgba(0, 0, 0, 0.65); opacity:1; }
+#dialog.actif #box.download, #dialog.actif #box.options { top:22% !important; }
+#dialog.actif #box:not(.photo):not(.video) { top:28%; }
 
-#dialogue.deleting { transition-duration:0.4s, 0.3s; -moz-transition-duration:0.4s, 0.3s; -webkit-transition-duration:0.4s, 0.3s; }
-#dialogue.deleting #box { transition-duration:0.4s; -moz-transition-duration:0.4s; -webkit-transition-duration:0.4s; }
-#dialogue.deleting #box.download, #dialogue.deleting #box.options { top:24% !important; }
-#dialogue.deleting #box:not(.photo):not(.video) { top:30%; }
+#dialog.deleting {
+	transition-duration:0.4s, 0.3s; -moz-transition-duration:0.4s, 0.3s; -ms-transition-duration:0.4s, 0.3s;
+	-o-transition-duration:0.4s, 0.3s; -webkit-transition-duration:0.4s, 0.3s;
+}
+
+#dialog.deleting #box {
+	transition-duration:0.4s; -moz-transition-duration:0.4s; -ms-transition-duration:0.4s;
+	-o-transition-duration:0.4s; -webkit-transition-duration:0.4s;
+}
+
+#dialog.deleting #box.download, #dialog.deleting #box.options { top:24% !important; }
+#dialog.deleting #box:not(.photo):not(.video) { top:30%; }
 
 
 /* ################################################ Conteneurs (thème 2) ### **
-#dialogue {
+#dialog {
 	position:fixed; top:0; right:0; bottom:0; left:0; width:100%; height:100%; z-index:9000; opacity:0;
-	transition-duration:0.8s, 0.3s; -moz-transition-duration:0.8s, 0.3s; -webkit-transition-duration:0.8s, 0.3s;
-	transition-property:background, opacity; -moz-transition-property:background, opacity;
-	-webkit-transition-property:background, opacity;
+	transition-duration:0.8s, 0.3s; -moz-transition-duration:0.8s, 0.3s;
+	-ms-transition-duration:0.8s, 0.3s; -o-transition-duration:0.8s, 0.3s; -webkit-transition-duration:0.8s, 0.3s;
+	transition-property:background-color, opacity; -moz-transition-property:background-color, opacity; -ms-transition-property:background-color, opacity;
+	-o-transition-property:background-color, opacity; -webkit-transition-property:background-color, opacity;
 	color:black; background:none;
 }
 
 #box {
 	position:relative; top:27%; margin:auto; padding:0.6em 0.8em 2.4em; width:33em; min-height:9em; overflow:hidden;
 	background-color:white; border-radius:0.8em; -khtml-border-radius:0.8em; -moz-border-radius:0.8em; -webkit-border-radius:0.8em;
+	background-clip:padding-box; -moz-background-clip:padding; -webkit-background-clip:padding-box;
 	box-shadow:0 0 30px #BBB; -moz-box-shadow:0 0 30px #BBB; -webkit-box-shadow:0 0 30px #BBB;
-	transition-duration:0.5s; -moz-transition-duration:0.5s; -webkit-transition-duration:0.5s;
-	transition-property:top; -moz-transition-property:top; -webkit-transition-property:top;
+	transition-duration:0.5s; -moz-transition-duration:0.5s; -ms-transition-duration:0.5s; -o-transition-duration:0.5s; -webkit-transition-duration:0.5s;
+	transition-property:top; -moz-transition-property:top; -ms-transition-property:top; -o-transition-property:top; -webkit-transition-property:top;
 }
 
 #box.photo, #box.video { top:50%; left:50%; padding:10px 10px 5px; width:auto; min-height:inherit; overflow:visible; }
@@ -74,20 +86,28 @@
 
 #box.photo.slideshow, #box.video.slideshow { border:2px solid #999; box-shadow:none; -moz-box-shadow:none; -webkit-box-shadow:none; }
 
-#dialogue.actif { background:#DDD url("../images/dialogue/background.png") no-repeat; opacity:1; }
-#dialogue.actif #box.download, #dialogue.actif #box.options { top:22% !important; }
-#dialogue.actif #box:not(.photo):not(.video) { top:28%; }
+#dialog.actif { background:#DDD url("../images/dialog/background.png") no-repeat; opacity:1; }
+#dialog.actif #box.download, #dialog.actif #box.options { top:22% !important; }
+#dialog.actif #box:not(.photo):not(.video) { top:28%; }
 
-#dialogue.deleting { transition-duration:0.4s, 0.3s; -moz-transition-duration:0.4s, 0.3s; -webkit-transition-duration:0.4s, 0.3s; }
-#dialogue.deleting #box { transition-duration:0.4s; -moz-transition-duration:0.4s; -webkit-transition-duration:0.4s; }
-#dialogue.deleting #box.download, #dialogue.deleting #box.options { top:24% !important; }
-#dialogue.deleting #box:not(.photo):not(.video) { top:30%; } */
+#dialog.deleting {
+	transition-duration:0.4s, 0.3s; -moz-transition-duration:0.4s, 0.3s; -ms-transition-duration:0.4s, 0.3s;
+	-o-transition-duration:0.4s, 0.3s; -webkit-transition-duration:0.4s, 0.3s;
+}
+
+#dialog.deleting #box {
+	transition-duration:0.4s; -moz-transition-duration:0.4s; -ms-transition-duration:0.4s;
+	-o-transition-duration:0.4s; -webkit-transition-duration:0.4s;
+}
+
+#dialog.deleting #box.download, #dialog.deleting #box.options { top:24% !important; }
+#dialog.deleting #box:not(.photo):not(.video) { top:30%; } */
 
 
 /* ############################################################### Texte ### */
 #box h1 {
 	margin:0.15em 0 0.7em; padding-left:41px; height:32px; line-height:32px;
-	font-size:1.6em; font-weight:bold; color:black;
+	font-size:1.5em; font-weight:bold; color:black;
 	background-image:url("../images/icons/32/sprites.png"); background-repeat:no-repeat;
 }
 
@@ -99,7 +119,7 @@
 #box p.saving {
 	position:absolute; bottom:6em; left:7em; margin:0; padding-left:23px; height:16px;
 	font-size:0.85em; color:#333; line-height:1.45em;
-	background:url("../images/dialogue/saving.png") no-repeat left center;
+	background:url("../images/dialog/saving.png") no-repeat left center;
 }
 
 #box p.reload {
@@ -160,12 +180,14 @@
 	font-size:0.85em; color:black; cursor:pointer;
 	border:1px solid #BBB; background-color:#E2E2E2; background-repeat:no-repeat; background-position:4px center;
 	border-radius:0.4em; -khtml-border-radius:0.4em; -moz-border-radius:0.4em; -webkit-border-radius:0.4em;
-	transition-duration:0.5s, 0.5s; -moz-transition-duration:0.5s, 0.5s; -webkit-transition-duration:0.5s, 0.5s;
+	background-clip:padding-box; -moz-background-clip:padding; -webkit-background-clip:padding-box;
+	transition-duration:0.5s, 0.5s; -moz-transition-duration:0.5s, 0.5s; -ms-transition-duration:0.5s, 0.5s;
+	-o-transition-duration:0.5s, 0.5s; -webkit-transition-duration:0.5s, 0.5s;
 	transition-property:border, background-color; -moz-transition-property:border, background-color;
-	-webkit-transition-property:border, background-color;
+	-ms-transition-property:border, background-color; -o-transition-property:border, background-color; -webkit-transition-property:border, background-color;
 }
 
-#box div.control button.cancel  { float:left; background-image:url("../images/icons/16/silk-cancel.png"); }
+#box div.control button.cancel { background-image:url("../images/icons/16/silk-cancel.png"); float:left; }
 #box div.control button.confirm { background-image:url("../images/icons/16/silk-accept.png"); }
 
 #box div.control button:hover, #box div.control button:active, #box div.control button:focus { border:1px solid #AAA; background-color:#F2F2F2; }
@@ -175,14 +197,16 @@
 #box div.navigation.txt button {
 	position:absolute; top:42%; padding:0.4em 0; width:7em; opacity:0.3;
 	font-size:0.8em; color:#CCC; text-align:center; cursor:pointer; border:none; background-color:#444;
-	transition-duration:0.5s; -moz-transition-duration:0.5s; -webkit-transition-duration:0.5s;
-	transition-property:opacity; -moz-transition-property:opacity; -webkit-transition-property:opacity;
+	transition-duration:0.5s; -moz-transition-duration:0.5s; -ms-transition-duration:0.5s; -o-transition-duration:0.5s; -webkit-transition-duration:0.5s;
+	transition-property:opacity; -moz-transition-property:opacity; -ms-transition-property:opacity; -o-transition-property:opacity;
+	-webkit-transition-property:opacity;
 }
 
 #box div.navigation.txt button#prev {
 	left:-4.75em;
 	border-radius:1em 1em 0.4em 0.4em; -khtml-border-radius:1em 1em 0.4em 0.4em;
 	-moz-border-radius:1em 1em 0.4em 0.4em; -webkit-border-radius:1em 1em 0.4em 0.4em;
+	background-clip:padding-box; -moz-background-clip:padding; -webkit-background-clip:padding-box;
 	transform:rotate(-90deg); -khtml-transform:rotate(-90deg); -moz-transform:rotate(-90deg); -ms-transform:rotate(-90deg);
 	-o-transform:rotate(-90deg); -webkit-transform:rotate(-90deg);
 }
@@ -191,6 +215,7 @@
 	right:-4.75em;
 	border-radius:1em 1em 0.4em 0.4em; -khtml-border-radius:1em 1em 0.4em 0.4em;
 	-moz-border-radius:1em 1em 0.4em 0.4em; -webkit-border-radius:1em 1em 0.4em 0.4em;
+	background-clip:padding-box; -moz-background-clip:padding; -webkit-background-clip:padding-box;
 	transform:rotate(90deg); -khtml-transform:rotate(90deg); -moz-transform:rotate(90deg); -ms-transform:rotate(90deg);
 	-o-transform:rotate(90deg); -webkit-transform:rotate(90deg);
 }
@@ -198,14 +223,14 @@
 #box div.navigation.img button {
 	position:absolute; top:40%; padding:0; width:25px; height:50px; opacity:0.3;
 	font-size:0.85em; color:#CCC; cursor:pointer; border:none; background-color:transparent;
-	transition-duration:0.5s; -moz-transition-duration:0.5s; -webkit-transition-duration:0.5s;
-	transition-property:opacity; -moz-transition-property:opacity; -webkit-transition-property:opacity;
+	transition-duration:0.5s; -moz-transition-duration:0.5s; -ms-transition-duration:0.5s; -o-transition-duration:0.5s; -webkit-transition-duration:0.5s;
+	transition-property:opacity; -moz-transition-property:opacity; -ms-transition-property:opacity; -o-transition-property:opacity;
+	-webkit-transition-property:opacity;
 }
 
 #box div.navigation.txt button#next, x:-moz-any-link { right:-4.85em; }
-
-#box div.navigation.img button#prev { left:-32px; }
 #box div.navigation.img button#next { right:-32px; }
+#box div.navigation.img button#prev { left:-32px; }
 
 #box div.navigation button[disabled] { display:none; }
 
@@ -228,16 +253,17 @@
 #box.photo dl dt a span {
 	display:inline-block; position:absolute; right:5px; bottom:5px; width:24px; height:24px; opacity:0;
 	background:transparent url("../images/icons/24/gnome-zoom-in.png") no-repeat center;
-	transition-duration:0.6s; -moz-transition-duration:0.6s; -webkit-transition-duration:0.6s;
-	transition-property:opacity; -moz-transition-property:opacity; -webkit-transition-property:opacity;
+	transition-duration:0.5s; -moz-transition-duration:0.6s; -ms-transition-duration:0.6s; -o-transition-duration:0.6s; -webkit-transition-duration:0.6s;
+	transition-property:opacity; -moz-transition-property:opacity; -ms-transition-property:opacity; -o-transition-property:opacity;
+	-webkit-transition-property:opacity;
 }
 
 #box.photo dl dt a:hover span, #box.photo dt a:active span, #box.photo dt a:focus span { opacity:0.75; }
 
 #box.photo dl dt img { display:block; }
-#box.photo dl dt img.loading  { background:white url("../images/dialogue/loading.png") no-repeat center; }
-#box.photo dl dt img.error_en { background:white url("../images/dialogue/404fr.png") no-repeat center; }
-#box.photo dl dt img.error_fr { background:white url("../images/dialogue/404fr.png") no-repeat center; }
+#box.photo dl dt img.loading  { background:white url("../images/dialog/loading.png") no-repeat center; }
+#box.photo dl dt img.error_en { background:white url("../images/dialog/404fr.png") no-repeat center; }
+#box.photo dl dt img.error_fr { background:white url("../images/dialog/404fr.png") no-repeat center; }
 
 #box.video dl dt video { display:block; color:white; background-color:black; }
 #box.video dl dt video p { margin:0; padding:1em; line-height:1.35em; }
@@ -245,10 +271,9 @@
 
 /* &&&&&&&&&&&&&&&&&&&&&&&&&& lien de téléchargement &&& */
 #box dl dd a.download {
-	float:right; margin:0.35em 0.4em 0;
-	font-size:0.7em; color:#AAA;
-	transition-duration:0.4s; -moz-transition-duration:0.4s; -webkit-transition-duration:0.4s;
-	transition-property:color; -moz-transition-property:color; -webkit-transition-property:color;
+	float:right; margin:0.35em 0.4em 0; font-size:0.7em; color:#AAA;
+	transition-duration:0.4s; -moz-transition-duration:0.4s; -ms-transition-duration:0.4s; -o-transition-duration:0.4s; -webkit-transition-duration:0.4s;
+	transition-property:color; -moz-transition-property:color; -ms-transition-property:color; -o-transition-property:color; -webkit-transition-property:color;
 }
 
 #box dl dd a.download:hover, #box dl dd a.download:active, #box dl dd a.download:focus { color:#777; }
@@ -257,7 +282,17 @@
 /* &&&&&&&&&&&&&&&&&&&&&&&&&&&&& bouton de fermeture &&& */
 #box div.close { position:absolute; top:3px; right:3px; z-index:9050; }
 
-#box div.close button.close {
+#box div.close.txt button.close {
+	margin:0 0 5em 4em; padding:0.2em 0.6em;
+	font-size:0.8em; font-weight:bold; text-transform:uppercase; cursor:pointer;
+	color:white; border:2px solid white; background:black;
+	border-radius:0.8em; -khtml-border-radius:0.8em; -moz-border-radius:0.8em; -webkit-border-radius:0.8em;
+	background-clip:padding-box; -moz-background-clip:padding; -webkit-background-clip:padding-box;
+}
+
+#box div.close.txt button.close:after { content:" / X"; }
+
+#box div.close.img button.close {
 	margin:0 0 5em 4em;
 	border:none; background:none; cursor:pointer;
 }

@@ -1,9 +1,9 @@
 /**
  * Created J/19/08/2010
- * Updated J/13/10/2011
- * Version 9
+ * Updated J/24/05/2012
+ * Version 10
  *
- * Copyright 2008-2011 | Fabrice Creuzot (luigifab) <code~luigifab~info>
+ * Copyright 2008-2012 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
  *
  * This program is free software, you can redistribute it or modify
@@ -17,7 +17,7 @@
  * GNU General Public License (GPL) for more details.
  */
 
-function BBcode() {
+apijs.core.bbcode = function () {
 
 	// définition des attributs
 	this.bbcode = null;
@@ -30,7 +30,7 @@ function BBcode() {
 	// GESTION DES DONNÉES (3)
 
 	// #### Initialisation ########################################################## public ### //
-	// = révision : 11
+	// = révision : 12
 	// » Prépare l'objet de transition
 	// » Ajoute un conteneur p lorsque nécessaire
 	this.init = function (data, emotes) {
@@ -306,4 +306,4 @@ function BBcode() {
 
 		return tag;
 	};
-}
+};
