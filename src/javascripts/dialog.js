@@ -1,7 +1,7 @@
 /**
  * Created D/12/04/2009
- * Updated J/24/05/2012
- * Version 122
+ * Updated J/11/10/2012
+ * Version 123
  *
  * Copyright 2008-2012 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
@@ -620,11 +620,11 @@ apijs.core.dialog = function () {
 
 
 	// #### Supprime le dialogue ################################################### private ### //
-	// = révision : 83
+	// = révision : 84
 	// » Dégage le timer du lien différé
 	// » Annule l'écoute des touches du clavier (eventListener:keydown)
 	// » Supprime totalement ou pas la boite de dialogue avec ou sans transitions
-	// » Afin de permettre les transitions CSS la suppression totale est différée dans le temps (eventListener:transitionEnd)
+	// » Afin de permettre les transitions CSS la suppression totale est différée dans le temps (eventListener:transitionend)
 	// » Réinitialise la plupart des variables
 	this.deleteDialog = function (total) {
 
@@ -648,29 +648,24 @@ apijs.core.dialog = function () {
 
 			document.getElementById('dialog').setAttribute('class', document.getElementById('dialog').getAttribute('class').replace('actif', 'deleting lock'));
 
-			if (typeof document.getElementById('dialog').style.transitionDuration === 'string')
-				document.getElementById('dialog').addEventListener('transitionEnd', function () {
-					if (document.getElementById('dialog'))
-						document.getElementById('dialog').parentNode.removeChild(document.getElementById('dialog'));
-				}, false);
-
-			else if (typeof document.getElementById('dialog').style.OTransitionDuration === 'string')
-				document.getElementById('dialog').addEventListener('OTransitionEnd', function () {
-					if (document.getElementById('dialog'))
-						document.getElementById('dialog').parentNode.removeChild(document.getElementById('dialog'));
-				}, false);
-
-			else if (typeof document.getElementById('dialog').style.MozTransitionDuration === 'string')
+			if ((typeof document.getElementById('dialog').style.transitionDuration === 'string') || (typeof document.getElementById('dialog').style.MozTransitionDuration === 'string')) {
 				document.getElementById('dialog').addEventListener('transitionend', function () {
 					if (document.getElementById('dialog'))
 						document.getElementById('dialog').parentNode.removeChild(document.getElementById('dialog'));
 				}, false);
-
-			else if (typeof document.getElementById('dialog').style.webkitTransitionDuration === 'string')
+			}
+			else if (typeof document.getElementById('dialog').style.OTransitionDuration === 'string') {
+				document.getElementById('dialog').addEventListener('OTransitionEnd', function () {
+					if (document.getElementById('dialog'))
+						document.getElementById('dialog').parentNode.removeChild(document.getElementById('dialog'));
+				}, false);
+			}
+			else if (typeof document.getElementById('dialog').style.webkitTransitionDuration === 'string') {
 				document.getElementById('dialog').addEventListener('webkitTransitionEnd', function () {
 					if (document.getElementById('dialog'))
 						document.getElementById('dialog').parentNode.removeChild(document.getElementById('dialog'));
 				}, false);
+			}
 		}
 		else if (total) {
 

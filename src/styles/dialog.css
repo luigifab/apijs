@@ -1,7 +1,7 @@
 /**
  * Created V/08/05/2009
- * Updated J/14/06/2012
- * Version 39
+ * Updated J/11/10/2012
+ * Version 40
  *
  * Copyright 2008-2012 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
@@ -44,11 +44,12 @@
 #dialog.slideshow { background-color:black !important; }
 
 #dialog.actif { background-color:black; background-color:rgba(0, 0, 0, 0.65); opacity:1; }
-#dialog.actif #box.download, #dialog.actif #box.options { top:22% !important; }
-#dialog.actif #box:not(.photo):not(.video) { top:28%; }
+#dialog.actif #box { top:28%; }
+#dialog.actif #box.photo, #dialog.actif #box.video { top:50%; }
+#dialog.actif #box.download, #dialog.actif #box.options { top:22%; }
 
 #dialog.deleting {
-	transition-duration:0.4s, 0.3s; -moz-transition-duration:0.4s, 0.3s; -ms-transition-duration:0.4s, 0.3s;
+	pointer-events:none; transition-duration:0.4s, 0.3s; -moz-transition-duration:0.4s, 0.3s; -ms-transition-duration:0.4s, 0.3s;
 	-o-transition-duration:0.4s, 0.3s; -webkit-transition-duration:0.4s, 0.3s;
 }
 
@@ -57,8 +58,9 @@
 	-o-transition-duration:0.4s; -webkit-transition-duration:0.4s;
 }
 
-#dialog.deleting #box.download, #dialog.deleting #box.options { top:24% !important; }
-#dialog.deleting #box:not(.photo):not(.video) { top:30%; }
+#dialog.deleting #box { top:30%; }
+#dialog.deleting #box.photo, #dialog.deleting #box.video { top:50%; }
+#dialog.deleting #box.download, #dialog.deleting #box.options { top:24%; }
 
 
 /* ################################################ Conteneurs (thème 2) ### **
@@ -87,11 +89,12 @@
 #box.photo.slideshow, #box.video.slideshow { border:2px solid #999; box-shadow:none; -moz-box-shadow:none; -webkit-box-shadow:none; }
 
 #dialog.actif { background:#DDD url("../images/dialog/background.png") no-repeat; opacity:1; }
-#dialog.actif #box.download, #dialog.actif #box.options { top:22% !important; }
-#dialog.actif #box:not(.photo):not(.video) { top:28%; }
+#dialog.actif #box { top:28%; }
+#dialog.actif #box.photo, #dialog.actif #box.video { top:50%; }
+#dialog.actif #box.download, #dialog.actif #box.options { top:22%; }
 
 #dialog.deleting {
-	transition-duration:0.4s, 0.3s; -moz-transition-duration:0.4s, 0.3s; -ms-transition-duration:0.4s, 0.3s;
+	pointer-events:none; transition-duration:0.4s, 0.3s; -moz-transition-duration:0.4s, 0.3s; -ms-transition-duration:0.4s, 0.3s;
 	-o-transition-duration:0.4s, 0.3s; -webkit-transition-duration:0.4s, 0.3s;
 }
 
@@ -100,8 +103,9 @@
 	-o-transition-duration:0.4s; -webkit-transition-duration:0.4s;
 }
 
-#dialog.deleting #box.download, #dialog.deleting #box.options { top:24% !important; }
-#dialog.deleting #box:not(.photo):not(.video) { top:30%; } */
+#dialog.deleting #box { top:30%; }
+#dialog.deleting #box.photo, #dialog.deleting #box.video { top:50%; }
+#dialog.deleting #box.download, #dialog.deleting #box.options { top:24%; } */
 
 
 /* ############################################################### Texte ### */
@@ -176,7 +180,7 @@
 #box div.control { position:absolute; right:0.8em; bottom:0.6em; }
 
 #box div.control button {
-	margin-left:0.45em; padding:0.2em 0.7em 0.2em 25px;
+	padding:0.2em 0.7em 0.2em 25px;
 	font-size:0.85em; color:black; cursor:pointer;
 	border:1px solid #BBB; background-color:#E2E2E2; background-repeat:no-repeat; background-position:4px center;
 	border-radius:0.4em; -khtml-border-radius:0.4em; -moz-border-radius:0.4em; -webkit-border-radius:0.4em;
@@ -187,7 +191,7 @@
 	-ms-transition-property:border, background-color; -o-transition-property:border, background-color; -webkit-transition-property:border, background-color;
 }
 
-#box div.control button.cancel { background-image:url("../images/icons/16/silk-cancel.png"); float:left; }
+#box div.control button.cancel { background-image:url("../images/icons/16/silk-cancel.png"); float:left; margin-right:0.45em; }
 #box div.control button.confirm { background-image:url("../images/icons/16/silk-accept.png"); }
 
 #box div.control button:hover, #box div.control button:active, #box div.control button:focus { border:1px solid #AAA; background-color:#F2F2F2; }

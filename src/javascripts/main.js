@@ -1,7 +1,7 @@
 /**
  * Created J/03/12/2009
- * Updated W/18/07/2012
- * Version 56
+ * Updated J/11/10/2012
+ * Version 57
  *
  * Copyright 2008-2012 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
@@ -94,7 +94,7 @@ else {
 
 
 // #### Lancement du programme ############################################## //
-// = révision : 50
+// = révision : 51
 // » Recherche les liens ayant la classe popup
 // » Vérifie si le navigateur supporte les transitions CSS ou pas
 // » Charge les modules disponibles et met en place les gestionnaires d'évènements
