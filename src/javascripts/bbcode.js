@@ -1,9 +1,9 @@
 /**
  * Created J/19/08/2010
- * Updated J/24/05/2012
- * Version 10
+ * Updated D/27/01/2013
+ * Version 11
  *
- * Copyright 2008-2012 | Fabrice Creuzot (luigifab) <code~luigifab~info>
+ * Copyright 2008-2013 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
  *
  * This program is free software, you can redistribute it or modify
@@ -30,15 +30,17 @@ apijs.core.bbcode = function () {
 	// GESTION DES DONNÉES (3)
 
 	// #### Initialisation ########################################################## public ### //
-	// = révision : 12
+	// = révision : 13
 	// » Prépare l'objet de transition
 	// » Ajoute un conteneur p lorsque nécessaire
+	// » Remplace '/]' par ']' (corrige l'interprétation des éventuels [br /] et [img /])
 	this.init = function (data, emotes) {
 
 		this.object = { tag: 'div', content: [] };
 		this.object['class'] = 'bbcode';
 
 		this.bbcode = (data[0] !== '[') ? '[p]' + data + '[/p]' : data;
+		this.bbcode = this.bbcode.replace(/\\\]/g, ']');
 
 		if ((apijs.config.bbcode !== null) && (typeof apijs.config.bbcode === 'object'))
 			this.emotes = (typeof emotes === 'boolean') ? emotes : true;
@@ -59,10 +61,10 @@ apijs.core.bbcode = function () {
 
 
 	// #### Résultat ################################################################ public ### //
-	// = révision : 5
+	// = révision : 6
 	// » Renvoie le fragment DOM correspondant au bbcode
 	// » Même si celui-ci est null
-	this.get = function () {
+	this.getFragment = function () {
 
 		return this.fragment;
 	};
@@ -161,13 +163,13 @@ apijs.core.bbcode = function () {
 
 
 	// #### Ajoute un nœud élément ou un nœud texte ################################ private ### //
-	// = révision : 10
+	// = révision : 13
 	// » Enregistre le nœud élément et ses attributs ou le nœud texte dans le tableau d'objets
 	// » Remplace les émoticônes lorsque nécessaire en fonction de la configuration
 	// » À bien noter qu'en JavaScript, les objets sont passés par référence, ils ne sont jamais copiés
 	this.addElement = function (data, attributes, level) {
 
-		var directlink = null, attr = null, name = null, value = null, i = 0, hasEmotes = false, dataArray = null;
+		var directlink = null, attr = null, name = null, value = null, hasEmotes = false, currentEmote = {};
 		directlink = this.getContentNode(this.object, 0, level);
 
 		// *** Nœud élément ************************************* //
@@ -199,24 +201,24 @@ apijs.core.bbcode = function () {
 			// recherche des éventuels émoticônes
 			if (this.emotes) {
 
-				dataArray = data.split(' ');
+				data = data.split(' ');
 
-				for (value in dataArray) {
-					if (typeof dataArray[value] !== 'string')
-						continue;
-					if (apijs.config.bbcode.hasOwnProperty(dataArray[value])) {
-						hasEmotes = true;
-						currentEmote = apijs.config.bbcode[dataArray[value]];
-						dataArray[value] = '[img src="' + currentEmote.src + '" width="' + currentEmote.width + '" height="' + currentEmote.height + '" alt="' + dataArray[value] + '" class="emote"]';
-					}
-					else if (apijs.config.bbcode.hasOwnProperty(dataArray[value].slice(0, -1))) {
-						hasEmotes = true;
-						currentEmote = apijs.config.bbcode[dataArray[value].slice(0, -1)];
-						dataArray[value] = '[img src="' + currentEmote.src + '" width="' + currentEmote.width + '" height="' + currentEmote.height + '" alt="' + dataArray[value] + '" class="emote"]' + dataArray[value].slice(-1);
+				for (value in data) if (data.hasOwnProperty(value)) {
+					if (typeof data[value] === 'string') {
+						if (apijs.config.bbcode.hasOwnProperty(data[value])) {
+							hasEmotes = true;
+							currentEmote = apijs.config.bbcode[data[value]];
+							data[value] = '[img src="' + currentEmote.src + '" width="' + currentEmote.width + '" height="' + currentEmote.height + '" alt="' + data[value] + '" class="emote"]';
+						}
+						else if (apijs.config.bbcode.hasOwnProperty(data[value].slice(0, -1))) {
+							hasEmotes = true;
+							currentEmote = apijs.config.bbcode[data[value].slice(0, -1)];
+							data[value] = '[img src="' + currentEmote.src + '" width="' + currentEmote.width + '" height="' + currentEmote.height + '" alt="' + data[value].slice(0, -1) + '" class="emote"]' + data[value].slice(-1);
+						}
 					}
 				}
 
-				data = dataArray.join(' ');
+				data = data.join(' ');
 
 				if (hasEmotes)
 					this.readData(data, level);
@@ -237,7 +239,7 @@ apijs.core.bbcode = function () {
 
 
 	// #### Recherche le dernier nœud content ###################################### private ### //
-	// = révision : 4
+	// = révision : 5
 	// » Recherche le dernier nœud content de l'objet
 	// » Ne va pas plus loin que le niveau maximum demandé
 	this.getContentNode = function (dom, level, maxlevel) {
@@ -245,13 +247,12 @@ apijs.core.bbcode = function () {
 		if ((dom.content.length < 1) || (maxlevel < 1))
 			return dom;
 
-		for (var i = dom.content.length - 1; i >= 0; i--) {
+		var i = dom.content.length - 1;
 
-			if (dom.content[i].hasOwnProperty('content') && (++level < maxlevel))
-				return this.getContentNode(dom.content[i], level, maxlevel);
-			else
-				return dom.content[i];
-		}
+		if (dom.content[i].hasOwnProperty('content') && (++level < maxlevel))
+			return this.getContentNode(dom.content[i], level, maxlevel);
+
+		return dom.content[i];
 	};
 
 
@@ -261,7 +262,7 @@ apijs.core.bbcode = function () {
 	// GÉNÉRATION DU FRAGMENT DOM (1)
 
 	// #### Création du fragment DOM ############################################### private ### //
-	// = révision : 14
+	// = révision : 15
 	// » Crée récursivement les différents nœuds à partir du tableau d'objets
 	// » Prend en charge les nœuds éléments et leurs attributs ainsi que les nœuds textes
 	// » À bien noter qu'en JavaScript, les objets sont passés par référence, ils ne sont jamais copiés
@@ -287,7 +288,7 @@ apijs.core.bbcode = function () {
 			if ((attr !== 'tag') && (attr !== 'text') && (attr !== 'content'))
 				tag.setAttribute(attr, data[attr]);
 
-			if ((data.tag === 'a') && (attr === 'class') && (data[attr].indexOf('popup') > -1) && (typeof openTab === 'function')) {
+			if ((data.tag === 'a') && (attr === 'class') && (data[attr].indexOf('popup') > -1)) {
 
 				if (apijs.config.navigator)
 					tag.addEventListener('click', openTab, false);

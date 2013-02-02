@@ -1,9 +1,9 @@
 /**
  * Created S/05/06/2010
- * Updated J/24/05/2012
- * Version 23
+ * Updated D/27/01/2013
+ * Version 24
  *
- * Copyright 2008-2012 | Fabrice Creuzot (luigifab) <code~luigifab~info>
+ * Copyright 2008-2013 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
  *
  * This program is free software, you can redistribute it or modify
@@ -24,7 +24,7 @@ apijs.core.i18n = function () {
 	// #### Définition des traductions ############################################## public ### //
 	// » Translations are published under the terms of the BSD license
 	// = English
-	// » Fabrice Creuzot (luigifab) <code~luigifab~info> & Brian Legrand <brianyouhouy~live~fr>
+	// » Fabrice Creuzot (luigifab) <code~luigifab~info>, Brian Legrand <brianyouhouy~live~fr>
 	this.data.en = {
 		buttonOk: "Ok",
 		buttonCancel: "Cancel",
@@ -51,7 +51,7 @@ apijs.core.i18n = function () {
 		uploadBadMultiType: "[p]It's impossible to send the file because the file format proposed isn't allowed.[/p][p]➩ Proposed file: [strong]§[/strong][br]➩ Accepted file formats: § and §.[/p]",
 		deleteNotFound: "Unfortunately, it's currently impossible to delete requested file (Error §: §).",
 
-		browserNoVideo: "[p]Your browser doesn't support the <video> tag.[br]Please upgrade your browser.[/p][ul][li][a href='http://www.google.com/chrome?hl=en' class='popup']Chrome 3.0+[/a][/li][li][a href='http://www.mozilla-europe.org/en/firefox/' class='popup']Firefox 3.5+[/a][/li][li][a href='http://windows.microsoft.com/en-US/internet-explorer/products/ie/home' class='popup']Internet Explorer 9.0+[/a][/li][li][a href='http://www.konqueror.org/' class='popup']Konqueror 4.4+[/a][/li][li][a href='http://www.opera.com/' class='popup']Opera 10.50+[/a][/li][li][a href='http://www.apple.com/safari/' class='popup']Safari 3.1+[/a][/li][/ul]",
+		browserNoVideo: "[p]Your browser [strong]§ §[/strong] doesn't support the <video> tag.[br]To watch this video, you need to upgrade your browser.[/p][ul][li][a href='http://www.google.com/chrome?hl=en' class='popup']Chrome 3.0+[/a][/li][li][a href='http://www.mozilla-europe.org/en/firefox/' class='popup']Firefox 3.5+[/a][/li][li][a href='http://windows.microsoft.com/en-US/internet-explorer/products/ie/home' class='popup']Internet Explorer 9.0+[/a][/li][li][a href='http://www.konqueror.org/' class='popup']Konqueror 4.4+[/a][/li][li][a href='http://www.opera.com/' class='popup']Opera 10.50+[/a][/li][li][a href='http://www.apple.com/safari/' class='popup']Safari 3.1+[/a][/li][/ul][p]It is also possible that the <video> tag is supported, but the codec used by the video (§) does not.[/p][p class='navigator']Your browser identifies itself as: §[/p]",
 
 		debugInvalidCall: "(debug) Invalid call",
 		debugInvalidUse: "(debug) Invalid use",
@@ -59,8 +59,9 @@ apijs.core.i18n = function () {
 		debugKeyDetected: "(debug) Key detected",
 		debugKeyCode: "Code of the seizure key: §",
 		debugInvalidConfig: "(debug) Invalid configuration",
-		debugNotRecognizedConfig: "Image configuration wasn't recognized",
-		debugNotExist: "doesn't exist (unlikely error)"
+		debugNotRecognizedConfig: "Image configuration wasn't recognized.",
+		debugNotExist: "doesn't exist (unlikely error)",
+		debugBadUse: "The upload dialog must be called with apijs.upload.sendFile()."
 	};
 	// = Français
 	// » Fabrice Creuzot (luigifab) <code~luigifab~info>
@@ -90,7 +91,7 @@ apijs.core.i18n = function () {
 		uploadBadMultiType: "[p]Il est impossible d'envoyer le fichier car le format du fichier proposé n'est pas autorisé.[/p][p]➩ Fichier proposé : [strong]§[/strong][br]➩ Formats de fichier acceptés : § et §.[/p]",
 		deleteNotFound: "Malheureusement, il est actuellement impossible de supprimer le fichier demandé (Erreur § : [span xml:lang='en']§[/span]).",
 
-		browserNoVideo: "[p]Votre navigateur ne supporte pas la balise <video>.[br]Veuillez mettre à jour votre navigateur.[/p][ul][li][a href='http://www.google.com/chrome?hl=fr' class='popup']Chrome 3.0+[/a][/li][li][a href='http://www.mozilla-europe.org/fr/firefox/' class='popup']Firefox 3.5+[/a][/li][li][a href='http://windows.microsoft.com/fr-FR/internet-explorer/products/ie/home' class='popup']Internet Explorer 9.0+[/a][/li][li][a href='http://www.konqueror.org/' class='popup']Konqueror 4.4+[/a][/li][li][a href='http://www.opera.com/' class='popup']Opera 10.50+[/a][/li][li][a href='http://www.apple.com/fr/safari/' class='popup']Safari 3.1+[/a][/li][/ul]",
+		browserNoVideo: "[p]Votre navigateur [strong]§ §[/strong] ne supporte pas la balise <video>.[br]Pour voir cette vidéo, vous devez mettre à jour votre navigateur.[/p][ul][li][a href='http://www.google.com/chrome?hl=fr' class='popup']Chrome 3.0+[/a][/li][li][a href='http://www.mozilla-europe.org/fr/firefox/' class='popup']Firefox 3.5+[/a][/li][li][a href='http://windows.microsoft.com/fr-FR/internet-explorer/products/ie/home' class='popup']Internet Explorer 9.0+[/a][/li][li][a href='http://www.konqueror.org/' class='popup']Konqueror 4.4+[/a][/li][li][a href='http://www.opera.com/' class='popup']Opera 10.50+[/a][/li][li][a href='http://www.apple.com/fr/safari/' class='popup']Safari 3.1+[/a][/li][/ul][p]Il se peut également que la balise <video> soit supportée, mais que le codec utilisé par la vidéo (§) ne le soit pas.[/p][p class='navigator']Votre navigateur s'identifie en tant que : §[/p]",
 
 		debugInvalidCall: "(debug) Appel invalide",
 		debugInvalidUse: "(debug) Utilisation invalide",
@@ -98,8 +99,9 @@ apijs.core.i18n = function () {
 		debugKeyDetected: "(debug) Touche détectée",
 		debugKeyCode: "Code de la touche saisie : §",
 		debugInvalidConfig: "(debug) Configuration invalide",
-		debugNotRecognizedConfig: "La configuration de l'image n'a pas été reconnue",
-		debugNotExist: "n'existe pas (erreur improbable)"
+		debugNotRecognizedConfig: "La configuration de l'image n'a pas été reconnue.",
+		debugNotExist: "n'existe pas (erreur improbable)",
+		debugBadUse: "Le dialogue d'upload doit être appelé via apijs.upload.sendFile()."
 	};
 
 
@@ -138,7 +140,7 @@ apijs.core.i18n = function () {
 
 
 	// #### Traduction par mot clef ################################################# public ### //
-	// = révision : 20
+	// = révision : 21
 	// » Vérifie si le mot clef existe dans les traductions
 	// » Renvoie la chaine de caractères correspondante à un mot clef
 	this.translate = function (word) {
@@ -149,7 +151,7 @@ apijs.core.i18n = function () {
 		}
 
 		// chaine de caractères configurable
-		else if (arguments.length > 1) {
+		if (arguments.length > 1) {
 
 			var i = 0, arg = 1, data = '', translation = '';
 
@@ -160,14 +162,12 @@ apijs.core.i18n = function () {
 		}
 
 		// chaine de caractères simple
-		else {
-			return this.data[apijs.config.lang][word];
-		}
+		return this.data[apijs.config.lang][word];
 	};
 
 
 	// #### Changement de langue #################################################### public ### //
-	// = révision : 2
+	// = révision : 3
 	// » Vérifie si la langue demandée existe dans la liste des langues disponibles
 	// » Renvoie true si la langue a été modifiée et false dans le cas contraire
 	this.changeLang = function (lang) {
@@ -176,8 +176,7 @@ apijs.core.i18n = function () {
 			apijs.config.lang = lang;
 			return true;
 		}
-		else {
-			return false;
-		}
+
+		return false;
 	};
 };

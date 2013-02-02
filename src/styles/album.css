@@ -1,9 +1,9 @@
 /**
  * Created V/08/05/2009
- * Updated V/25/05/2012
- * Version 16
+ * Updated S/02/02/2013
+ * Version 22
  *
- * Copyright 2008-2012 | Fabrice Creuzot (luigifab) <code~luigifab~info>
+ * Copyright 2008-2013 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
  *
  * This program is free software, you can redistribute it or modify
@@ -20,33 +20,31 @@
 /* ####################################################### Mode standard ### */
 div.album {
 	margin:1.2em auto; padding:0.3em; width:660px; overflow:hidden;
-	background-color:#EEE; border-radius:1em; -khtml-border-radius:1em; -moz-border-radius:1em; -webkit-border-radius:1em;
-	background-clip:padding-box; -moz-background-clip:padding; -webkit-background-clip:padding-box;
+	background-color:#EEE;
+	border-radius:1em; -moz-border-radius:1em; -webkit-border-radius:1em;
+	background-clip:padding-box; -moz-background-clip:padding; -o-background-clip:padding; -webkit-background-clip:padding-box;
 }
 
 div.album dl {
 	float:left; margin:4px; padding:5px 5px 4px; width:200px; text-align:center;
 	font-size:0.8em; color:#666; border:1px solid #CCC; background-color:#CCC;
-	border-radius:0.6em; -khtml-border-radius:0.6em; -moz-border-radius:0.6em; -webkit-border-radius:0.6em;
-	background-clip:padding-box; -moz-background-clip:padding; -webkit-background-clip:padding-box;
-	transition-duration:0.3s; -moz-transition-duration:0.3s; -webkit-transition-duration:0.3s;
-	transition-property:border-color; -moz-transition-property:border-color; -webkit-transition-property:border-color;
+	border-radius:0.6em; -moz-border-radius:0.6em; -webkit-border-radius:0.6em;
+	transition:border-color 0.3s; -moz-transition:border-color 0.3s; -o-transition:border-color 0.3s; -webkit-transition:border-color 0.3s;
+	background-clip:padding-box; -moz-background-clip:padding; -o-background-clip:padding; -webkit-background-clip:padding-box;
 }
 
 div.album dl dt { margin-bottom:0.4em; min-height:150px; vertical-align:middle; }
 div.album dl dt a { display:block; text-decoration:none; }
-div.album dl dt a img { display:block; margin:auto; overflow:hidden; line-height:1.2em; }
+div.album dl dt a img { display:block; margin:auto; overflow:hidden; line-height:120%; }
 
 div.album dl dd {
 	margin:0 0.5em; overflow:hidden; white-space:nowrap; text-overflow:ellipsis;
-	transition-duration:0.3s; -moz-transition-duration:0.3s; -ms-transition-duration:0.3s; -o-transition-duration:0.3s; -webkit-transition-duration:0.3s;
-	transition-property:color; -moz-transition-property:color; -ms-transition-property:color; -o-transition-property:color; -webkit-transition-property:color;
+	transition:color 0.3s; -moz-transition:color 0.3s; -o-transition:color 0.3s; -webkit-transition:color 0.3s;
 }
 
 div.album dl dd span.datenum {
 	color:#888;
-	transition-duration:0.3s; -moz-transition-duration:0.3s; -ms-transition-duration:0.3s; -o-transition-duration:0.3s; -webkit-transition-duration:0.3s;
-	transition-property:color; -moz-transition-property:color; -ms-transition-property:color; -o-transition-property:color; -webkit-transition-property:color;
+	transition:color 0.3s; -moz-transition:color 0.3s; -o-transition:color 0.3s; -webkit-transition:color 0.3s;
 }
 
 div.album dl:hover { border-color:#999; }
@@ -55,19 +53,17 @@ div.album dl:hover dd span.datenum { color:#666; }
 
 
 /* ################################################### Mode présentation ### */
-div.presentation {
+div.gallery {
 	display:inline-block; margin:1.2em 1em; padding:6px 6px 3px; overflow:hidden;
-	font-size:0.8em; text-align:center; background-color:#DEDEDE;
-	border-radius:0.7em; -khtml-border-radius:0.7em; -moz-border-radius:0.7em; -webkit-border-radius:0.7em;
-	background-clip:padding-box; -moz-background-clip:padding; -webkit-background-clip:padding-box;
+	font-size:0.8em; text-align:center;
 }
 
-div.presentation a { display:inline-block; text-decoration:none; }
-div.presentation img { display:inline-block; overflow:hidden; line-height:1.2em; border:1px solid white; }
+div.gallery a { display:inline-block; text-decoration:none; }
+div.gallery img { display:inline-block; overflow:hidden; line-height:120%; border:1px solid white; }
 
-div.presentation ul { margin:0; list-style:none; }
-div.presentation ul li { display:inline-block; margin:4px 1px; vertical-align:middle; }
-div.presentation ul li a { display:block; }
-div.presentation ul li a img { display:block; }
-div.presentation ul li a img.actif { border:1px solid black; }
+div.gallery ul { margin:0; list-style:none; }
+div.gallery ul li { display:inline-block; margin:4px 1px; vertical-align:middle; }
+div.gallery ul li a { display:block; }
+div.gallery ul li a img { display:block; }
+div.gallery ul li a img.actif { border:1px solid black; }
 
