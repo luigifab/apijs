@@ -1,7 +1,7 @@
 /**
  * Created L/13/04/2009
- * Updated S/12/01/2013
- * Version 34
+ * Updated S/23/02/2013
+ * Version 36
  *
  * Copyright 2008-2013 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
@@ -23,6 +23,7 @@ apijs.core.upload = function () {
 	this.percent = 0;
 	this.extensions = null;
 	this.uploadkey = null;
+	this.maxsize = 0;
 	this.callback = null;
 	this.callbackParams = null;
 
@@ -34,10 +35,10 @@ apijs.core.upload = function () {
 
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// GESTION DES ACTIONS DE L'UTILISATEUR (3)
+	// GESTION DES ACTIONS DE L'UTILISATEUR
 
 	// #### Dialogue d'upload ###################################### i18n ## debug ## public ### //
-	// = révision : 40
+	// = révision : 41
 	// » Permet à l'utilisateur l'envoi de fichier sans avoir à recharger la page
 	// » Utilise une iframe à nom unique pour permettre l'envoi des fichiers
 	// » Prépare et affiche le dialogue d'upload de [TheDialog]
@@ -50,6 +51,7 @@ apijs.core.upload = function () {
 			this.callbackParams = callbackParams;
 			this.extensions = extensions;
 			this.uploadkey = uniqid();
+			this.maxsize = maxsize;
 
 			apijs.dialog.dialogFormUpload(title, this.prepareText(maxsize), inputname, this.uploadkey, icon);
 		}
@@ -93,13 +95,13 @@ apijs.core.upload = function () {
 
 
 	// #### Texte d'information ############################################ i18n ## private ### //
-	// = révision : 19
+	// = révision : 20
 	// » Génère le texte d'information du dialogue d'upload
 	// » Affiche la liste des extensions acceptées et la taille maximale autorisée
 	// » Fait bien attention à ne pas modifier la liste des extensions originale
 	this.prepareText = function (maxsize) {
 
-		var text = null, cloneExtensions = null, latestExtension = null;
+		var text, cloneExtensions, latestExtension;
 
 		cloneExtensions = apijs.dialog.clone(this.extensions);
 		latestExtension = cloneExtensions.pop();
@@ -121,19 +123,20 @@ apijs.core.upload = function () {
 
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// GESTION DE L'ENVOI DU FICHIER (4)
+	// GESTION DE L'ENVOI DU FICHIER
 
 	// #### Vérification du formulaire ################################### i18n ## protected ### //
-	// = révision : 70
-	// » Vérifie si un fichier a été proposé et si son extension est autorisée
+	// = révision : 75
+	// » Vérifie si un fichier a été proposé et si ce fichier est autorisée
 	// » Fait bien attention à ne pas modifier la liste des extensions originale
 	// » Valide le formulaire et affiche le dialogue de progression de [TheDialog]
 	// » Lance l'animation générique et temps réel de la barre de progression (appels différés de 50 et 1000 millisecondes)
 	// » Afin de permettre l'envoi du formulaire l'affichage du dialogue est différé dans le temps (1 milliseconde)
 	this.actionConfirm = function () {
 
-		var filename = document.getElementById('box').getElementsByTagName('input')[1].value,
-		    result = false, cloneExtensions = null, latestExtension = null;
+		var filename = document.getElementById('box').getElementsByTagName('input')[1].value.replace('C:\\fakepath\\', ''),
+		    input = document.getElementById('box').getElementsByTagName('input')[1], size = -1, maxsize = -1, decimal,
+		    result = false, cloneExtensions, latestExtension;
 
 		cloneExtensions = apijs.dialog.clone(this.extensions);
 		latestExtension = cloneExtensions.pop();
@@ -154,43 +157,70 @@ apijs.core.upload = function () {
 			if (cloneExtensions.length < 1) {
 				apijs.dialog.dialogInformation(
 					document.getElementById('box').querySelector('h1').firstChild.nodeValue,
-					apijs.i18n.translate('uploadBadOneType', filename, latestExtension),
-					'eeupload'
+					apijs.i18n.translate('uploadBadOneType', filename, latestExtension), 'eeupload'
 				);
 			}
 			else {
 				cloneExtensions = cloneExtensions.join(', ');
 				apijs.dialog.dialogInformation(
 					document.getElementById('box').querySelector('h1').firstChild.nodeValue,
-					apijs.i18n.translate('uploadBadMultiType', filename, cloneExtensions, latestExtension),
-					'eeupload'
+					apijs.i18n.translate('uploadBadMultiType', filename, cloneExtensions, latestExtension), 'eeupload'
 				);
 			}
 		}
 
 		// *** Validation du formulaire ************************* //
+		// ou taille supérieure (FileApi)
 		else {
-			result = true;
-			document.getElementById('iframeUpload').setAttribute('onload', 'apijs.upload.endUpload();');
+			if (typeof input.files === 'object') {
+				size = input.files[0].size;
+				maxsize = this.maxsize * 1024 * 1024;
+			}
 
-			//this.extensions = null;
-			//this.uploadkey = null;
+			if ((size > -1) && (size > maxsize)) {
 
-			this.percent = 0;
-			this.svgDirection = 0;
-			this.svgWaiting = 10;
-			this.progressWaiting = 15;
+				decimal = apijs.i18n.translate('uploadBadSizeDecimal');
 
-			this.svgTimer = window.setInterval(apijs.upload.animGeneric.bind(this), 50);
-			this.progressTimer = window.setTimeout(apijs.upload.uploadRealTime, 1000);
+				if (maxsize > (1024 * 1024)) {
+					size = apijs.i18n.translate('uploadBadSizeM', (size / 1024 / 1024).toFixed(2));
+					maxsize = apijs.i18n.translate('uploadBadSizeM', (maxsize / 1024 / 1024).toFixed(2));
+				}
+				else {
+					size = apijs.i18n.translate('uploadBadSizeK', (size / 1024).toFixed(2));
+					maxsize = apijs.i18n.translate('uploadBadSizeK', (maxsize / 1024).toFixed(2));
+				}
 
-			window.setTimeout(function () {
-				apijs.dialog.dialogProgress(
+				size = size.replace('.00', '').replace('.', decimal);
+				maxsize = maxsize.replace('.00', '').replace('.', decimal);
+
+				apijs.dialog.dialogInformation(
 					document.getElementById('box').querySelector('h1').firstChild.nodeValue,
-					apijs.i18n.translate('uploadInProgress'),
-					apijs.dialog.classNames.replace('upload', '').replace('lock', '')
+					apijs.i18n.translate('uploadBadSize', filename, size, maxsize), 'eeupload'
 				);
-			}, 1);
+			}
+			else {
+				result = true;
+				document.getElementById('iframeUpload').setAttribute('onload', 'apijs.upload.endUpload();');
+
+				//this.extensions = null;
+				//this.uploadkey = null;
+
+				this.percent = 0;
+				this.svgDirection = 0;
+				this.svgWaiting = 10;
+				this.progressWaiting = 15;
+
+				this.svgTimer = window.setInterval(apijs.upload.animGeneric.bind(this), 50);
+				this.progressTimer = window.setTimeout(apijs.upload.uploadRealTime, 1000);
+
+				window.setTimeout(function () {
+					apijs.dialog.dialogProgress(
+						document.getElementById('box').querySelector('h1').firstChild.nodeValue,
+						apijs.i18n.translate('uploadInProgress'),
+						apijs.dialog.classNames.replace('upload', '').replace('lock', '')
+					);
+				}, 1);
+			}
 		}
 
 		return result;
@@ -198,7 +228,7 @@ apijs.core.upload = function () {
 
 
 	// #### Suppression d'un fichier ####################################### i18n ## private ### //
-	// = révision : 19
+	// = révision : 20
 	// » Demande la suppression d'un fichier en appelant le serveur via XMLHttpRequest (réponse au format XML)
 	// » Affiche un message de confirmation de suppression et appel la fonction de rappel si la suppression a réussie (appel immédiat)
 	// » Affiche un message d'erreur le plus détaillé possible dans le cas contraire
@@ -211,7 +241,7 @@ apijs.core.upload = function () {
 			if ((xhr.readyState === 4) && (xhr.status === 200)) {
 
 				try {
-					var result = null, status = null, message = null, icon = null;
+					var result, status, message, icon;
 
 					result  = xhr.responseXML;
 					status  = result.getElementsByTagName('status')[0].firstChild.nodeValue;
@@ -240,7 +270,7 @@ apijs.core.upload = function () {
 
 
 	// #### Suivi en temps réel ############################## firebug ## timeout ## private ### //
-	// = révision : 36
+	// = révision : 37
 	// » Récupère l'avancement de l'envoi du fichier en appelant le serveur via XMLHttpRequest (réponse au format XML)
 	// » Fait avancer la barre de progression en fonction de l'avancement de l'envoi du fichier
 	// » Auto-rappel toutes les 1000 millisecondes si nécessaire
@@ -254,7 +284,7 @@ apijs.core.upload = function () {
 			if ((xhr.readyState === 4) && (xhr.status === 200) && (apijs.upload.progressWaiting > 0) && (apijs.upload.percent < 100)) {
 
 				try {
-					var result = null, status = null, percent = null, rate = null, time = null;
+					var result, status, percent, rate, time;
 
 					// récupération des données XML
 					result = xhr.responseXML;
@@ -314,7 +344,7 @@ apijs.core.upload = function () {
 
 
 	// #### Terminus ########################################## firebug ## event ## private ### //
-	// = révision : 92
+	// = révision : 95
 	// » Désactive l'animation de la barre de progression et réinitialise la plupart des variables
 	// » Récupère le résultat de l'envoi du fichier ET du traitement du fichier depuis l'iframe (réponse au format XML)
 	// » Termine la barre de progression et appel la fonction de rappel si l'envoi du fichier a réussi (appel différé de 1500 millisecondes)
@@ -328,8 +358,12 @@ apijs.core.upload = function () {
 		if (this.svgTimer)
 			clearInterval(this.svgTimer);
 
+		if (this.extensions === null)
+			return;
+
 		this.extensions = null;
 		//this.uploadkey = null;
+		this.maxsize = 0;
 		this.percent = 100;
 		this.svgTimer = null;
 		this.svgDirection = 0;
@@ -338,7 +372,7 @@ apijs.core.upload = function () {
 		this.progressWaiting = 0;
 
 		// *** Traitement du rapport **************************** //
-		var result = null, status = null, message = null;
+		var result, status, message;
 
 		try {
 			// récupération des données XML
@@ -409,7 +443,7 @@ apijs.core.upload = function () {
 
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// GESTION DE LA BARRE DE PROGRESSION (2)
+	// GESTION DE LA BARRE DE PROGRESSION
 
 	// #### Avancement générique ####################################### interval ## private ### //
 	// = révision : 85
@@ -457,7 +491,7 @@ apijs.core.upload = function () {
 
 
 	// #### Avancement de la barre de progression ########################## i18n ## private ### //
-	// = révision : 75
+	// = révision : 76
 	// » Fait avancer la barre de progression jusqu'à une certaine valeur
 	// » Affiche à l'intérieur du graphique SVG : 5% (25 Ko/s) / 5% (15 secondes restantes) / 5% (25 Ko/s - 15 secondes restantes) / 100%
 	// » Recherche silencieusement l'accès au graphique SVG
@@ -466,7 +500,7 @@ apijs.core.upload = function () {
 		// *** Recherche silencieuse **************************** //
 		// Essaye d'accéder au graphique SVG
 		try {
-			var rect = null, text = null;
+			var rect, text;
 
 			rect = (apijs.config.navigator) ? document.getElementById('progressbar').getSVGDocument().getElementById('bar') : document.getElementById('progressbar').getSVGDocument().rootElement.getElementById('bar');
 

@@ -6,7 +6,7 @@ For more information, go to https://www.luigifab.fr/apijs (IPv6 is required, it'
 
 This repository is a releases mirror. To install it, please read the documentation.
 
-- Current version: 4.0.0 (02/02/2013) (archive regenerated on 02/07/2021)
+- Current version: 4.1.0 (26/02/2013) (archive regenerated on 02/07/2021)
 - Client compatibility: Firefox 36+, Chrome 32+, Opera 19+, Edge 16+, Safari 9+
 - Translations: English (en), French (fr-FR/fr-CA), German (de), Italian (it), Portuguese (pt-PT/pt-BR), Spanish (es)
 - Other translations: Czech (cs), Dutch (nl), Japanese (ja), Polish (pl), Slovak (sk)

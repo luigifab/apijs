@@ -1,7 +1,7 @@
 /**
  * Created D/12/04/2009
- * Updated D/27/01/2013
- * Version 127
+ * Updated V/22/02/2013
+ * Version 132
  *
  * Copyright 2008-2013 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
@@ -23,6 +23,8 @@ apijs.core.dialog = function () {
 	this.classNames = null;
 
 	this.image = null;
+	this.imageSize = null;
+
 	this.timer = null;
 	this.timerbis = null;
 	this.callback = null;
@@ -36,7 +38,7 @@ apijs.core.dialog = function () {
 
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// DÉFINITION DES BOITES DE DIALOGUE (8)
+	// DÉFINITION DES BOITES DE DIALOGUE
 
 	// #### Dialogue d'information ################################# i18n ## debug ## public ### //
 	// = révision : 76
@@ -303,7 +305,7 @@ apijs.core.dialog = function () {
 
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// DÉFINITION DES ACTIONS DES BOUTONS ET DES TOUCHES DU CLAVIER (3)
+	// DÉFINITION DES ACTIONS DES BOUTONS, DES TOUCHES DU CLAVIER ET DU NAVIGATEUR
 
 	// #### Action de fermeture ##################################################### public ### //
 	// = révision : 43
@@ -525,38 +527,104 @@ apijs.core.dialog = function () {
 	};
 
 
+	// #### Action de redimensionnement de la fenêtre ##################### event ## private ### //
+	// = révision : 8
+	// » Redimensionne les dialogues photos et vidéos en fonction de la taille de la fenêtre
+	// » S'assure de mettre à jour toutes les dimensions et de ne pas dépasser la taille de la photo/vidéo source
+	this.actionResizeBrowser = function () {
+
+		// *** Préparation ************************************** //
+		var infoWindow = {}, infoMedia = {}, imageSize = apijs.dialog.imageSize,
+		    bbcode = document.getElementById('topho').querySelector('div.bbcode');
+
+		infoMedia.width = parseInt(document.getElementById('topho').getAttribute('width'), 10);
+		infoMedia.height = parseInt(document.getElementById('topho').getAttribute('height'), 10);
+
+		infoWindow.width = Math.round(window.innerWidth - window.innerWidth * apijs.config.dialog.margin / 100);
+		infoWindow.height = Math.round(window.innerHeight - window.innerHeight * apijs.config.dialog.margin / 100);
+
+		// *** Calcul des dimensions **************************** //
+		// largeur de l'image supérieure/inférieure à la largeur de la fenêtre
+		if ((infoMedia.width > infoWindow.width) || (infoMedia.width < infoWindow.width)) {
+
+			infoMedia.width = infoWindow.width;
+			infoMedia.height = Math.round(infoMedia.width / imageSize.ratio);
+
+			if (infoMedia.height > infoWindow.height) {
+				infoMedia.height = infoWindow.height;
+				infoMedia.width = Math.round(infoMedia.height * imageSize.ratio);
+			}
+		}
+
+		// hauteur de l'image supérieure/inférieure à la hauteur de la fenêtre
+		else if ((infoMedia.height > infoWindow.height) || (infoMedia.height < infoWindow.height)) {
+
+			infoMedia.height = infoWindow.height;
+			infoMedia.width = Math.round(infoMedia.height * imageSize.ratio);
+
+			if (infoMedia.width > infoWindow.width) {
+				infoMedia.width = infoWindow.width;
+				infoMedia.height = Math.round(infoMedia.width / imageSize.ratio);
+			}
+		}
+
+		// *** Taille maximale ********************************** //
+		if ((infoMedia.width > imageSize.width) || isNaN(infoMedia.width) || (infoMedia.width < 1)) {
+			infoMedia.width = imageSize.width;
+			infoMedia.height = imageSize.height;
+		}
+		else if ((infoMedia.height > imageSize.height) || isNaN(infoMedia.height) || (infoMedia.height < 1)) {
+			infoMedia.width = imageSize.width;
+			infoMedia.height = imageSize.height;
+		}
+
+		// *** Mise à jour du dialogue ************************** //
+		document.getElementById('box').style.width = infoMedia.width + 'px';
+		document.getElementById('box').style.marginLeft = Math.round(-(infoMedia.width + 20) / 2) + 'px';
+		document.getElementById('box').style.marginTop  = Math.round(-(infoMedia.height + 66) / 2) + 'px';
+
+		document.getElementById('topho').setAttribute('width', infoMedia.width);
+		document.getElementById('topho').setAttribute('height', infoMedia.height);
+
+		if (bbcode)
+			bbcode.style.height = infoMedia.height + 'px';
+	};
+
+
 
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// GESTION DES CONTENEURS PARENTS (9)
+	// GESTION DES CONTENEURS PARENTS
 
 	// #### Prépare le terrain ##################################################### private ### //
-	// = révision : 78
+	// = révision : 81
 	// » Supprime l'ancien dialogue
 	// » Prend en compte la configuration de [TheSlideshow] si besoin
-	// » Met en place l'écoute des touches du clavier (eventListener:keydown)
+	// » Met en place l'écoute des touches du clavier
 	this.setupDialog = function (type, icon) {
 
-		// *** Supprime l'ancien dialogue *********************** //
+		// supprime l'ancien dialogue
 		if (this.classNames !== null) {
 			this.deleteDialog(false);
 		}
 
-		// *** Active l'écoute des touches ********************** //
+		// active l'écoute des touches
 		if (apijs.config.navigator) {
+
 			document.addEventListener('keydown', apijs.dialog.actionKey, true);
 			window.addEventListener('beforeunload', apijs.dialog.actionCloseBrowser, true);
+
 			this.restrictNavigation(true);
 		}
 
-		// *** Préparation du dialogue ************************** //
+		// préparation du dialogue
 		this.classNames = (typeof icon === 'string') ? (type + ' ' + icon) : type;
 		this.fragment = document.createDocumentFragment();
 	};
 
 
 	// #### Affiche le dialogue #################################################### private ### //
-	// = révision : 14
+	// = révision : 18
 	// » Accroche le fragment DOM au document HTML
 	// » Permet une transition lors de la mise en place d'un tout nouveau dialogue, donc lorsqu'il n'y en avait pas juste avant
 	// » Afin de permettre les transitions CSS la modification de l'attribut class est différée dans le temps (1 milliseconde)
@@ -564,19 +632,17 @@ apijs.core.dialog = function () {
 
 		var classNames = this.classNames.split(' ');
 
-		// *** Pas de transitions ******************************* //
+		// pas de transitions
 		if (document.getElementById('dialog')) {
 			this.fragment.firstChild.setAttribute('class', this.fragment.firstChild.getAttribute('class').replace('init', 'actif'));
 			document.getElementById('dialog').appendChild(this.fragment.firstChild.firstChild);
 		}
-
-		// *** Transitions non supportées *********************** //
+		// transitions non supportées
 		else if (!apijs.config.transition || in_array('notransition', classNames)) {
 			this.fragment.firstChild.setAttribute('class', this.fragment.firstChild.getAttribute('class').replace('init', 'actif'));
 			document.body.appendChild(this.fragment);
 		}
-
-		// *** Transitions supportées *************************** //
+		// transitions supportées
 		else {
 			document.body.appendChild(this.fragment);
 			window.setTimeout(function () {
@@ -584,21 +650,41 @@ apijs.core.dialog = function () {
 			}, 1);
 		}
 
-		// *** Fermeture des popups au clic ********************* //
-		if (apijs.config.navigator && apijs.config.dialog.closeOnClic && !in_array(['waiting', 'progress', 'lock'], classNames))
-			document.addEventListener('click', apijs.dialog.actionCloseOnClic, false);
+		// fermeture des popups au clic
+		if (apijs.config.navigator) {
+
+			if (apijs.config.dialog.closeOnClic && !in_array(['waiting', 'progress', 'lock'], classNames))
+				document.addEventListener('click', apijs.dialog.actionCloseOnClic, false);
+
+			// adapatation de la taille des photos et vidéos
+			if (in_array(['photo','video'], classNames))
+				window.addEventListener('resize', apijs.dialog.actionResizeBrowser, false);
+
+			// mise en pause de la vidéo
+			if (in_array('video', classNames)) {
+
+				if (typeof document.hidden === 'boolean')
+					document.addEventListener('visibilitychange', apijs.dialog.pauseVideo, false);
+				else if (typeof document.mozHidden === 'boolean')
+					document.addEventListener('mozvisibilitychange', apijs.dialog.pauseVideo, false);
+				else if (typeof document.msHidden === 'boolean')
+					document.addEventListener('msvisibilitychange', apijs.dialog.pauseVideo, false);
+				else if (typeof document.webkitHidden === 'boolean')
+					document.addEventListener('webkitvisibilitychange', apijs.dialog.pauseVideo, false);
+			}
+		}
 	};
 
 
 	// #### Supprime le dialogue ################################################### private ### //
-	// = révision : 95
-	// » Dégage le timer du lien différé et annule l'écoute des touches du clavier (eventListener:keydown)
+	// = révision : 101
 	// » Supprime totalement ou pas la boite de dialogue avec ou sans transitions
-	// » Afin de permettre les transitions CSS la suppression totale est différée dans le temps (eventListener:transitionend)
+	// » Afin de permettre les transitions CSS la suppression totale est différée dans le temps
+	// » Dégage le timer du lien différé et annule les gestionnaires d'événements du dialogue
 	// » Pour terminer, réinitialise la plupart des variables
 	this.deleteDialog = function (total) {
 
-		var classNames = this.classNames.split(' '), video = null;
+		var classNames = this.classNames.split(' '), video;
 
 		// *** Prépare la suppression du dialogue *************** //
 		if (this.timer)
@@ -608,16 +694,34 @@ apijs.core.dialog = function () {
 
 			document.removeEventListener('keydown', apijs.dialog.actionKey, true);
 			window.removeEventListener('beforeunload', apijs.dialog.actionCloseBrowser, true);
+
 			this.restrictNavigation(false);
 
 			video = document.getElementById('dialog').querySelector('video');
 			if (video && (typeof video.pause === 'function'))
 				video.pause();
-		}
 
-		// *** Fermeture des popups au clic ********************* //
-		if (apijs.config.navigator && apijs.config.dialog.closeOnClic && !in_array(['waiting', 'progress', 'lock'], classNames))
-			document.removeEventListener('click', apijs.dialog.actionCloseOnClic, false);
+			// fermeture des popups au clic
+			if (apijs.config.dialog.closeOnClic && !in_array(['waiting', 'progress', 'lock'], classNames))
+				document.removeEventListener('click', apijs.dialog.actionCloseOnClic, false);
+
+			// adapatation de la taille des photos et vidéos
+			if (in_array(['photo','video'], classNames))
+				window.removeEventListener('resize', apijs.dialog.actionResizeBrowser, false);
+
+			// mise en pause de la vidéo
+			if (in_array('video', classNames)) {
+
+				if (typeof document.hidden === 'boolean')
+					document.removeEventListener('visibilitychange', apijs.dialog.pauseVideo, false);
+				else if (typeof document.mozHidden === 'boolean')
+					document.removeEventListener('mozvisibilitychange', apijs.dialog.pauseVideo, false);
+				else if (typeof document.msHidden === 'boolean')
+					document.removeEventListener('msvisibilitychange', apijs.dialog.pauseVideo, false);
+				else if (typeof document.webkitHidden === 'boolean')
+					document.removeEventListener('webkitvisibilitychange', apijs.dialog.pauseVideo, false);
+			}
+		}
 
 		// *** Supprime le dialogue ***************************** //
 		if (total && (!apijs.config.transition || in_array('notransition', classNames))) {
@@ -655,6 +759,8 @@ apijs.core.dialog = function () {
 		this.classNames = null;
 
 		this.image = null;
+		this.imageSize = null;
+
 		this.timer = null;
 
 		this.fragment = null;
@@ -666,16 +772,16 @@ apijs.core.dialog = function () {
 
 
 	// #### Affiche le site ######################################################## private ### //
-	// = révision : 94
+	// = révision : 95
 	// » Supprime l'iframe du formulaire d'upload lorsque nécessaire
 	// » Réinitialise les dernières variables
 	this.showPage = function () {
 
-		// *** Supprime l'éventuelle iframe ********************* //
+		// supprime l'éventuelle iframe
 		if (document.getElementById('iframeUpload'))
 			document.getElementById('iframeUpload').parentNode.removeChild(document.getElementById('iframeUpload'));
 
-		// *** Réinitialise les variables *********************** //
+		// réinitialise les variables
 		if (this.timerbis)
 			clearTimeout(this.timerbis);
 
@@ -685,111 +791,121 @@ apijs.core.dialog = function () {
 	};
 
 
-	// #### Restriction de la navigation au clavier ################################ private ### //
-	// = révision : 5
-	// » Empêche la navigation au clavier (avec la touche tab) de quitter la boite de dialogue
+
+
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// GESTION DE L'INTERACTION ENTRE L'UTILISATEUR ET LE NAVIGATEUR
+
+	// #### Mise en pause de la vidéo ##################################### event ## private ### //
+	// = révision : 6
+	// » Met en pause la vidéo lorsque la page n'est plus visible (API page visibility)
+	// » http://www.alsacreations.com/article/lire/1519-html-api-page-visibility.html
+	this.pauseVideo = function () {
+
+		var hidden;
+
+		if (typeof document.hidden === 'boolean')
+			hidden = document.hidden;
+		else if (typeof document.mozHidden === 'boolean')
+			hidden = document.mozHidden;
+		else if (typeof document.msHidden === 'boolean')
+			hidden = document.msHidden;
+		else if (typeof document.webkitHidden === 'boolean')
+			hidden = document.webkitHidden;
+
+		if (hidden)
+			document.getElementById('dialog').querySelector('video').pause();
+		else
+			document.getElementById('dialog').querySelector('video').play();
+	};
+
+
+	// #### Restriction de la navigation au clavier ####################### event ## private ### //
+	// = révision : 9
+	// » Empêche la navigation au clavier avec la touche tab de quitter la boite de dialogue
 	// » http://www.w3schools.com/tags/att_global_tabindex.asp
 	// » In HTML 4 the tabindex attribute can be used with: <a>, <area>, <button>, <input>, <object>, <select>, and <textarea>
 	// » In HTML 5 the tabindex attribute can be used on any HTML element
 	this.restrictNavigation = function (lock) {
 
-		var tags = 'a,area,button,input,object,select,textarea,iframe,div', elems = null, elem = 0;
+		var tags = 'a,area,button,input,object,select,textarea,iframe', elems = document.querySelectorAll(tags), elem;
 
 		if (lock) {
-			elems = document.querySelectorAll(tags);
 			for (elem = 0; elem < elems.length; elem++)
 				elems[elem].setAttribute('tabindex', '-1');
 		}
 		else {
-			elems = document.querySelectorAll(tags);
 			for (elem = 0; elem < elems.length; elem++)
 				elems[elem].removeAttribute('tabindex');
 		}
 	};
 
 
-	// #### Vérifie la taille de la fenêtre ######################################## private ### //
-	// = révision : 16
-	// » Vérifie si les dialogues photo ou vidéo peuvent être affichés sans redimensionnement
-	// » Renvoie true si la photo ou vidéo doit être redimensionnée et false s'il n'y a rien à faire
-	this.checkWindowSize = function (width, height) {
-
-		if ((width >= (window.innerWidth - window.innerWidth * apijs.config.dialog.margin / 100)) ||
-		    (height >= (window.innerHeight - window.innerHeight * apijs.config.dialog.margin / 100)))
-			return true;
-		else
-			return false;
-	};
-
-
 	// #### Recherche la taille idéale du dialogue ################################# private ### //
-	// = révision : 28
+	// = révision : 36
 	// » Vérifie si la largeur de la boite de dialogue ne dépassera pas la largeur de la fenêtre
 	// » Vérifie si la hauteur de la boite de dialogue ne dépassera pas la hauteur de la fenêtre
 	// » Adapte la taille du dialogue et de son contenu en conséquence
-	// » Logique de calcul inspirée de Lytebox 3.2 (http://www.dolem.com/lytebox)
 	this.updateWindowSize = function (width, height, url) {
 
 		// *** Préparation des variables ************************ //
-		var infoMedia = null, infoWindow = null, mimeTypes = null;
+		var infoMedia, infoWindow, mimeTypes;
 
-		infoMedia = { width: width, height: height, id: url.slice((url.lastIndexOf('/') + 1), url.lastIndexOf('.')), mime: null };
+		infoMedia  = { width: width, height: height, id: url.slice((url.lastIndexOf('/') + 1), url.lastIndexOf('.')), mime: '' };
 		infoWindow = { width: window.innerWidth, height: window.innerHeight };
-		mimeTypes = {
-			ogv: 'video/ogg',  webm: 'video/webm',
-			jpg: 'image/jpeg', jpeg: 'image/jpeg',
-			png: 'image/png',   gif: 'image/gif',
-			svg: 'image/svg+xml'
-		};
+		mimeTypes  = { ogv:'video/ogg', webm:'video/webm', jpg:'image/jpeg', png:'image/png', gif:'image/gif', svg:'image/svg+xml' };
+
+		this.imageSize = { width: width, height: height, ratio: width/height };
 
 		// *** Recherche du type mime *************************** //
-		infoMedia.mime = url.slice(url.lastIndexOf('.') + 1);
+		infoMedia.mime = url.slice(url.lastIndexOf('.') + 1).replace('jpeg', 'jpg');
 
 		if (mimeTypes.hasOwnProperty(infoMedia.mime))
 			infoMedia.mime = mimeTypes[infoMedia.mime];
 
 		// *** Calcul des dimensions **************************** //
-		if (this.checkWindowSize(width, height)) {
+		if ((width >= Math.round(window.innerWidth - window.innerWidth * apijs.config.dialog.margin / 100)) ||
+		    (height >= Math.round(window.innerHeight - window.innerHeight * apijs.config.dialog.margin / 100))) {
 
-			infoWindow.width -= window.innerWidth * apijs.config.dialog.margin / 100;
-			infoWindow.height -= window.innerHeight * apijs.config.dialog.margin / 100;
+			infoWindow.width -= Math.round(window.innerWidth * apijs.config.dialog.margin / 100);
+			infoWindow.height -= Math.round(window.innerHeight * apijs.config.dialog.margin / 100);
 
 			// largeur de l'image supérieure à la largeur de la fenêtre
 			if (infoMedia.width > infoWindow.width) {
 
-				infoMedia.height = Math.floor(infoMedia.height * (infoWindow.width / infoMedia.width));
 				infoMedia.width = infoWindow.width;
+				infoMedia.height = Math.round(infoMedia.width / this.imageSize.ratio);
 
 				if (infoMedia.height > infoWindow.height) {
-					infoMedia.width = Math.floor(infoMedia.width * (infoWindow.height / infoMedia.height));
 					infoMedia.height = infoWindow.height;
+					infoMedia.width = Math.round(infoMedia.height * this.imageSize.ratio);
 				}
 			}
 
 			// hauteur de l'image supérieure à la hauteur de la fenêtre
 			else if (infoMedia.height > infoWindow.height) {
 
-				infoMedia.width = Math.floor(infoMedia.width * (infoWindow.height / infoMedia.height));
 				infoMedia.height = infoWindow.height;
+				infoMedia.width = Math.round(infoMedia.height * this.imageSize.ratio);
 
 				if (infoMedia.width > infoWindow.width) {
-					infoMedia.height = Math.floor(infoMedia.height * (infoWindow.width / infoMedia.width));
 					infoMedia.width = infoWindow.width;
+					infoMedia.height = Math.round(infoMedia.width / this.imageSize.ratio);
 				}
 			}
 		}
 
-		// *** Applique les nouvelles dimensions **************** //
+		// *** Mise à jour du futur dialogue ******************** //
 		this.fragment.firstChild.firstChild.style.width = infoMedia.width + 'px';
-		this.fragment.firstChild.firstChild.style.marginLeft = parseInt(-(infoMedia.width + 20) / 2, 10) + 'px';
-		this.fragment.firstChild.firstChild.style.marginTop  = parseInt(-(infoMedia.height + 65) / 2, 10) + 'px';
+		this.fragment.firstChild.firstChild.style.marginLeft = Math.round(-(infoMedia.width + 20) / 2) + 'px';
+		this.fragment.firstChild.firstChild.style.marginTop  = Math.round(-(infoMedia.height + 66) / 2) + 'px';
 
 		return infoMedia;
 	};
 
 
 	// #### Chargement de la photo ################################################# private ### //
-	// = révision : 12
+	// = révision : 15
 	// » Définie l'attribut src de la balise img du dialogue photo
 	// » Prend soin d'attendre le temps que la photo soit intégralement chargée avant de l'afficher
 	this.loadImage = function (width, height, url) {
@@ -803,29 +919,30 @@ apijs.core.dialog = function () {
 			this.image.addEventListener('load', function () {
 				if (document.getElementById('topho')) {
 					document.getElementById('topho').removeAttribute('class');
-					document.getElementById('topho').setAttribute('src', this.image.src);
+					document.getElementById('topho').setAttribute('src', apijs.dialog.image.src);
 				}
 			}.bind(this), false);
 
 			// eventListener:error
 			this.image.addEventListener('error', function () {
 
-				if (document.getElementById('topho')) {
+				window.setTimeout(function () {
+					if (document.getElementById('topho')) {
 
-					// suppression des éléments a et span (photo redimensionnée)
-					if (document.getElementById('topho').getAttribute('class').indexOf('resized') > -1) {
+						// suppression des éléments a et span (photo redimensionnée)
+						if (document.getElementById('topho').getAttribute('class').indexOf('resized') > -1) {
+							var img = document.getElementById('topho').cloneNode(true);
+							document.getElementById('topho').parentNode.parentNode.removeChild(document.getElementById('topho').parentNode);
+							document.getElementById('box').firstChild.firstChild.appendChild(img);
+						}
 
-						var img = document.getElementById('topho').cloneNode(true);
-						document.getElementById('topho').parentNode.parentNode.removeChild(document.getElementById('topho').parentNode);
-						document.getElementById('box').firstChild.firstChild.appendChild(img);
+						// suppression du lien de téléchargement
+						if (apijs.config.dialog.savePhoto)
+							document.getElementById('box').firstChild.lastChild.removeChild(document.getElementById('box').firstChild.lastChild.lastChild);
+
+						document.getElementById('topho').setAttribute('class', document.getElementById('topho').getAttribute('class').replace('loading', 'error') + ' ' + apijs.config.lang);
 					}
-
-					// suppression du lien de téléchargement
-					if (apijs.config.dialog.savePhoto)
-						document.getElementById('box').firstChild.lastChild.removeChild(document.getElementById('box').firstChild.lastChild.lastChild);
-
-					document.getElementById('topho').setAttribute('class', 'error_' + apijs.config.lang);
-				}
+				}, 750);
 			}.bind(this), false);
 		}
 		else {
@@ -836,7 +953,7 @@ apijs.core.dialog = function () {
 
 
 	// #### Clone un objet ######################################################### private ### //
-	// = révision : 10
+	// = révision : 11
 	// » Clone une variable objet (de type object ou array)
 	// » Permet ainsi de pouvoir modifier un objet sans modifier l'objet original
 	// » En JavaScript, les objets sont passés par référence, ils ne sont jamais copiés
@@ -845,7 +962,7 @@ apijs.core.dialog = function () {
 		if ((typeof data !== 'object') || (data === null))
 			return data;
 
-		var value = null, object = new data.constructor();
+		var value, object = new data.constructor();
 
 		for (value in data) if (data.hasOwnProperty(value))
 			object[value] = apijs.dialog.clone(data[value]);
@@ -857,7 +974,7 @@ apijs.core.dialog = function () {
 
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// DÉFINITION DU CONTENU DES BOITES DE DIALOGUE (13)
+	// DÉFINITION DU CONTENU DES BOITES DE DIALOGUE
 
 	// #### Éléments parents ####################################################### private ### //
 	// = révision : 75
@@ -932,7 +1049,7 @@ apijs.core.dialog = function () {
 
 
 	// #### Texte ################################################################## private ### //
-	// = révision : 67
+	// = révision : 68
 	// » Met en place le paragraphe du dialogue
 	// » Prend en charge le bbcode grâce à [bbcode]
 	// # <div>{data}</div>
@@ -940,7 +1057,6 @@ apijs.core.dialog = function () {
 
 		var bbcode = new apijs.core.bbcode();
 		bbcode.init(data, apijs.config.dialog.emotes);
-		bbcode.exec();
 
 		this.fragment.firstChild.firstChild.appendChild(bbcode.getFragment());
 	};
@@ -1260,7 +1376,7 @@ apijs.core.dialog = function () {
 
 
 	// #### Photo et légende ############################################### i18n ## private ### //
-	// = révision : 142
+	// = révision : 144
 	// » Met en place la photo et la légende du dialogue photo
 	// » Redimensionne la photo en fonction de la taille de la fenêtre lorsque nécessaire
 	// » Affiche une icône au survol si la photo est redimensionnée lors de son affichage et si la configuration le permet
@@ -1268,7 +1384,7 @@ apijs.core.dialog = function () {
 	// # <dl>
 	// #  <dt>
 	// #    [<a href="{url}" onclick="window.open(this.href); this.blur(); return false;">]
-	// #      <img width="{infoPhoto.width}" height="{infoPhoto.height}" alt="" class="loading [resized]" id="topho" />[<span />]
+	// #      <img width="{infoPhoto.width}" height="{infoPhoto.height}" alt="" class="loading [svg] [resized]" id="topho" />[<span />]
 	// #    [</a>]
 	// #  </dt>
 	// #  <dd>
@@ -1289,10 +1405,10 @@ apijs.core.dialog = function () {
 
 				// Éléments a img span (photo redimensionnée)
 				// # <a href="{url}" onclick="window.open(this.href); this.blur(); return false;">
-				// #  <img width="{infoPhoto.width}" height="{infoPhoto.height}" alt="" class="loading resized" id="topho" />
+				// #  <img width="{infoPhoto.width}" height="{infoPhoto.height}" alt="" class="loading [svg] resized" id="topho" />
 				// #  <span />
 				// # </a>
-				if (apijs.config.dialog.showFullsize && this.checkWindowSize(width, height)) {
+				if (apijs.config.dialog.showFullsize && ((infoPhoto.width !== width) || (infoPhoto.height !== height))) {
 
 					this.elemC = document.createElement('a');
 					this.elemC.setAttribute('href', url);
@@ -1302,20 +1418,30 @@ apijs.core.dialog = function () {
 						this.elemD.setAttribute('width', infoPhoto.width);
 						this.elemD.setAttribute('height', infoPhoto.height);
 						this.elemD.setAttribute('alt', '');
-						this.elemD.setAttribute('class', 'loading resized');
+
+						if (document.implementation.hasFeature('http://www.w3.org/TR/SVG11/feature#Image', '1.1'))
+							this.elemD.setAttribute('class', 'loading svg resized');
+						else
+							this.elemD.setAttribute('class', 'loading resized');
+
 						this.elemD.setAttribute('id', 'topho');
 
 					this.elemC.appendChild(this.elemD);
 					this.elemC.appendChild(document.createElement('span'));
 				}
 				// Élément img
-				// # <img width="{infoPhoto.width}" height="{infoPhoto.height}" alt="" class="loading" id="topho" />
+				// # <img width="{infoPhoto.width}" height="{infoPhoto.height}" alt="" class="loading [svg]" id="topho" />
 				else {
 					this.elemC = document.createElement('img');
 					this.elemC.setAttribute('width', infoPhoto.width);
 					this.elemC.setAttribute('height', infoPhoto.height);
 					this.elemC.setAttribute('alt', '');
-					this.elemC.setAttribute('class', 'loading');
+
+					if (document.implementation.hasFeature('http://www.w3.org/TR/SVG11/feature#Image', '1.1'))
+						this.elemC.setAttribute('class', 'loading svg');
+					else
+						this.elemC.setAttribute('class', 'loading');
+
 					this.elemC.setAttribute('id', 'topho');
 				}
 
@@ -1380,14 +1506,14 @@ apijs.core.dialog = function () {
 
 
 	// #### Vidéo et légende ############################################### i18n ## private ### //
-	// = révision : 85
+	// = révision : 89
 	// » Met en place la vidéo et la légende du dialogue vidéo
 	// » Redimensionne la vidéo en fonction de la taille de la fenêtre lorsque nécessaire
 	// » Un message d'information remplace la vidéo lorsque la balise vidéo du langage HTML 5 n'est pas gérée par le navigateur
 	// » Affiche un lien pour télécharger la vidéo si la configuration le permet
 	// # <dl>
 	// #  <dt>
-	// #    <video src="{url}" width="{infoVideo.width}" height="{infoVideo.height}" controls="controls" [autoplay="autoplay"]>
+	// #    <video src="{url}" width="{infoVideo.width}" height="{infoVideo.height}" controls="controls" [autoplay="autoplay"] id="topho">
 	// #      [{i18n.browserNoVideo}]
 	// #    </video>
 	// #  </dt>
@@ -1399,7 +1525,7 @@ apijs.core.dialog = function () {
 	this.htmlVideo = function (url, name, date, legend) {
 
 		// vérification des dimensions
-		var nav = BrowserDetect, noVideo = null, infoVideo = this.updateWindowSize(apijs.config.dialog.videoWidth, apijs.config.dialog.videoHeight, url);
+		var noVideo, infoVideo = this.updateWindowSize(apijs.config.dialog.videoWidth, apijs.config.dialog.videoHeight, url);
 
 		// Élément dl
 		this.elemA = document.createElement('dl');
@@ -1413,6 +1539,7 @@ apijs.core.dialog = function () {
 				this.elemC.setAttribute('width', infoVideo.width);
 				this.elemC.setAttribute('height', infoVideo.height);
 				this.elemC.setAttribute('controls', 'controls');
+				this.elemC.setAttribute('id', 'topho');
 
 				if (apijs.config.dialog.videoAutoplay)
 					this.elemC.setAttribute('autoplay', 'autoplay');
@@ -1421,15 +1548,12 @@ apijs.core.dialog = function () {
 				if (typeof this.elemC.pause !== 'function') {
 
 					noVideo = new apijs.core.bbcode();
-					noVideo.init(apijs.i18n.translate('browserNoVideo', nav.browser, nav.version, infoVideo.mime, navigator.userAgent));
-					noVideo.exec();
+					noVideo.init(apijs.i18n.translate('browserNoVideo', BrowserDetect.browser, BrowserDetect.version, infoVideo.mime, navigator.userAgent));
 
-					this.elemC.appendChild(noVideo.getFragment());
-					this.elemC.style.width = infoVideo.width;
-					this.elemC.style.height = infoVideo.height;
-				}
-				if (BrowserDetect.browser === 'Safari') {
-					this.elemC.setAttribute('style', 'height:' + infoVideo.height + 'px');
+					noVideo = noVideo.getFragment();
+					noVideo.firstChild.setAttribute('style', 'height:' + infoVideo.height + 'px');
+
+					this.elemC.appendChild(noVideo);
 				}
 
 			this.elemB.appendChild(this.elemC);

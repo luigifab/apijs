@@ -1,7 +1,7 @@
 /**
  * Created J/03/12/2009
- * Updated D/27/01/2013
- * Version 60
+ * Updated J/14/02/2013
+ * Version 62
  *
  * Copyright 2008-2013 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
@@ -16,23 +16,22 @@
  * merchantability or fitness for a particular purpose. See the
  * GNU General Public License (GPL) for more details.
  *
- * JSLint: apijs startApijs setApijsConfig openTab  window alert confirm  str_shuffle in_array ucwords uniqid BrowserDetect
+ * JSLint: apijs startApijs setApijsLang setApijsConfig openTab  window alert confirm  str_shuffle in_array ucwords uniqid BrowserDetect
  * sloppy: true, white: true, browser: true, devel: true, plusplus: true, maxerr: 1000  (upload.js, regexp: true ; demo.js, eval is evil)
  */
 
 // #### Paramètres de configuration ######################################### //
-// = révision : 63
+// = révision : 64
 // » Définie la variable globale du programme ainsi que sa configuration
 // » Lance le programme JavaScript
 var apijs = {
 	core: {},
 	config: {
-		lang: 'fr',
+		lang: 'auto',
 		debug: false,
 		debugkey: false,
 		navigator: true,
 		transition: true,
-		autolang: true,
 		dialog: {
 			closeOnClic: false,
 			restrictNavigation: true,
@@ -50,7 +49,7 @@ var apijs = {
 			imagePrev: null,  // { src: './images/icons/24/gnome-prev.png', width: 24, height: 24 }
 			imageNext: null,  // { src: './images/icons/24/gnome-next.png', width: 24, height: 24 }
 			imageClose: null, // { src: './images/dialog/close.png', width: 60, height: 22 }
-			imageUpload: { src: './images/dialog/progress2.svg.php', width: 300, height: 17 },
+			imageUpload: { src: './images/dialog/progress3.svg.php', width: 300, height: 17 },
 			filePhoto: './downloadfile.php',
 			fileVideo: './downloadfile.php',
 			fileUpload: './uploadfile.php'
@@ -92,13 +91,12 @@ else if (navigator.userAgent.indexOf('MSIE 8') > -1) {
 
 
 // #### Lancement du programme ############################################## //
-// = révision : 56
+// = révision : 57
 // » Recherche les liens ayant la classe popup
 // » Vérifie si le navigateur supporte les transitions CSS ou pas
 // » Charge les modules disponibles et met en place les gestionnaires d'évènements
 function startApijs() {
 
-	// *** Recherche des liens ************************* //
 	if (apijs.config.navigator) {
 		for (var tags = document.querySelectorAll('a.popup'), tag = 0; tag < tags.length; tag++)
 			tags[tag].addEventListener('click', openTab, false);
@@ -108,7 +106,6 @@ function startApijs() {
 			tags[tag].setAttribute('onclick', 'window.open(this.href); return false;');
 	}
 
-	// *** Support des transitions CSS ***************** //
 	if ((typeof document.body.style.transitionDuration !== 'string') &&
 	    (typeof document.body.style.OTransitionDuration !== 'string') &&
 	    (typeof document.body.style.MozTransitionDuration !== 'string') &&
@@ -116,23 +113,25 @@ function startApijs() {
 		apijs.config.transition = false;
 	}
 
-	// *** Chargement des modules ********************** //
 	if ((typeof apijs.core.i18n === 'function') && (typeof apijs.core.bbcode === 'function') &&
 	    (typeof apijs.core.dialog === 'function') && (typeof apijs.core.upload === 'function') &&
 	    (typeof apijs.core.slideshow === 'function')) {
 
 		apijs.i18n = new apijs.core.i18n();
+
+		if (typeof setApijsLang === 'function')
+			setApijsLang();
+
 		apijs.i18n.init();
 
 		if (typeof setApijsConfig === 'function')
 			setApijsConfig();
 
 		apijs.dialog = new apijs.core.dialog();
+		apijs.upload = new apijs.core.upload();
 
 		apijs.slideshow = new apijs.core.slideshow();
 		apijs.slideshow.init();
-
-		apijs.upload = new apijs.core.upload();
 	}
 }
 

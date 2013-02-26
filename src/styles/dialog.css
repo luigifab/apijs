@@ -1,7 +1,7 @@
 /**
  * Created V/08/05/2009
- * Updated J/31/01/2013
- * Version 46
+ * Updated S/23/02/2013
+ * Version 54
  *
  * Copyright 2008-2013 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
@@ -30,10 +30,10 @@
 #box {
 	position:relative; top:27%; margin:auto; padding:0.6em 0.8em 2.4em; width:33em; min-height:9em; overflow:hidden;
 	background-color:white; opacity:0.9;
-	transition:top 0.5s; -moz-transition:top 0.5s; -o-transition:top 0.5s; -webkit-transition:top 0.5s;
-	box-shadow:0 0 30px #111; -moz-box-shadow:0 0 30px #111; -webkit-box-shadow:0 0 30px #111;
 	border-radius:0.8em; -moz-border-radius:0.8em; -webkit-border-radius:0.8em;
 	background-clip:padding-box; -moz-background-clip:padding; -o-background-clip:padding; -webkit-background-clip:padding-box;
+	transition:top 0.5s; -moz-transition:top 0.5s; -o-transition:top 0.5s; -webkit-transition:top 0.5s;
+	box-shadow:0 0 30px #111; -moz-box-shadow:0 0 30px #111; -webkit-box-shadow:0 0 30px #111;
 }
 
 #box.photo, #box.video { top:50%; left:50%; padding:10px 10px 5px; width:auto; min-height:inherit; overflow:visible; opacity:1; }
@@ -71,10 +71,10 @@
 #box {
 	position:relative; top:27%; margin:auto; padding:0.6em 0.8em 2.4em; width:33em; min-height:9em; overflow:hidden;
 	background-color:white;
-	transition:top 0.5s; -moz-transition:top 0.5s; -o-transition:top 0.5s; -webkit-transition:top 0.5s;
-	box-shadow:0 0 30px #BBB; -moz-box-shadow:0 0 30px #BBB; -webkit-box-shadow:0 0 30px #BBB;
 	border-radius:0.8em; -moz-border-radius:0.8em; -webkit-border-radius:0.8em;
 	background-clip:padding-box; -moz-background-clip:padding; -o-background-clip:padding; -webkit-background-clip:padding-box;
+	transition:top 0.5s; -moz-transition:top 0.5s; -o-transition:top 0.5s; -webkit-transition:top 0.5s;
+	box-shadow:0 0 30px #BBB; -moz-box-shadow:0 0 30px #BBB; -webkit-box-shadow:0 0 30px #BBB;
 }
 
 #box.photo, #box.video { top:50%; left:50%; padding:10px 10px 5px; width:auto; min-height:inherit; overflow:visible; }
@@ -121,8 +121,8 @@
 #box p abbr { border-bottom:none; }
 
 #box p.saving {
-	position:absolute; bottom:6em; left:7em; margin:0; padding-left:23px; height:16px;
-	font-size:0.85em; color:#333; line-height:145%; background:url("../images/dialog/saving.png") no-repeat left center;
+	position:absolute; bottom:6em; left:7em; margin:0; padding-left:25px; height:20px;
+	font-size:0.85em; color:#333; line-height:20px; background:url("../images/dialog/saving.svg.php?w=20&h=20") no-repeat left center;
 }
 
 #box p.reload {
@@ -149,10 +149,8 @@
 	border:1px solid #BBB; background-color:#E2E2E2; background-repeat:no-repeat; background-position:4px center;
 	border-radius:0.4em; -moz-border-radius:0.4em; -webkit-border-radius:0.4em;
 	background-clip:padding-box; -moz-background-clip:padding; -o-background-clip:padding; -webkit-background-clip:padding-box;
-	transition:background-color 0.5s, border 0.5s;
-	-moz-transition:background-color 0.5s, border 0.5s;
-	-o-transition:background-color 0.5s, border 0.5s;
-	-webkit-transition:background-color 0.5s, border 0.5s;
+	transition:background-color 0.5s, border 0.5s; -moz-transition:background-color 0.5s, border 0.5s;
+	-o-transition:background-color 0.5s, border 0.5s; -webkit-transition:background-color 0.5s, border 0.5s;
 }
 
 #box div.control button.cancel { background-image:url("../images/icons/16/silk-cancel.png"); float:left; margin-right:0.45em; }
@@ -163,12 +161,14 @@
 
 /* ############################################### Boutons de navigation ### */
 #box div.navigation button[disabled] { display:none; }
+#box div.navigation button { opacity:0.7; }
+#box div.navigation button:hover, #box div.navigation button:active, #box div.navigation button:focus { opacity:1; }
 
 #box div.navigation.txt button {
 	position:absolute; top:42%; padding:0; width:7em; height:22px; line-height:22px; line-height:22px;
 	font-size:0.8em; color:#CCC; text-align:center; cursor:pointer; border:none; background-color:black;
-	transition:opacity 0.5s; -moz-transition:opacity 0.5s; -o-transition:opacity 0.5s; -webkit-transition:opacity 0.5s;
 	background-clip:padding-box; -moz-background-clip:padding; -o-background-clip:padding; -webkit-background-clip:padding-box;
+	transition:opacity 0.5s; -moz-transition:opacity 0.5s; -o-transition:opacity 0.5s; -webkit-transition:opacity 0.5s;
 }
 
 #box div.navigation.txt button#prev {
@@ -192,10 +192,6 @@
 #box div.navigation.img button#next { right:-32px; }
 #box div.navigation.img button#prev { left:-32px; }
 
-#box div.navigation button { opacity:0.7; }
-#box div.navigation button:hover, #box div.navigation button:active,
-#box div.navigation button:focus { opacity:1; }
-
 #dialog.slideshow.cblack div.navigation button { opacity:0.4; }
 #dialog.slideshow.cblack div.navigation button:hover, #dialog.slideshow.cblack div.navigation button:active,
 #dialog.slideshow.cblack div.navigation button:focus { opacity:0.8; }
@@ -208,22 +204,26 @@
 
 #box.photo dl dt a span {
 	display:inline-block; position:absolute; right:5px; bottom:5px; width:24px; height:24px; opacity:0;
-	background:transparent url("../images/icons/24/gnome-zoom-in.png") no-repeat center;
+	background:url("../images/icons/24/gnome-zoom-in.png") no-repeat center;
 	transition:opacity 0.5s; -moz-transition:opacity 0.5s; -o-transition:opacity 0.5s; -webkit-transition:opacity 0.5s;
 }
 
 #box.photo dl dt a:hover span, #box.photo dt a:active span, #box.photo dt a:focus span { opacity:0.75; }
 
-#box.photo dl dt img { display:block; }
-#box.photo dl dt img.loading  { background:white url("../images/dialog/loading.png") no-repeat center; }
-#box.photo dl dt img.error_en { background:white url("../images/dialog/404en.png") no-repeat center; }
-#box.photo dl dt img.error_fr { background:white url("../images/dialog/404fr.png") no-repeat center; }
+#box.photo dl dt img { display:block; background-color:white; background-repeat:no-repeat; background-position:center; }
+#box.photo dl dt img.loading { background-image:url("../images/dialog/loading.png"); }
+#box.photo dl dt img.error { background-image:url("../images/dialog/error-en.png"); }
+#box.photo dl dt img.error.fr { background-image:url("../images/dialog/error-fr.png"); }
+#box.photo dl dt img.svg.loading { background-image:url("../images/dialog/loading.svg.php?w=60&h=20"); }
+#box.photo dl dt img.svg.error { background-image:url("../images/dialog/error.svg.php?w=200&h=200&lang=en"); }
+#box.photo dl dt img.svg.error.fr { background-image:url("../images/dialog/error.svg.php?w=200&h=200&lang=fr"); }
 
-#box.video dl dt video { display:block; color:white; background-color:black; }
-#box.video dl dt video p { margin:0; padding:1em; line-height:135%; }
-#box.video dl dt video a { display:inline; padding:0; min-height:inherit; color:yellow; background:none; }
-#box.video dl dt video strong { color:yellow; }
-#box.video dl dt video p.navigator { font-size:0.85em; line-height:140%; color:#CCC; }
+#box.video dl dt video { display:block; overflow:hidden; color:white; background-color:black; }
+#box.video dl dt video div { background-image:url("../images/dialog/tv.gif"); }
+#box.video dl dt video div p { margin:0; padding:1em; line-height:135%; }
+#box.video dl dt video div p.navigator { font-size:0.85em; line-height:140%; color:#CCC; }
+#box.video dl dt video div a { display:inline; padding:0; min-height:inherit; color:yellow; background:none; }
+#box.video dl dt video div strong { color:yellow; }
 
 /* &&&&&&&&&&&&&&&&&&&&&&&&&&&&& bouton de fermeture &&& */
 #box div.close { position:absolute; top:3px; right:3px; z-index:9050; }
@@ -231,13 +231,11 @@
 #box div.close.txt button.close {
 	margin:0 0 5em 4em; padding:0 0.6em; line-height:179%;
 	font-size:0.8em; font-weight:bold; text-transform:uppercase; cursor:pointer;
-	color:white; border:2px solid white; background:black;
+	color:white; border:2px solid white; background:black; white-space:nowrap;
 	border-radius:0.8em; -moz-border-radius:0.8em; -webkit-border-radius:0.8em;
 	background-clip:padding-box; -moz-background-clip:padding; -o-background-clip:padding; -webkit-background-clip:padding-box;
-	transition:border 0.4s, color 0.4s;
-	-moz-transition:border 0.4s, color 0.4s;
-	-o-transition:border 0.4s, color 0.4s;
-	-webkit-transition:border 0.4s, color 0.4s;
+	transition:border 0.4s, color 0.4s; -moz-transition:border 0.4s, color 0.4s;
+	-o-transition:border 0.4s, color 0.4s; -webkit-transition:border 0.4s, color 0.4s;
 }
 
 #box div.close.txt button.close:after { content:" / X"; }

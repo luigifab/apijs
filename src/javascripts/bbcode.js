@@ -1,7 +1,7 @@
 /**
  * Created J/19/08/2010
- * Updated D/27/01/2013
- * Version 11
+ * Updated D/17/02/2013
+ * Version 12
  *
  * Copyright 2008-2013 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
@@ -27,7 +27,7 @@ apijs.core.bbcode = function () {
 
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// GESTION DES DONNÉES (3)
+	// GESTION DES DONNÉES
 
 	// #### Initialisation ########################################################## public ### //
 	// = révision : 13
@@ -47,24 +47,16 @@ apijs.core.bbcode = function () {
 	};
 
 
-	// #### Interprétation ########################################################## public ### //
-	// = révision : 2
-	// » Analyse le bbcode
-	// » Génère le fragment DOM
-	this.exec = function () {
+	// #### Interprétation et résultat ############################################## public ### //
+	// = révision : 7
+	// » Analyse le bbcode et génère le fragment DOM
+	// » Renvoie le fragment DOM correspondant au bbcode
+	this.getFragment = function () {
 
 		this.readData(this.bbcode, 0);
 
 		this.fragment = document.createDocumentFragment();
 		this.fragment.appendChild(this.createDomFragment(this.object));
-	};
-
-
-	// #### Résultat ################################################################ public ### //
-	// = révision : 6
-	// » Renvoie le fragment DOM correspondant au bbcode
-	// » Même si celui-ci est null
-	this.getFragment = function () {
 
 		return this.fragment;
 	};
@@ -73,17 +65,17 @@ apijs.core.bbcode = function () {
 
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// GÉNÉRATION DE L'OBJET (3)
+	// GÉNÉRATION DE L'OBJET JS ET DU FRAGMENT DOM
 
 	// #### Création de l'objet de transition ###################################### private ### //
-	// = révision : 15
+	// = révision : 16
 	// » Parcours le bbcode récursivement
 	// » Découpe les données avec des expressions régulières
 	// » Sauvegarde chaque élément et chaque bout de texte dans un tableau d'objets
 	// » À bien noter qu'en JavaScript, les objets sont passés par référence, ils ne sont jamais copiés
 	this.readData = function (data, level) {
 
-		var element = null, attributes = null, content = null, text = null, other = null, cut = 0;
+		var element, attributes, content, text, other, cut;
 
 		// *** Texte et éléments simples ou doubles ************* //
 		// la chaine contient du texte suivit d'un ou plusieurs éléments
@@ -163,13 +155,13 @@ apijs.core.bbcode = function () {
 
 
 	// #### Ajoute un nœud élément ou un nœud texte ################################ private ### //
-	// = révision : 13
+	// = révision : 14
 	// » Enregistre le nœud élément et ses attributs ou le nœud texte dans le tableau d'objets
 	// » Remplace les émoticônes lorsque nécessaire en fonction de la configuration
 	// » À bien noter qu'en JavaScript, les objets sont passés par référence, ils ne sont jamais copiés
 	this.addElement = function (data, attributes, level) {
 
-		var directlink = null, attr = null, name = null, value = null, hasEmotes = false, currentEmote = {};
+		var directlink, attribute, name, value, hasEmotes = false, currentEmote = {};
 		directlink = this.getContentNode(this.object, 0, level);
 
 		// *** Nœud élément ************************************* //
@@ -183,10 +175,10 @@ apijs.core.bbcode = function () {
 			if (attributes.length > 5) {
 				attributes = attributes.slice(1, -1).split(/["'] /);
 
-				for (attr in attributes) if (attributes.hasOwnProperty(attr)) {
+				for (attribute in attributes) if (attributes.hasOwnProperty(attribute)) {
 
-					name = attributes[attr].slice(0, attributes[attr].indexOf('='));
-					value = attributes[attr].slice(attributes[attr].indexOf('=') + 2);
+					name = attributes[attribute].slice(0, attributes[attribute].indexOf('='));
+					value = attributes[attribute].slice(attributes[attribute].indexOf('=') + 2);
 
 					if (directlink.hasOwnProperty('content'))
 						directlink.content[directlink.content.length - 1][name] = value;
@@ -256,20 +248,15 @@ apijs.core.bbcode = function () {
 	};
 
 
-
-
-	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// GÉNÉRATION DU FRAGMENT DOM (1)
-
 	// #### Création du fragment DOM ############################################### private ### //
-	// = révision : 15
+	// = révision : 16
 	// » Crée récursivement les différents nœuds à partir du tableau d'objets
 	// » Prend en charge les nœuds éléments et leurs attributs ainsi que les nœuds textes
 	// » À bien noter qu'en JavaScript, les objets sont passés par référence, ils ne sont jamais copiés
 	// » http://jsperf.com/create-nested-dom-structure
 	this.createDomFragment = function (data) {
 
-		var tag = null, attr = null, elem = 0;
+		var tag, attr, elem;
 
 		// prépare un nœud élément ou renvoie un nœud texte
 		if (data.hasOwnProperty('tag'))

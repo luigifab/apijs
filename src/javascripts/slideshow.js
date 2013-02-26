@@ -1,7 +1,7 @@
 /**
  * Created J/13/05/2010
- * Updated S/02/02/2013
- * Version 26
+ * Updated D/17/02/2013
+ * Version 28
  *
  * Copyright 2008-2013 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
@@ -26,7 +26,7 @@ apijs.core.slideshow = function () {
 
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// GESTION DU DIAPORAMA (4)
+	// GESTION DU DIAPORAMA
 
 	// #### Initialisation ########################################################## public ### //
 	// = révision : 20
@@ -97,7 +97,7 @@ apijs.core.slideshow = function () {
 
 
 	// #### Prépare l'affichage du dialogue ############## i18n ## event ## debug ## private ### //
-	// = révision : 46
+	// = révision : 48
 	// » Recherche les informations de la photo ou de la vidéo à afficher
 	// » En mode diaporama, déduit s'il faut mettre à jour l'image principale de l'album, s'il faut afficher un dialogue photo ou vidéo
 	//  ou s'il faut mettre à jour les dialogues photo ou vidéo
@@ -105,31 +105,39 @@ apijs.core.slideshow = function () {
 	this.showMedia = function (ev) {
 
 		// *** Recherche des informations *********************** //
-		var media = { num: 0, id: null, url: null, conf: null, name: null, date: null, legend: null, width: null, height: null, classNames: '' },
-		    tmp = null;
+		var media = {};
 
 		if (typeof ev !== 'string') {
 			ev.preventDefault();
-			media.id  = ev.target.parentNode.getAttribute('id');
-			media.url = ev.target.parentNode.getAttribute('href');
-			media.alt = ev.target.getAttribute('alt');
-			media.conf = ev.target.parentNode.querySelector('input').getAttribute('value').split('|');
+
+			if (ev.target.nodeName.toLowerCase() === 'a') {
+				media.id = ev.target.getAttribute('id');
+				media.url = ev.target.getAttribute('href');
+				media.conf = ev.target.querySelector('input').getAttribute('value').split('|');
+			}
+			else {
+				media.id = ev.target.parentNode.getAttribute('id');
+				media.url = ev.target.parentNode.getAttribute('href');
+				media.conf = ev.target.parentNode.querySelector('input').getAttribute('value').split('|');
+			}
+
+			media.alt = (ev.target.nodeName.toLowerCase() === 'img') ? ev.target.getAttribute('alt') : '';
 			media.classNames = document.getElementById(media.id.slice(0, media.id.lastIndexOf('.'))).getAttribute('class');
 
-			tmp = media.id.split('.');
-			media.album = parseInt(tmp[1], 10);
-			media.number = parseInt(tmp[2], 10);
+			media.album = parseInt(media.id.split('.')[1], 10);
+			media.number = parseInt(media.id.split('.')[2], 10);
 		}
 		else {
-			media.id  = ev;
+			media.id = ev;
 			media.url = document.getElementById(media.id).getAttribute('href');
-			media.alt = document.getElementById(media.id).querySelector('img').getAttribute('alt');
 			media.conf = document.getElementById(media.id).querySelector('input').getAttribute('value').split('|');
+
+			media.alt = document.getElementById(media.id).querySelector('img');
+			media.alt = (media.alt) ? media.alt.getAttribute('alt') : '';
 			media.classNames = document.getElementById(media.id.slice(0, media.id.lastIndexOf('.'))).getAttribute('class');
 
-			tmp = media.id.split('.');
-			media.album = parseInt(tmp[1], 10);
-			media.number = parseInt(tmp[2], 10);
+			media.album = parseInt(media.id.split('.')[1], 10);
+			media.number = parseInt(media.id.split('.')[2], 10);
 		}
 
 		media.classNames = media.classNames.replace('gallery', 'slideshow').replace('album', 'slideshow');
@@ -143,7 +151,7 @@ apijs.core.slideshow = function () {
 
 			// mise à jour de l'image principale (survol ou clic)
 			if ((apijs.dialog.classNames === null) && ((media.conf.length === 6) || (media.conf.length === 4))) {
-				this.updategallery(media);
+				this.updateGallery(media);
 			}
 
 			// affichage du dialogue (clic sur l'image principale)
@@ -155,7 +163,7 @@ apijs.core.slideshow = function () {
 			// changement de photo ou de vidéo depuis le dialogue
 			// touches droite gauche début fin et boutons précédent suivant
 			else {
-				this.updategallery(media);
+				this.updateGallery(media);
 				this.showDialog(media);
 			}
 		}
@@ -171,14 +179,14 @@ apijs.core.slideshow = function () {
 
 
 	// #### Gestion du mode présentation ########################## i18n ## debug ## private ### //
-	// = révision : 23
+	// = révision : 24
 	// » Extrait et vérifie les données nécessaires à la modification des attributs de l'image principale de l'album
 	// » Se base sur le lien de l'image et l'image qui viennent d'être cliqué ou survolé
 	// » Ajoute l'attribut class actif sur l'image du lien en question
 	// » Enregistre le numéro de l'image en question
-	this.updategallery = function (media) {
+	this.updateGallery = function (media) {
 
-		var id = null, tag = null, i = 0;
+		var id, tag, i;
 
 		// *** Image principale (photo) ************************* //
 		if ((media.conf.length === 6) && (media.conf[0].length > 0) && (media.conf[1].length > 0) && (media.conf[2].length > 0) &&
@@ -290,7 +298,7 @@ apijs.core.slideshow = function () {
 
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// DÉFINITION DES ACTIONS DES BOUTONS ET DES TOUCHES DU CLAVIER (5)
+	// DÉFINITION DES ACTIONS DES BOUTONS ET DES TOUCHES DU CLAVIER
 
 	// #### Affichage des boutons de navigation #################################### private ### //
 	// = révision : 28
