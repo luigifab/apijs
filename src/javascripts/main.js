@@ -1,7 +1,7 @@
 /**
  * Created J/03/12/2009
- * Updated J/14/02/2013
- * Version 62
+ * Updated D/10/03/2013
+ * Version 64
  *
  * Copyright 2008-2013 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
@@ -16,12 +16,12 @@
  * merchantability or fitness for a particular purpose. See the
  * GNU General Public License (GPL) for more details.
  *
- * JSLint: apijs startApijs setApijsLang setApijsConfig openTab  window alert confirm  str_shuffle in_array ucwords uniqid BrowserDetect
- * sloppy: true, white: true, browser: true, devel: true, plusplus: true, maxerr: 1000  (upload.js, regexp: true ; demo.js, eval is evil)
+ * JSLint: apijs startApijs setApijsLang setApijsConfig openTab uniqid  BrowserDetect str_shuffle in_array  window alert confirm
+ * sloppy: true, white: true, browser: true, devel: true, plusplus: true, maxerr: 1000  (upload.js, regexp: true) (demo.js, eval is evil)
  */
 
 // #### Paramètres de configuration ######################################### //
-// = révision : 64
+// = révision : 65
 // » Définie la variable globale du programme ainsi que sa configuration
 // » Lance le programme JavaScript
 var apijs = {
@@ -91,10 +91,10 @@ else if (navigator.userAgent.indexOf('MSIE 8') > -1) {
 
 
 // #### Lancement du programme ############################################## //
-// = révision : 57
+// = révision : 58
 // » Recherche les liens ayant la classe popup
 // » Vérifie si le navigateur supporte les transitions CSS ou pas
-// » Charge les modules disponibles et met en place les gestionnaires d'évènements
+// » Charge les modules disponibles et met en place les gestionnaires d'événements
 function startApijs() {
 
 	if (apijs.config.navigator) {
@@ -132,15 +132,25 @@ function startApijs() {
 
 		apijs.slideshow = new apijs.core.slideshow();
 		apijs.slideshow.init();
+
+		//if (typeof apijs.core.ajax === 'function') {
+		//	if ((typeof apijs.config.ajax === 'object') && (typeof history.pushState === 'function')) {
+		//		apijs.ajax = new apijs.core.ajax();
+		//		apijs.ajax.init();
+		//	}
+		//}
 	}
 }
 
 
-// #### Nouvel onglet ####################################################### //
-// = révision : 4
-// » Ouvre le lien dans un nouvel onglet
-// » Annule l'action par défaut
+// #### Outils ############################################################## //
+// = révision : 5
+// » Ouvre le lien dans un nouvel onglet et annule l'action par défaut
+// » Essaye de générer un identifiant unique
 function openTab(ev) {
 	ev.preventDefault();
 	window.open(this.href);
+}
+function uniqid() {
+	return str_shuffle('958753cfb564e097e2f9121a43da98708727f30365b1da846cc6fae22afe7ebcbda4030bd81f1e4d0615b96358dc294c').substr(0, 8);
 }

@@ -1,7 +1,7 @@
 /**
  * Created S/05/06/2010
- * Updated V/22/02/2013
- * Version 29
+ * Updated J/07/03/2013
+ * Version 30
  *
  * Copyright 2008-2013 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
@@ -27,6 +27,7 @@ apijs.core.i18n = function () {
 	// » Fabrice Creuzot (luigifab) <code~luigifab~info>, Brian Legrand <brianyouhouy~live~fr>
 	this.data.en = {
 		buttonOk: "Ok",
+		buttonRetry: "Retry",
 		buttonCancel: "Cancel",
 		buttonConfirm: "Confirm",
 		buttonClose: "Close",
@@ -71,6 +72,7 @@ apijs.core.i18n = function () {
 	// » Fabrice Creuzot (luigifab) <code~luigifab~info>
 	this.data.fr = {
 		buttonOk: "Ok",
+		buttonRetry: "Réessayer",
 		buttonCancel: "Annuler",
 		buttonConfirm: "Valider",
 		buttonClose: "Fermer",

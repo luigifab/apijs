@@ -1,7 +1,7 @@
 /**
  * Created L/13/04/2009
- * Updated S/23/02/2013
- * Version 36
+ * Updated D/10/03/2013
+ * Version 38
  *
  * Copyright 2008-2013 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
@@ -21,11 +21,11 @@ apijs.core.upload = function () {
 
 	// définition des attributs
 	this.percent = 0;
+	this.maxsize = 0;
 	this.extensions = null;
 	this.uploadkey = null;
-	this.maxsize = 0;
 	this.callback = null;
-	this.callbackParams = null;
+	this.callbackParam = null;
 
 	this.svgTimer = null;
 	this.svgDirection = 0;
@@ -38,17 +38,17 @@ apijs.core.upload = function () {
 	// GESTION DES ACTIONS DE L'UTILISATEUR
 
 	// #### Dialogue d'upload ###################################### i18n ## debug ## public ### //
-	// = révision : 41
+	// = révision : 43
 	// » Permet à l'utilisateur l'envoi de fichier sans avoir à recharger la page
 	// » Utilise une iframe à nom unique pour permettre l'envoi des fichiers
 	// » Prépare et affiche le dialogue d'upload de [TheDialog]
-	this.sendFile = function (title, inputname, maxsize, extensions, callback, callbackParams, icon) {
+	this.sendFile = function (title, inputname, maxsize, extensions, callback, callbackParam, icon) {
 
 		// *** Mise en place du formulaire ********************** //
 		if ((typeof title === 'string') && (typeof inputname === 'string') && (typeof maxsize === 'number') && (typeof extensions === 'object') && (extensions instanceof Array) && (typeof callback === 'function')) {
 
 			this.callback = callback;
-			this.callbackParams = callbackParams;
+			this.callbackParam = callbackParam;
 			this.extensions = extensions;
 			this.uploadkey = uniqid();
 			this.maxsize = maxsize;
@@ -62,22 +62,22 @@ apijs.core.upload = function () {
 			if ((typeof callback === 'function') && (typeof callback.name === 'string') && (callback.name.length > 0))
 				callback = callback.name;
 
-			apijs.dialog.dialogInformation(apijs.i18n.translate('debugInvalidCall'), '[pre]TheUpload » sendFile[br]➩ (string) title : ' + title + '[br]➩ (string) inputname : ' + inputname + '[br]➩ (number) maxsize : ' + maxsize + '[br]➩ (array) extensions : ' + extensions + '[br]➩ (function) callback : ' + callback + '[br]➩ (mixed) callbackParams : ' + callbackParams + '[br]➩ (string) icon : ' + icon + '[/pre]');
+			apijs.dialog.dialogInformation(apijs.i18n.translate('debugInvalidCall'), '[pre]TheUpload » sendFile[br]➩ (string) title : ' + title + '[br]➩ (string) inputname : ' + inputname + '[br]➩ (number) maxsize : ' + maxsize + '[br]➩ (array) extensions : ' + extensions + '[br]➩ (function) callback : ' + callback + '[br]➩ (mixed) callbackParam : ' + callbackParam + '[br]➩ (string) icon : ' + icon + '[/pre]');
 		}
 	};
 
 
 	// #### Dialogue de suppression ################################ i18n ## debug ## public ### //
-	// = révision : 13
+	// = révision : 14
 	// » Permet à l'utilisateur la suppression d'un fichier sans avoir à recharger la page
 	// » Prépare et affiche le dialogue de confirmation de [TheDialog]
-	this.deleteFile = function (title, text, fileid, callback, callbackParams, icon) {
+	this.deleteFile = function (title, text, fileid, callback, callbackParam, icon) {
 
 		// *** Mise en place du formulaire ********************** //
 		if ((typeof title === 'string') && (typeof text === 'string') && (typeof fileid === 'string') && (typeof callback === 'function')) {
 
 			this.callback = callback;
-			this.callbackParams = callbackParams;
+			this.callbackParam = callbackParam;
 
 			icon = (typeof icon !== 'string') ? 'delete' : icon;
 			apijs.dialog.dialogConfirmation(title, text, apijs.upload.actionDelete, fileid, icon);
@@ -89,36 +89,52 @@ apijs.core.upload = function () {
 			if ((typeof callback === 'function') && (typeof callback.name === 'string') && (callback.name.length > 0))
 				callback = callback.name;
 
-			apijs.dialog.dialogInformation(apijs.i18n.translate('debugInvalidCall'), '[pre]TheUpload » deleteFile[br]➩ (string) title : ' + title + '[br]➩ (string) text : ' + text + '[br]➩ (string) fileid : ' + fileid + '[br]➩ (function) callback : ' + callback + '[br]➩ (mixed) callbackParams : ' + callbackParams + '[br]➩ (string) icon : ' + icon + '[/pre]');
+			apijs.dialog.dialogInformation(apijs.i18n.translate('debugInvalidCall'), '[pre]TheUpload » deleteFile[br]➩ (string) title : ' + title + '[br]➩ (string) text : ' + text + '[br]➩ (string) fileid : ' + fileid + '[br]➩ (function) callback : ' + callback + '[br]➩ (mixed) callbackParam : ' + callbackParam + '[br]➩ (string) icon : ' + icon + '[/pre]');
 		}
 	};
 
 
 	// #### Texte d'information ############################################ i18n ## private ### //
-	// = révision : 20
+	// = révision : 23
 	// » Génère le texte d'information du dialogue d'upload
 	// » Affiche la liste des extensions acceptées et la taille maximale autorisée
-	// » Fait bien attention à ne pas modifier la liste des extensions originale
 	this.prepareText = function (maxsize) {
 
-		var text, cloneExtensions, latestExtension;
+		var text, last = this.extensions[this.extensions.length - 1];
 
-		cloneExtensions = apijs.dialog.clone(this.extensions);
-		latestExtension = cloneExtensions.pop();
-
-		if (latestExtension === '*') {
+		if (last === '*')
 			text = apijs.i18n.translate('uploadAllType', maxsize);
-		}
-		else if (cloneExtensions.length < 1) {
-			text = apijs.i18n.translate('uploadOneType', latestExtension, maxsize);
-		}
-		else {
-			cloneExtensions = cloneExtensions.join(', ');
-			text = apijs.i18n.translate('uploadMultiType', cloneExtensions, latestExtension, maxsize);
-		}
+		else if (this.extensions.length === 1)
+			text = apijs.i18n.translate('uploadOneType', last, maxsize);
+		else
+			text = apijs.i18n.translate('uploadMultiType', this.extensions.slice(0, -1).join(', '), last, maxsize);
 
 		return text;
 	};
+
+
+	// #### Message d'erreur ############################################## i18n ## private  ### //
+	// = révision : 6
+	// » Affiche le dialogue d'information avec un message d'erreur
+	// » Supprime l'iframe et remplace le bouton Ok par le bouton Réessayer
+	this.showRetry = function (text, input) {
+
+		var callbackname = this.callback.name, title = document.getElementById('box').querySelector('h1').firstChild.nodeValue, button;
+
+		apijs.dialog.dialogInformation(title, text, 'eeupload');
+		document.getElementById('iframeUpload').parentNode.removeChild(document.getElementById('iframeUpload'));
+
+		if (callbackname !== 'string') {
+			callbackname = this.callback.toString().match(/function ([^\(]+)\(/)[0];
+			callbackname = callbackname.slice(9, -1);
+		}
+
+		button = document.getElementById('box').querySelector('button');
+		button.firstChild.nodeValue = apijs.i18n.translate('buttonRetry');
+		button.setAttribute('class', 'back');
+		button.setAttribute('onclick', "apijs.upload.sendFile('" + title + "', '" + input + "', " + this.maxsize + ", ['" + this.extensions.toString().replace(/,/g, "','") + "'], " + callbackname + ", " + this.callbackParam + ");");
+	};
+
 
 
 
@@ -126,20 +142,17 @@ apijs.core.upload = function () {
 	// GESTION DE L'ENVOI DU FICHIER
 
 	// #### Vérification du formulaire ################################### i18n ## protected ### //
-	// = révision : 75
-	// » Vérifie si un fichier a été proposé et si ce fichier est autorisée
-	// » Fait bien attention à ne pas modifier la liste des extensions originale
+	// = révision : 81
+	// » Vérifie si un fichier a été proposé et si ce fichier est autorisée (extension + taille)
 	// » Valide le formulaire et affiche le dialogue de progression de [TheDialog]
 	// » Lance l'animation générique et temps réel de la barre de progression (appels différés de 50 et 1000 millisecondes)
 	// » Afin de permettre l'envoi du formulaire l'affichage du dialogue est différé dans le temps (1 milliseconde)
 	this.actionConfirm = function () {
 
-		var filename = document.getElementById('box').getElementsByTagName('input')[1].value.replace('C:\\fakepath\\', ''),
-		    input = document.getElementById('box').getElementsByTagName('input')[1], size = -1, maxsize = -1, decimal,
-		    result = false, cloneExtensions, latestExtension;
-
-		cloneExtensions = apijs.dialog.clone(this.extensions);
-		latestExtension = cloneExtensions.pop();
+		var input = document.getElementById('box').getElementsByTagName('input')[1],
+		    filename = input.value.replace('C:\\fakepath\\', ''),
+		    decimal, size = -1, maxsize = this.maxsize * 1024 * 1024,
+		    text, last = this.extensions[this.extensions.length - 1];
 
 		// *** Aucun fichier ************************************ //
 		if (filename.length < 1) {
@@ -147,88 +160,66 @@ apijs.core.upload = function () {
 		}
 
 		// *** Extension invalide ******************************* //
-		else if ((latestExtension !== '*') && !in_array(filename.slice(filename.lastIndexOf('.') + 1).toLowerCase(), this.extensions)) {
+		else if ((last !== '*') && !in_array(filename.slice(filename.lastIndexOf('.') + 1).toLowerCase(), this.extensions)) {
 
 			if (filename.lastIndexOf('/') > 0)
 				filename = filename.slice(filename.lastIndexOf('/') + 1);
 			else if (filename.lastIndexOf('\\') > 0)
 				filename = filename.slice(filename.lastIndexOf('\\') + 1);
 
-			if (cloneExtensions.length < 1) {
-				apijs.dialog.dialogInformation(
-					document.getElementById('box').querySelector('h1').firstChild.nodeValue,
-					apijs.i18n.translate('uploadBadOneType', filename, latestExtension), 'eeupload'
-				);
-			}
-			else {
-				cloneExtensions = cloneExtensions.join(', ');
-				apijs.dialog.dialogInformation(
-					document.getElementById('box').querySelector('h1').firstChild.nodeValue,
-					apijs.i18n.translate('uploadBadMultiType', filename, cloneExtensions, latestExtension), 'eeupload'
-				);
-			}
+			text = (this.extensions.length < 1) ? apijs.i18n.translate('uploadBadOneType', filename, last) :
+			       apijs.i18n.translate('uploadBadMultiType', filename, this.extensions.slice(0, -1).join(', '), last);
+
+			this.showRetry(text, input.getAttribute('name'));
 		}
 
 		// *** Validation du formulaire ************************* //
 		// ou taille supérieure (FileApi)
 		else {
-			if (typeof input.files === 'object') {
+			if (typeof input.files === 'object')
 				size = input.files[0].size;
-				maxsize = this.maxsize * 1024 * 1024;
-			}
 
 			if ((size > -1) && (size > maxsize)) {
 
-				decimal = apijs.i18n.translate('uploadBadSizeDecimal');
-
-				if (maxsize > (1024 * 1024)) {
-					size = apijs.i18n.translate('uploadBadSizeM', (size / 1024 / 1024).toFixed(2));
-					maxsize = apijs.i18n.translate('uploadBadSizeM', (maxsize / 1024 / 1024).toFixed(2));
+				if (maxsize > 1048576) {
+					size = apijs.i18n.translate('uploadBadSizeM', (size / 1048576).toFixed(2));
+					maxsize = apijs.i18n.translate('uploadBadSizeM', (maxsize / 1048576).toFixed(2));
 				}
 				else {
 					size = apijs.i18n.translate('uploadBadSizeK', (size / 1024).toFixed(2));
 					maxsize = apijs.i18n.translate('uploadBadSizeK', (maxsize / 1024).toFixed(2));
 				}
 
+				decimal = apijs.i18n.translate('uploadBadSizeDecimal');
 				size = size.replace('.00', '').replace('.', decimal);
 				maxsize = maxsize.replace('.00', '').replace('.', decimal);
 
-				apijs.dialog.dialogInformation(
-					document.getElementById('box').querySelector('h1').firstChild.nodeValue,
-					apijs.i18n.translate('uploadBadSize', filename, size, maxsize), 'eeupload'
-				);
+				this.showRetry(apijs.i18n.translate('uploadBadSize', filename, size, maxsize), input.getAttribute('name'));
 			}
 			else {
-				result = true;
 				document.getElementById('iframeUpload').setAttribute('onload', 'apijs.upload.endUpload();');
-
-				//this.extensions = null;
-				//this.uploadkey = null;
 
 				this.percent = 0;
 				this.svgDirection = 0;
 				this.svgWaiting = 10;
 				this.progressWaiting = 15;
-
 				this.svgTimer = window.setInterval(apijs.upload.animGeneric.bind(this), 50);
 				this.progressTimer = window.setTimeout(apijs.upload.uploadRealTime, 1000);
 
 				window.setTimeout(function () {
-					apijs.dialog.dialogProgress(
-						document.getElementById('box').querySelector('h1').firstChild.nodeValue,
-						apijs.i18n.translate('uploadInProgress'),
-						apijs.dialog.classNames.replace('upload', '').replace('lock', '')
-					);
+					apijs.dialog.dialogProgress(document.getElementById('box').querySelector('h1').firstChild.nodeValue, apijs.i18n.translate('uploadInProgress'), apijs.dialog.classNames.replace(/upload|lock/, ''));
 				}, 1);
+
+				return true;
 			}
 		}
 
-		return result;
+		return false;
 	};
 
 
 	// #### Suppression d'un fichier ####################################### i18n ## private ### //
-	// = révision : 20
+	// = révision : 22
 	// » Demande la suppression d'un fichier en appelant le serveur via XMLHttpRequest (réponse au format XML)
 	// » Affiche un message de confirmation de suppression et appel la fonction de rappel si la suppression a réussie (appel immédiat)
 	// » Affiche un message d'erreur le plus détaillé possible dans le cas contraire
@@ -240,21 +231,21 @@ apijs.core.upload = function () {
 			// *** Réponse apparemment concluante ************** //
 			if ((xhr.readyState === 4) && (xhr.status === 200)) {
 
-				try {
-					var result, status, message, icon;
+				var result, status, message, icon, title = document.getElementById('box').querySelector('h1').firstChild.nodeValue;
 
+				try {
 					result  = xhr.responseXML;
 					status  = result.getElementsByTagName('status')[0].firstChild.nodeValue;
 					message = result.getElementsByTagName('message')[0].firstChild.nodeValue;
 					icon    = (status === 'success') ? 'information' : 'error';
 
-					apijs.dialog.dialogInformation(document.getElementById('box').querySelector('h1').firstChild.nodeValue, message, icon);
+					apijs.dialog.dialogInformation(title, message, icon);
 
 					if (status === 'success')
-						apijs.upload.callback(apijs.upload.callbackParams);
+						apijs.upload.callback(apijs.upload.callbackParam);
 				}
 				catch (ee) {
-					apijs.dialog.dialogInformation(document.getElementById('box').querySelector('h1').firstChild.nodeValue, '[pre]' + ee + '[/pre]', 'error');
+					apijs.dialog.dialogInformation(title, '[pre]' + ee + '[/pre]', 'error');
 				}
 			}
 
@@ -344,7 +335,7 @@ apijs.core.upload = function () {
 
 
 	// #### Terminus ########################################## firebug ## event ## private ### //
-	// = révision : 95
+	// = révision : 97
 	// » Désactive l'animation de la barre de progression et réinitialise la plupart des variables
 	// » Récupère le résultat de l'envoi du fichier ET du traitement du fichier depuis l'iframe (réponse au format XML)
 	// » Termine la barre de progression et appel la fonction de rappel si l'envoi du fichier a réussi (appel différé de 1500 millisecondes)
@@ -361,10 +352,10 @@ apijs.core.upload = function () {
 		if (this.extensions === null)
 			return;
 
+		this.percent = 100;
+		this.maxsize = 0;
 		this.extensions = null;
 		//this.uploadkey = null;
-		this.maxsize = 0;
-		this.percent = 100;
 		this.svgTimer = null;
 		this.svgDirection = 0;
 		this.svgWaiting = 0;
@@ -403,7 +394,7 @@ apijs.core.upload = function () {
 			// ou affiche un message d'erreur dont le message provient du document XML de l'iframe
 			if (status === 'success') {
 				this.animToValue(100);
-				window.setTimeout(function () { this.callback(this.uploadkey, this.callbackParams); }.bind(this), 1500);
+				window.setTimeout(function () { this.callback(this.uploadkey, this.callbackParam); }.bind(this), 1500);
 			}
 			else {
 				apijs.dialog.dialogInformation(document.getElementById('box').querySelector('h1').firstChild.nodeValue, message, 'eeupload');

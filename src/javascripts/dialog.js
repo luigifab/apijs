@@ -1,7 +1,7 @@
 /**
  * Created D/12/04/2009
- * Updated V/22/02/2013
- * Version 132
+ * Updated D/10/03/2013
+ * Version 134
  *
  * Copyright 2008-2013 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
@@ -24,11 +24,12 @@ apijs.core.dialog = function () {
 
 	this.image = null;
 	this.imageSize = null;
+	this.videoPlaying = false;
 
 	this.timer = null;
 	this.timerbis = null;
 	this.callback = null;
-	this.callbackParams = null;
+	this.callbackParam = null;
 
 	this.fragment = null;
 	this.elemA = null;
@@ -71,14 +72,14 @@ apijs.core.dialog = function () {
 
 
 	// #### Dialogue de confirmation ############################### i18n ## debug ## public ### //
-	// = révision : 88
+	// = révision : 89
 	// » Permet de demander une confirmation à l'utilisateur
 	// » Composé d'un titre, d'un paragraphe et de deux boutons de dialogue
 	// » Par la suite peut également être composé d'un lien différé de 10 secondes
 	// » Fermeture par bouton Annuler ou touche Échap tant que le dialogue n'est pas validé
-	// » Appel la fonction callback avec son paramètre callbackParams après la validation du dialogue
+	// » Appel la fonction callback avec son paramètre callbackParam après la validation du dialogue
 	// » Auto-focus sur le bouton Valider
-	this.dialogConfirmation = function (title, text, callback, callbackParams, icon) {
+	this.dialogConfirmation = function (title, text, callback, callbackParam, icon) {
 
 		// *** Création de la boite de dialogue ***************** //
 		if ((typeof title === 'string') && (typeof text === 'string') && (typeof callback === 'function')) {
@@ -91,7 +92,7 @@ apijs.core.dialog = function () {
 			this.htmlButtonConfirm('button');
 
 			this.callback = callback;
-			this.callbackParams = callbackParams;
+			this.callbackParam = callbackParam;
 
 			this.showDialog();
 			document.getElementById('box').lastChild.firstChild.focus();
@@ -103,19 +104,19 @@ apijs.core.dialog = function () {
 			if ((typeof callback === 'function') && (typeof callback.name === 'string') && (callback.name.length > 0))
 				callback = callback.name;
 
-			this.dialogInformation(apijs.i18n.translate('debugInvalidCall'), '[pre]TheDialog » dialogConfirmation[br]➩ (string) title : ' + title + '[br]➩ (string) text : ' + text + '[br]➩ (function) callback : ' + callback + '[br]➩ (mixed) callbackParams : ' + callbackParams + '[br]➩ (string) icon : ' + icon + '[/pre]');
+			this.dialogInformation(apijs.i18n.translate('debugInvalidCall'), '[pre]TheDialog » dialogConfirmation[br]➩ (string) title : ' + title + '[br]➩ (string) text : ' + text + '[br]➩ (function) callback : ' + callback + '[br]➩ (mixed) callbackParam : ' + callbackParam + '[br]➩ (string) icon : ' + icon + '[/pre]');
 		}
 	};
 
 
 	// #### Dialogue d'options ##################################### i18n ## debug ## public ### //
-	// = révision : 24
+	// = révision : 25
 	// » Permet à l'utilisateur de modifier des options
 	// » Composé d'un formulaire, d'un titre, d'un paragraphe et de deux boutons de dialogue
 	// » Par la suite peut également être composé d'un lien différé de 10 secondes
-	// » Validation du formulaire uniquement si l'appel de la fonction callback avec son paramètre callbackParams renvoie true
+	// » Validation du formulaire uniquement si l'appel de la fonction callback avec son paramètre callbackParam renvoie true
 	// » Fermeture par bouton Annuler ou touche Échap tant que le formulaire n'est pas validé
-	this.dialogFormOptions = function (title, text, action, callback, callbackParams, icon) {
+	this.dialogFormOptions = function (title, text, action, callback, callbackParam, icon) {
 
 		// *** Création de la boite de dialogue ***************** //
 		if ((typeof title === 'string') && (typeof text === 'string') && (typeof action === 'string') && (typeof callback === 'function')) {
@@ -128,7 +129,7 @@ apijs.core.dialog = function () {
 			this.htmlButtonConfirm('submit');
 
 			this.callback = callback;
-			this.callbackParams = callbackParams;
+			this.callbackParam = callbackParam;
 
 			this.showDialog();
 		}
@@ -139,7 +140,7 @@ apijs.core.dialog = function () {
 			if ((typeof callback === 'function') && (typeof callback.name === 'string') && (callback.name.length > 0))
 				callback = callback.name;
 
-			this.dialogInformation(apijs.i18n.translate('debugInvalidCall'), '[pre]TheDialog » dialogFormOptions[br]➩ (string) title : ' + title + '[br]➩ (string) text : ' + text + '[br]➩ (string) action : ' + action + '[br]➩ (function) callback : ' + callback + '[br]➩ (mixed) callbackParams : ' + callbackParams + '[br]➩ (string) icon : ' + icon + '[/pre]');
+			this.dialogInformation(apijs.i18n.translate('debugInvalidCall'), '[pre]TheDialog » dialogFormOptions[br]➩ (string) title : ' + title + '[br]➩ (string) text : ' + text + '[br]➩ (string) action : ' + action + '[br]➩ (function) callback : ' + callback + '[br]➩ (mixed) callbackParam : ' + callbackParam + '[br]➩ (string) icon : ' + icon + '[/pre]');
 		}
 	};
 
@@ -339,7 +340,7 @@ apijs.core.dialog = function () {
 
 
 	// #### Action du bouton Valider ##################### i18n ## debug ## event ## private ### //
-	// = révision : 122
+	// = révision : 124
 	// » Désactive l'action de la touche Échap
 	// » Pour le dialogue de confirmation, appel la fonction de rappel (appel différé d'au moins 500 millisecondes)
 	// » Pour le dialogue d'options, appel la fonction de rappel avant de soumettre le formulaire (envoi différé d'au moins 500 millisecondes)
@@ -380,13 +381,13 @@ apijs.core.dialog = function () {
 				this.timerbis = window.setTimeout(function () {
 					if (typeof this.callback === 'function') {
 						this.classNames = this.classNames.replace('lock', '');
-						this.callback(this.callbackParams);
+						this.callback(this.callbackParam);
 					}
 				}.bind(this), apijs.config.dialog.savingTime);
 			}
 			else {
 				this.classNames = this.classNames.replace('lock', '');
-				this.callback(this.callbackParams);
+				this.callback(this.callbackParam);
 			}
 
 			result = true;
@@ -395,7 +396,7 @@ apijs.core.dialog = function () {
 		// *** Dialogue d'options ******************************* //
 		else if (this.classNames.indexOf('options') > -1) {
 
-			if (this.callback(this.clone(this.callbackParams)) === true) {
+			if (this.callback(this.callbackParam) === true) {
 
 				// gestion du dialogue (en cas de validation)
 				this.classNames += ' lock';
@@ -528,14 +529,13 @@ apijs.core.dialog = function () {
 
 
 	// #### Action de redimensionnement de la fenêtre ##################### event ## private ### //
-	// = révision : 8
+	// = révision : 9
 	// » Redimensionne les dialogues photos et vidéos en fonction de la taille de la fenêtre
 	// » S'assure de mettre à jour toutes les dimensions et de ne pas dépasser la taille de la photo/vidéo source
 	this.actionResizeBrowser = function () {
 
 		// *** Préparation ************************************** //
-		var infoWindow = {}, infoMedia = {}, imageSize = apijs.dialog.imageSize,
-		    bbcode = document.getElementById('topho').querySelector('div.bbcode');
+		var infoWindow = {}, infoMedia = {}, imageSize = apijs.dialog.imageSize;
 
 		infoMedia.width = parseInt(document.getElementById('topho').getAttribute('width'), 10);
 		infoMedia.height = parseInt(document.getElementById('topho').getAttribute('height'), 10);
@@ -586,221 +586,16 @@ apijs.core.dialog = function () {
 		document.getElementById('topho').setAttribute('width', infoMedia.width);
 		document.getElementById('topho').setAttribute('height', infoMedia.height);
 
-		if (bbcode)
-			bbcode.style.height = infoMedia.height + 'px';
+		if (document.getElementById('topho').querySelector('div.bbcode'))
+			document.getElementById('topho').querySelector('div.bbcode').style.height = infoMedia.height + 'px';
 	};
 
-
-
-
-	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// GESTION DES CONTENEURS PARENTS
-
-	// #### Prépare le terrain ##################################################### private ### //
-	// = révision : 81
-	// » Supprime l'ancien dialogue
-	// » Prend en compte la configuration de [TheSlideshow] si besoin
-	// » Met en place l'écoute des touches du clavier
-	this.setupDialog = function (type, icon) {
-
-		// supprime l'ancien dialogue
-		if (this.classNames !== null) {
-			this.deleteDialog(false);
-		}
-
-		// active l'écoute des touches
-		if (apijs.config.navigator) {
-
-			document.addEventListener('keydown', apijs.dialog.actionKey, true);
-			window.addEventListener('beforeunload', apijs.dialog.actionCloseBrowser, true);
-
-			this.restrictNavigation(true);
-		}
-
-		// préparation du dialogue
-		this.classNames = (typeof icon === 'string') ? (type + ' ' + icon) : type;
-		this.fragment = document.createDocumentFragment();
-	};
-
-
-	// #### Affiche le dialogue #################################################### private ### //
-	// = révision : 18
-	// » Accroche le fragment DOM au document HTML
-	// » Permet une transition lors de la mise en place d'un tout nouveau dialogue, donc lorsqu'il n'y en avait pas juste avant
-	// » Afin de permettre les transitions CSS la modification de l'attribut class est différée dans le temps (1 milliseconde)
-	this.showDialog = function () {
-
-		var classNames = this.classNames.split(' ');
-
-		// pas de transitions
-		if (document.getElementById('dialog')) {
-			this.fragment.firstChild.setAttribute('class', this.fragment.firstChild.getAttribute('class').replace('init', 'actif'));
-			document.getElementById('dialog').appendChild(this.fragment.firstChild.firstChild);
-		}
-		// transitions non supportées
-		else if (!apijs.config.transition || in_array('notransition', classNames)) {
-			this.fragment.firstChild.setAttribute('class', this.fragment.firstChild.getAttribute('class').replace('init', 'actif'));
-			document.body.appendChild(this.fragment);
-		}
-		// transitions supportées
-		else {
-			document.body.appendChild(this.fragment);
-			window.setTimeout(function () {
-				document.getElementById('dialog').setAttribute('class', document.getElementById('dialog').getAttribute('class').replace('init', 'actif'));
-			}, 1);
-		}
-
-		// fermeture des popups au clic
-		if (apijs.config.navigator) {
-
-			if (apijs.config.dialog.closeOnClic && !in_array(['waiting', 'progress', 'lock'], classNames))
-				document.addEventListener('click', apijs.dialog.actionCloseOnClic, false);
-
-			// adapatation de la taille des photos et vidéos
-			if (in_array(['photo','video'], classNames))
-				window.addEventListener('resize', apijs.dialog.actionResizeBrowser, false);
-
-			// mise en pause de la vidéo
-			if (in_array('video', classNames)) {
-
-				if (typeof document.hidden === 'boolean')
-					document.addEventListener('visibilitychange', apijs.dialog.pauseVideo, false);
-				else if (typeof document.mozHidden === 'boolean')
-					document.addEventListener('mozvisibilitychange', apijs.dialog.pauseVideo, false);
-				else if (typeof document.msHidden === 'boolean')
-					document.addEventListener('msvisibilitychange', apijs.dialog.pauseVideo, false);
-				else if (typeof document.webkitHidden === 'boolean')
-					document.addEventListener('webkitvisibilitychange', apijs.dialog.pauseVideo, false);
-			}
-		}
-	};
-
-
-	// #### Supprime le dialogue ################################################### private ### //
-	// = révision : 101
-	// » Supprime totalement ou pas la boite de dialogue avec ou sans transitions
-	// » Afin de permettre les transitions CSS la suppression totale est différée dans le temps
-	// » Dégage le timer du lien différé et annule les gestionnaires d'événements du dialogue
-	// » Pour terminer, réinitialise la plupart des variables
-	this.deleteDialog = function (total) {
-
-		var classNames = this.classNames.split(' '), video;
-
-		// *** Prépare la suppression du dialogue *************** //
-		if (this.timer)
-			clearTimeout(this.timer);
-
-		if (apijs.config.navigator) {
-
-			document.removeEventListener('keydown', apijs.dialog.actionKey, true);
-			window.removeEventListener('beforeunload', apijs.dialog.actionCloseBrowser, true);
-
-			this.restrictNavigation(false);
-
-			video = document.getElementById('dialog').querySelector('video');
-			if (video && (typeof video.pause === 'function'))
-				video.pause();
-
-			// fermeture des popups au clic
-			if (apijs.config.dialog.closeOnClic && !in_array(['waiting', 'progress', 'lock'], classNames))
-				document.removeEventListener('click', apijs.dialog.actionCloseOnClic, false);
-
-			// adapatation de la taille des photos et vidéos
-			if (in_array(['photo','video'], classNames))
-				window.removeEventListener('resize', apijs.dialog.actionResizeBrowser, false);
-
-			// mise en pause de la vidéo
-			if (in_array('video', classNames)) {
-
-				if (typeof document.hidden === 'boolean')
-					document.removeEventListener('visibilitychange', apijs.dialog.pauseVideo, false);
-				else if (typeof document.mozHidden === 'boolean')
-					document.removeEventListener('mozvisibilitychange', apijs.dialog.pauseVideo, false);
-				else if (typeof document.msHidden === 'boolean')
-					document.removeEventListener('msvisibilitychange', apijs.dialog.pauseVideo, false);
-				else if (typeof document.webkitHidden === 'boolean')
-					document.removeEventListener('webkitvisibilitychange', apijs.dialog.pauseVideo, false);
-			}
-		}
-
-		// *** Supprime le dialogue ***************************** //
-		if (total && (!apijs.config.transition || in_array('notransition', classNames))) {
-			document.getElementById('dialog').parentNode.removeChild(document.getElementById('dialog'));
-		}
-		else if (total) {
-
-			document.getElementById('dialog').setAttribute('class', document.getElementById('dialog').getAttribute('class').replace('actif', 'deleting'));
-
-			if ((typeof document.getElementById('dialog').style.transitionDuration === 'string') ||
-			    (typeof document.getElementById('dialog').style.MozTransitionDuration === 'string')) {
-				document.getElementById('dialog').addEventListener('transitionend', function () {
-					if (document.getElementById('dialog'))
-						document.getElementById('dialog').parentNode.removeChild(document.getElementById('dialog'));
-				}, false);
-			}
-			else if (typeof document.getElementById('dialog').style.OTransitionDuration === 'string') {
-				document.getElementById('dialog').addEventListener('OTransitionEnd', function () {
-					if (document.getElementById('dialog'))
-						document.getElementById('dialog').parentNode.removeChild(document.getElementById('dialog'));
-				}, false);
-			}
-			else if (typeof document.getElementById('dialog').style.webkitTransitionDuration === 'string') {
-				document.getElementById('dialog').addEventListener('webkitTransitionEnd', function () {
-					if (document.getElementById('dialog'))
-						document.getElementById('dialog').parentNode.removeChild(document.getElementById('dialog'));
-				}, false);
-			}
-		}
-		else {
-			document.getElementById('box').parentNode.removeChild(document.getElementById('box'));
-		}
-
-		// *** Réinitialise les variables *********************** //
-		this.classNames = null;
-
-		this.image = null;
-		this.imageSize = null;
-
-		this.timer = null;
-
-		this.fragment = null;
-		this.elemA = null;
-		this.elemB = null;
-		this.elemC = null;
-		this.elemD = null;
-	};
-
-
-	// #### Affiche le site ######################################################## private ### //
-	// = révision : 95
-	// » Supprime l'iframe du formulaire d'upload lorsque nécessaire
-	// » Réinitialise les dernières variables
-	this.showPage = function () {
-
-		// supprime l'éventuelle iframe
-		if (document.getElementById('iframeUpload'))
-			document.getElementById('iframeUpload').parentNode.removeChild(document.getElementById('iframeUpload'));
-
-		// réinitialise les variables
-		if (this.timerbis)
-			clearTimeout(this.timerbis);
-
-		this.timerbis = null;
-		this.callback = null;
-		this.callbackParams = null;
-	};
-
-
-
-
-	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// GESTION DE L'INTERACTION ENTRE L'UTILISATEUR ET LE NAVIGATEUR
 
 	// #### Mise en pause de la vidéo ##################################### event ## private ### //
-	// = révision : 6
+	// = révision : 8
 	// » Met en pause la vidéo lorsque la page n'est plus visible (API page visibility)
 	// » http://www.alsacreations.com/article/lire/1519-html-api-page-visibility.html
-	this.pauseVideo = function () {
+	this.actionPauseVideo = function () {
 
 		var hidden;
 
@@ -813,19 +608,26 @@ apijs.core.dialog = function () {
 		else if (typeof document.webkitHidden === 'boolean')
 			hidden = document.webkitHidden;
 
-		if (hidden)
-			document.getElementById('dialog').querySelector('video').pause();
-		else
-			document.getElementById('dialog').querySelector('video').play();
+		if (hidden) {
+			apijs.dialog.videoPlaying = !document.getElementById('topho').paused;
+			document.getElementById('topho').pause();
+		}
+		else {
+			if (apijs.dialog.videoPlaying)
+				document.getElementById('topho').play();
+		}
 	};
 
 
+
+
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// GESTION DE L'INTERACTION ENTRE LE NAVIGATEUR ET LES DIALOGUES
+
 	// #### Restriction de la navigation au clavier ####################### event ## private ### //
-	// = révision : 9
+	// = révision : 10
 	// » Empêche la navigation au clavier avec la touche tab de quitter la boite de dialogue
 	// » http://www.w3schools.com/tags/att_global_tabindex.asp
-	// » In HTML 4 the tabindex attribute can be used with: <a>, <area>, <button>, <input>, <object>, <select>, and <textarea>
-	// » In HTML 5 the tabindex attribute can be used on any HTML element
 	this.restrictNavigation = function (lock) {
 
 		var tags = 'a,area,button,input,object,select,textarea,iframe', elems = document.querySelectorAll(tags), elem;
@@ -842,26 +644,17 @@ apijs.core.dialog = function () {
 
 
 	// #### Recherche la taille idéale du dialogue ################################# private ### //
-	// = révision : 36
+	// = révision : 38
 	// » Vérifie si la largeur de la boite de dialogue ne dépassera pas la largeur de la fenêtre
 	// » Vérifie si la hauteur de la boite de dialogue ne dépassera pas la hauteur de la fenêtre
 	// » Adapte la taille du dialogue et de son contenu en conséquence
 	this.updateWindowSize = function (width, height, url) {
 
 		// *** Préparation des variables ************************ //
-		var infoMedia, infoWindow, mimeTypes;
-
-		infoMedia  = { width: width, height: height, id: url.slice((url.lastIndexOf('/') + 1), url.lastIndexOf('.')), mime: '' };
-		infoWindow = { width: window.innerWidth, height: window.innerHeight };
-		mimeTypes  = { ogv:'video/ogg', webm:'video/webm', jpg:'image/jpeg', png:'image/png', gif:'image/gif', svg:'image/svg+xml' };
+		var infoMedia = { width: width, height: height, id: url.slice((url.lastIndexOf('/') + 1), url.lastIndexOf('.')) },
+		    infoWindow = { width: window.innerWidth, height: window.innerHeight };
 
 		this.imageSize = { width: width, height: height, ratio: width/height };
-
-		// *** Recherche du type mime *************************** //
-		infoMedia.mime = url.slice(url.lastIndexOf('.') + 1).replace('jpeg', 'jpg');
-
-		if (mimeTypes.hasOwnProperty(infoMedia.mime))
-			infoMedia.mime = mimeTypes[infoMedia.mime];
 
 		// *** Calcul des dimensions **************************** //
 		if ((width >= Math.round(window.innerWidth - window.innerWidth * apijs.config.dialog.margin / 100)) ||
@@ -901,6 +694,21 @@ apijs.core.dialog = function () {
 		this.fragment.firstChild.firstChild.style.marginTop  = Math.round(-(infoMedia.height + 66) / 2) + 'px';
 
 		return infoMedia;
+	};
+
+
+	// #### Recherche le type mime du fichier ###################################### private ### //
+	// = révision : 3
+	// » Renvoie le type mime d'un fichier image ou vidéo
+	this.searchMimeType = function (file) {
+
+		var ext, types = {
+			jpg:'image/jpeg', jpeg:'image/jpeg', png:'image/png', gif:'image/gif', svg:'image/svg+xml',
+			ogv:'video/ogg', webm:'video/webm', mp4:'video/mp4', m4v:'video/mp4'
+		};
+
+		ext = file.slice(file.lastIndexOf('.') + 1, (file.lastIndexOf('#') > 0) ? file.lastIndexOf('#') : file.length);
+		return (types.hasOwnProperty(ext)) ? types[ext] : '';
 	};
 
 
@@ -952,22 +760,203 @@ apijs.core.dialog = function () {
 	};
 
 
-	// #### Clone un objet ######################################################### private ### //
-	// = révision : 11
-	// » Clone une variable objet (de type object ou array)
-	// » Permet ainsi de pouvoir modifier un objet sans modifier l'objet original
-	// » En JavaScript, les objets sont passés par référence, ils ne sont jamais copiés
-	this.clone = function (data) {
 
-		if ((typeof data !== 'object') || (data === null))
-			return data;
 
-		var value, object = new data.constructor();
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// GESTION DES CONTENEURS PARENTS
 
-		for (value in data) if (data.hasOwnProperty(value))
-			object[value] = apijs.dialog.clone(data[value]);
+	// #### Prépare le terrain ##################################################### private ### //
+	// = révision : 81
+	// » Supprime l'ancien dialogue
+	// » Prend en compte la configuration de [TheSlideshow] si besoin
+	// » Met en place l'écoute des touches du clavier
+	this.setupDialog = function (type, icon) {
 
-		return object;
+		// supprime l'ancien dialogue
+		if (this.classNames !== null) {
+			this.deleteDialog(false);
+		}
+
+		// active l'écoute des touches
+		if (apijs.config.navigator) {
+
+			document.addEventListener('keydown', apijs.dialog.actionKey, true);
+			window.addEventListener('beforeunload', apijs.dialog.actionCloseBrowser, true);
+
+			this.restrictNavigation(true);
+		}
+
+		// préparation du dialogue
+		this.classNames = (typeof icon === 'string') ? (type + ' ' + icon) : type;
+		this.fragment = document.createDocumentFragment();
+	};
+
+
+	// #### Affiche le dialogue #################################################### private ### //
+	// = révision : 19
+	// » Accroche le fragment DOM au document HTML
+	// » Permet une transition lors de la mise en place d'un tout nouveau dialogue, donc lorsqu'il n'y en avait pas juste avant
+	// » Afin de permettre les transitions CSS la modification de l'attribut class est différée dans le temps (1 milliseconde)
+	this.showDialog = function () {
+
+		var classNames = this.classNames.split(' ');
+
+		// pas de transitions
+		if (document.getElementById('dialog')) {
+			this.fragment.firstChild.setAttribute('class', this.fragment.firstChild.getAttribute('class').replace('init', 'actif'));
+			document.getElementById('dialog').appendChild(this.fragment.firstChild.firstChild);
+		}
+		// transitions non supportées
+		else if (!apijs.config.transition || in_array('notransition', classNames)) {
+			this.fragment.firstChild.setAttribute('class', this.fragment.firstChild.getAttribute('class').replace('init', 'actif'));
+			document.body.appendChild(this.fragment);
+		}
+		// transitions supportées
+		else {
+			document.body.appendChild(this.fragment);
+			window.setTimeout(function () {
+				document.getElementById('dialog').setAttribute('class', document.getElementById('dialog').getAttribute('class').replace('init', 'actif'));
+			}, 1);
+		}
+
+		// fermeture des popups au clic
+		if (apijs.config.navigator) {
+
+			if (apijs.config.dialog.closeOnClic && !in_array(['waiting', 'progress', 'lock'], classNames))
+				document.addEventListener('click', apijs.dialog.actionCloseOnClic, false);
+
+			// adapatation de la taille des photos et vidéos
+			if (in_array(['photo','video'], classNames))
+				window.addEventListener('resize', apijs.dialog.actionResizeBrowser, false);
+
+			// mise en pause de la vidéo
+			if (in_array('video', classNames)) {
+
+				if (typeof document.hidden === 'boolean')
+					document.addEventListener('visibilitychange', apijs.dialog.actionPauseVideo, false);
+				else if (typeof document.mozHidden === 'boolean')
+					document.addEventListener('mozvisibilitychange', apijs.dialog.actionPauseVideo, false);
+				else if (typeof document.msHidden === 'boolean')
+					document.addEventListener('msvisibilitychange', apijs.dialog.actionPauseVideo, false);
+				else if (typeof document.webkitHidden === 'boolean')
+					document.addEventListener('webkitvisibilitychange', apijs.dialog.actionPauseVideo, false);
+			}
+		}
+	};
+
+
+	// #### Supprime le dialogue ################################################### private ### //
+	// = révision : 103
+	// » Supprime totalement ou pas la boite de dialogue avec ou sans transitions
+	// » Afin de permettre les transitions CSS la suppression totale est différée dans le temps
+	// » Dégage le timer du lien différé et annule les gestionnaires d'événements du dialogue
+	// » Pour terminer, réinitialise la plupart des variables
+	this.deleteDialog = function (total) {
+
+		var classNames = this.classNames.split(' '), video = document.getElementById('topho');
+
+		// *** Prépare la suppression du dialogue *************** //
+		if (this.timer)
+			clearTimeout(this.timer);
+
+		if (apijs.config.navigator) {
+
+			document.removeEventListener('keydown', apijs.dialog.actionKey, true);
+			window.removeEventListener('beforeunload', apijs.dialog.actionCloseBrowser, true);
+
+			this.restrictNavigation(false);
+
+			if (video && (typeof video.pause === 'function'))
+				video.pause();
+
+			// fermeture des popups au clic
+			if (apijs.config.dialog.closeOnClic && !in_array(['waiting', 'progress', 'lock'], classNames))
+				document.removeEventListener('click', apijs.dialog.actionCloseOnClic, false);
+
+			// adapatation de la taille des photos et vidéos
+			if (in_array(['photo','video'], classNames))
+				window.removeEventListener('resize', apijs.dialog.actionResizeBrowser, false);
+
+			// mise en pause de la vidéo
+			if (in_array('video', classNames)) {
+
+				if (typeof document.hidden === 'boolean')
+					document.removeEventListener('visibilitychange', apijs.dialog.actionPauseVideo, false);
+				else if (typeof document.mozHidden === 'boolean')
+					document.removeEventListener('mozvisibilitychange', apijs.dialog.actionPauseVideo, false);
+				else if (typeof document.msHidden === 'boolean')
+					document.removeEventListener('msvisibilitychange', apijs.dialog.actionPauseVideo, false);
+				else if (typeof document.webkitHidden === 'boolean')
+					document.removeEventListener('webkitvisibilitychange', apijs.dialog.actionPauseVideo, false);
+			}
+		}
+
+		// *** Supprime le dialogue ***************************** //
+		if (total && (!apijs.config.transition || in_array('notransition', classNames))) {
+			document.getElementById('dialog').parentNode.removeChild(document.getElementById('dialog'));
+		}
+		else if (total) {
+
+			document.getElementById('dialog').setAttribute('class', document.getElementById('dialog').getAttribute('class').replace('actif', 'deleting'));
+
+			if ((typeof document.getElementById('dialog').style.transitionDuration === 'string') ||
+			    (typeof document.getElementById('dialog').style.MozTransitionDuration === 'string')) {
+				document.getElementById('dialog').addEventListener('transitionend', function () {
+					if (document.getElementById('dialog'))
+						document.getElementById('dialog').parentNode.removeChild(document.getElementById('dialog'));
+				}, false);
+			}
+			else if (typeof document.getElementById('dialog').style.OTransitionDuration === 'string') {
+				document.getElementById('dialog').addEventListener('OTransitionEnd', function () {
+					if (document.getElementById('dialog'))
+						document.getElementById('dialog').parentNode.removeChild(document.getElementById('dialog'));
+				}, false);
+			}
+			else if (typeof document.getElementById('dialog').style.webkitTransitionDuration === 'string') {
+				document.getElementById('dialog').addEventListener('webkitTransitionEnd', function () {
+					if (document.getElementById('dialog'))
+						document.getElementById('dialog').parentNode.removeChild(document.getElementById('dialog'));
+				}, false);
+			}
+		}
+		else {
+			document.getElementById('box').parentNode.removeChild(document.getElementById('box'));
+		}
+
+		// *** Réinitialise les variables *********************** //
+		this.classNames = null;
+
+		this.image = null;
+		this.imageSize = null;
+		this.videoPlaying = false;
+
+		this.timer = null;
+
+		this.fragment = null;
+		this.elemA = null;
+		this.elemB = null;
+		this.elemC = null;
+		this.elemD = null;
+	};
+
+
+	// #### Affiche le site ######################################################## private ### //
+	// = révision : 96
+	// » Supprime l'iframe du formulaire d'upload lorsque nécessaire
+	// » Réinitialise les dernières variables
+	this.showPage = function () {
+
+		// supprime l'éventuelle iframe
+		if (document.getElementById('iframeUpload'))
+			document.getElementById('iframeUpload').parentNode.removeChild(document.getElementById('iframeUpload'));
+
+		// réinitialise les variables
+		if (this.timerbis)
+			clearTimeout(this.timerbis);
+
+		this.timerbis = null;
+		this.callback = null;
+		this.callbackParam = null;
 	};
 
 
@@ -1282,14 +1271,15 @@ apijs.core.dialog = function () {
 
 
 	// #### Formulaire d'envoi de fichier ########################################## private ### //
-	// = révision : 142
+	// = révision : 143
 	// » Met en place le contenu du formulaire du dialogue d'upload
 	// » Composé d'un champ fichier et d'un champ caché pour l'extension APC de PHP ou pour PHP 5.4+
 	// » Composé également d'une iframe qui sera détruite lors de l'affichage du site
 	// » En profite par la même occasion pour pré-charger le graphique SVG du dialogue de progression
 	// » Basculement automatique du focus entre le champ fichier et le bouton valider du formulaire
 	// » À noter qu'il est obligatoire d'utiliser un nom d'iframe unique
-	// # <iframe [src="{config.dialog.imageUpload.src}"] name="iframeUpload.{uploadkey}" style="display:none;" id="iframeUpload" />
+	// # <iframe [src="{config.dialog.imageUpload.src}"] sandbox="allow-forms allow-same-origin"
+	// #  name="iframeUpload.{uploadkey}" style="display:none;" id="iframeUpload" />
 	// # <div>
 	// #  <input type="hidden" name="UPLOAD_PROGRESS" value="{uploadkey}" />
 	// #  <input type="file" name="{inputname}" onchange="document.getElementById('box').lastChild.firstChild.focus();" />
@@ -1302,6 +1292,7 @@ apijs.core.dialog = function () {
 		if (apijs.config.navigator)
 			this.elemA.setAttribute('src', apijs.config.dialog.imageUpload.src);
 
+		this.elemA.setAttribute('sandbox', 'allow-forms allow-same-origin');
 		this.elemA.setAttribute('name', 'iframeUpload.' + uploadkey);
 		this.elemA.setAttribute('style', 'display:none;');
 		this.elemA.setAttribute('id', 'iframeUpload');
@@ -1333,11 +1324,11 @@ apijs.core.dialog = function () {
 
 
 	// #### Barre de progression ################################################### private ### //
-	// = révision : 55
+	// = révision : 56
 	// » Met en place le graphique SVG du dialogue de progression
 	// » Rien ne s'affiche lorsque le format SVG n'est pas géré par le navigateur ou lorsque le fichier est introuvable
-	// # [<object data="{config.dialog.imageUpload.src}" type="image/svg+xml"
-	// #   width="{config.dialog.imageUpload.width}" height="{config.dialog.imageUpload.height}" id="progressbar" />]
+	// # <object data="{config.dialog.imageUpload.src}" type="image/svg+xml"
+	// #  width="{config.dialog.imageUpload.width}" height="{config.dialog.imageUpload.height}" id="progressbar" />
 	this.htmlProgressBar = function () {
 
 		// élément object
@@ -1376,7 +1367,7 @@ apijs.core.dialog = function () {
 
 
 	// #### Photo et légende ############################################### i18n ## private ### //
-	// = révision : 144
+	// = révision : 147
 	// » Met en place la photo et la légende du dialogue photo
 	// » Redimensionne la photo en fonction de la taille de la fenêtre lorsque nécessaire
 	// » Affiche une icône au survol si la photo est redimensionnée lors de son affichage et si la configuration le permet
@@ -1384,18 +1375,18 @@ apijs.core.dialog = function () {
 	// # <dl>
 	// #  <dt>
 	// #    [<a href="{url}" onclick="window.open(this.href); this.blur(); return false;">]
-	// #      <img width="{infoPhoto.width}" height="{infoPhoto.height}" alt="" class="loading [svg] [resized]" id="topho" />[<span />]
+	// #      <img width="{media.width}" height="{media.height}" alt="" class="loading [svg] [resized]" id="topho" />
+	// #      [<span />]
 	// #    [</a>]
 	// #  </dt>
 	// #  <dd>
-	// #    [<span>{infoPhoto.id/name} ({date})</span>] {legend}
-	// #    [<a href="{config.dialog.filePhoto}?id={infoPhoto.id}" type="{infoPhoto.mime}" class="download">{i18n.downloadLink}</a>]
+	// #    [<span>{media.id/name} ({date})</span>] {legend}
+	// #    [<a href="{config.dialog.filePhoto}?id={media.id}" type="{mimetype}" class="download">{i18n.downloadLink}</a>]
 	// #  </dd>
 	// # </dl>
 	this.htmlPhoto = function (width, height, url, name, date, legend) {
 
-		// vérification des dimensions
-		var infoPhoto = this.updateWindowSize(width, height, url);
+		var media = this.updateWindowSize(width, height, url);
 
 		// Élément dl
 		this.elemA = document.createElement('dl');
@@ -1405,18 +1396,18 @@ apijs.core.dialog = function () {
 
 				// Éléments a img span (photo redimensionnée)
 				// # <a href="{url}" onclick="window.open(this.href); this.blur(); return false;">
-				// #  <img width="{infoPhoto.width}" height="{infoPhoto.height}" alt="" class="loading [svg] resized" id="topho" />
+				// #  <img width="{media.width}" height="{media.height}" alt="" class="loading [svg] resized" id="topho" />
 				// #  <span />
 				// # </a>
-				if (apijs.config.dialog.showFullsize && ((infoPhoto.width !== width) || (infoPhoto.height !== height))) {
+				if (apijs.config.dialog.showFullsize && ((media.width !== width) || (media.height !== height))) {
 
 					this.elemC = document.createElement('a');
 					this.elemC.setAttribute('href', url);
 					this.elemC.setAttribute('onclick', 'window.open(this.href); this.blur(); return false;');
 
 						this.elemD = document.createElement('img');
-						this.elemD.setAttribute('width', infoPhoto.width);
-						this.elemD.setAttribute('height', infoPhoto.height);
+						this.elemD.setAttribute('width', media.width);
+						this.elemD.setAttribute('height', media.height);
 						this.elemD.setAttribute('alt', '');
 
 						if (document.implementation.hasFeature('http://www.w3.org/TR/SVG11/feature#Image', '1.1'))
@@ -1430,11 +1421,11 @@ apijs.core.dialog = function () {
 					this.elemC.appendChild(document.createElement('span'));
 				}
 				// Élément img
-				// # <img width="{infoPhoto.width}" height="{infoPhoto.height}" alt="" class="loading [svg]" id="topho" />
+				// # <img width="{media.width}" height="{media.height}" alt="" class="loading [svg]" id="topho" />
 				else {
 					this.elemC = document.createElement('img');
-					this.elemC.setAttribute('width', infoPhoto.width);
-					this.elemC.setAttribute('height', infoPhoto.height);
+					this.elemC.setAttribute('width', media.width);
+					this.elemC.setAttribute('height', media.height);
 					this.elemC.setAttribute('alt', '');
 
 					if (document.implementation.hasFeature('http://www.w3.org/TR/SVG11/feature#Image', '1.1'))
@@ -1453,7 +1444,7 @@ apijs.core.dialog = function () {
 			this.elemB = document.createElement('dd');
 
 				// Élément span
-				// # <span>{infoPhoto.id/name} ({date})</span>
+				// # <span>{media.id/name} ({date})</span>
 				if ((name !== 'false') || (date !== 'false')) {
 
 					this.elemC = document.createElement('span');
@@ -1468,11 +1459,11 @@ apijs.core.dialog = function () {
 
 					// auto name + date
 					else if ((name === 'auto') && (date !== 'false'))
-						this.elemC.appendChild(document.createTextNode(infoPhoto.id + ' (' + date + ')'));
+						this.elemC.appendChild(document.createTextNode(media.id + ' (' + date + ')'));
 
 					// auto name
 					else if (name === 'auto')
-						this.elemC.appendChild(document.createTextNode(infoPhoto.id));
+						this.elemC.appendChild(document.createTextNode(media.id));
 
 					// date
 					else if (date !== 'false')
@@ -1486,12 +1477,12 @@ apijs.core.dialog = function () {
 				this.elemB.appendChild(document.createTextNode(' ' + legend + ' '));
 
 				// Élément a (lien télécharger)
-				// # <a href="{config.dialog.filePhoto}?id={infoPhoto.id}" type="{infoPhoto.mime}" class="download">{i18n.downloadLink}</a>
+				// # <a href="{config.dialog.filePhoto}?id={media.id}" type="{mimetype}" class="download">{i18n.downloadLink}</a>
 				if (apijs.config.dialog.savePhoto) {
 
 					this.elemC = document.createElement('a');
-					this.elemC.setAttribute('href', apijs.config.dialog.filePhoto + '?id=' + infoPhoto.id);
-					this.elemC.setAttribute('type', infoPhoto.mime);
+					this.elemC.setAttribute('href', apijs.config.dialog.filePhoto + '?id=' + media.id);
+					this.elemC.setAttribute('type', this.searchMimeType(url));
 					this.elemC.setAttribute('class', 'download');
 					this.elemC.appendChild(document.createTextNode(apijs.i18n.translate('downloadLink')));
 
@@ -1506,26 +1497,27 @@ apijs.core.dialog = function () {
 
 
 	// #### Vidéo et légende ############################################### i18n ## private ### //
-	// = révision : 89
+	// = révision : 91
 	// » Met en place la vidéo et la légende du dialogue vidéo
 	// » Redimensionne la vidéo en fonction de la taille de la fenêtre lorsque nécessaire
 	// » Un message d'information remplace la vidéo lorsque la balise vidéo du langage HTML 5 n'est pas gérée par le navigateur
 	// » Affiche un lien pour télécharger la vidéo si la configuration le permet
 	// # <dl>
 	// #  <dt>
-	// #    <video src="{url}" width="{infoVideo.width}" height="{infoVideo.height}" controls="controls" [autoplay="autoplay"] id="topho">
+	// #    <video width="{media.width}" height="{media.height}" controls="controls" [autoplay="autoplay"] id="topho">
+	// #      <source src="{url}" type="{mimetype}" />
 	// #      [{i18n.browserNoVideo}]
 	// #    </video>
 	// #  </dt>
 	// #  <dd>
-	// #    [<span>{infoVideo.id/name} ({date})</span>] {legend}
-	// #    [<a href="{config.dialog.fileVideo}?id={infoVideo.id}" type="{infoVideo.mime}" class="download">{i18n.downloadLink}</a>]
+	// #    [<span>{media.id/name} ({date})</span>] {legend}
+	// #    [<a href="{config.dialog.fileVideo}?id={media.id}" type="{mimetype}" class="download">{i18n.downloadLink}</a>]
 	// #  </dd>
 	// # </dl>
 	this.htmlVideo = function (url, name, date, legend) {
 
-		// vérification des dimensions
-		var noVideo, infoVideo = this.updateWindowSize(apijs.config.dialog.videoWidth, apijs.config.dialog.videoHeight, url);
+		var i, multiple, noVideo, mimetype = this.searchMimeType(url),
+		    media = this.updateWindowSize(apijs.config.dialog.videoWidth, apijs.config.dialog.videoHeight, url);
 
 		// Élément dl
 		this.elemA = document.createElement('dl');
@@ -1535,23 +1527,42 @@ apijs.core.dialog = function () {
 
 				// Élément video
 				this.elemC = document.createElement('video');
-				this.elemC.setAttribute('src', url);
-				this.elemC.setAttribute('width', infoVideo.width);
-				this.elemC.setAttribute('height', infoVideo.height);
+				this.elemC.setAttribute('width', media.width);
+				this.elemC.setAttribute('height', media.height);
 				this.elemC.setAttribute('controls', 'controls');
-				this.elemC.setAttribute('id', 'topho');
 
 				if (apijs.config.dialog.videoAutoplay)
 					this.elemC.setAttribute('autoplay', 'autoplay');
+
+				this.elemC.setAttribute('id', 'topho');
+
+				if (url.indexOf('#') > 0) {
+
+					multiple = url.slice(url.indexOf('#') + 1);
+					multiple = multiple.split(',');
+					multiple.unshift(url.slice(url.lastIndexOf('.') + 1, url.lastIndexOf('#')));
+
+					for (i = 0; i < multiple.length; i++) {
+						this.elemD = document.createElement('source');
+						this.elemD.setAttribute('src', url.slice(0, url.lastIndexOf('.')) + '.' + multiple[i]);
+						this.elemD.setAttribute('type', this.searchMimeType(multiple[i]));
+						this.elemC.appendChild(this.elemD);
+					}
+				}
+				else {
+					this.elemD = document.createElement('source');
+					this.elemD.setAttribute('src', url);
+					this.elemD.setAttribute('type', mimetype);
+					this.elemC.appendChild(this.elemD);
+				}
 
 				// Navigateurs obsolètes ou ne gérant pas le codec
 				if (typeof this.elemC.pause !== 'function') {
 
 					noVideo = new apijs.core.bbcode();
-					noVideo.init(apijs.i18n.translate('browserNoVideo', BrowserDetect.browser, BrowserDetect.version, infoVideo.mime, navigator.userAgent));
-
+					noVideo.init(apijs.i18n.translate('browserNoVideo', BrowserDetect.browser, BrowserDetect.version, mimetype, navigator.userAgent));
 					noVideo = noVideo.getFragment();
-					noVideo.firstChild.setAttribute('style', 'height:' + infoVideo.height + 'px');
+					noVideo.firstChild.setAttribute('style', 'height:' + media.height + 'px');
 
 					this.elemC.appendChild(noVideo);
 				}
@@ -1564,7 +1575,7 @@ apijs.core.dialog = function () {
 			this.elemB = document.createElement('dd');
 
 				// Élément span
-				// # <span>{infoVideo.id/name} ({date})</span>
+				// # <span>{media.id/name} ({date})</span>
 				if ((name !== 'false') || (date !== 'false')) {
 
 					this.elemC = document.createElement('span');
@@ -1579,11 +1590,11 @@ apijs.core.dialog = function () {
 
 					// auto name + date
 					else if ((name === 'auto') && (date !== 'false'))
-						this.elemC.appendChild(document.createTextNode(infoVideo.id + ' (' + date + ')'));
+						this.elemC.appendChild(document.createTextNode(media.id + ' (' + date + ')'));
 
 					// auto name
 					else if (name === 'auto')
-						this.elemC.appendChild(document.createTextNode(infoVideo.id));
+						this.elemC.appendChild(document.createTextNode(media.id));
 
 					// date
 					else if (date !== 'false')
@@ -1597,12 +1608,12 @@ apijs.core.dialog = function () {
 				this.elemB.appendChild(document.createTextNode(' ' + legend + ' '));
 
 				// Élément a (lien télécharger)
-				// # <a href="{config.dialog.fileVideo}?id={infoVideo.id}" type="{infoVideo.mime}" class="download">{i18n.downloadLink}</a>
+				// # <a href="{config.dialog.fileVideo}?id={media.id}" type="{mimetype}" class="download">{i18n.downloadLink}</a>
 				if (apijs.config.dialog.saveVideo) {
 
 					this.elemC = document.createElement('a');
-					this.elemC.setAttribute('href', apijs.config.dialog.fileVideo + '?id=' + infoVideo.id);
-					this.elemC.setAttribute('type', infoVideo.mime);
+					this.elemC.setAttribute('href', apijs.config.dialog.fileVideo + '?id=' + media.id);
+					this.elemC.setAttribute('type', mimetype);
 					this.elemC.setAttribute('class', 'download');
 					this.elemC.appendChild(document.createTextNode(apijs.i18n.translate('downloadLink')));
 

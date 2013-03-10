@@ -1,7 +1,7 @@
 /**
  * Created V/08/05/2009
- * Updated S/23/02/2013
- * Version 54
+ * Updated V/08/03/2013
+ * Version 56
  *
  * Copyright 2008-2013 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
@@ -31,7 +31,7 @@
 	position:relative; top:27%; margin:auto; padding:0.6em 0.8em 2.4em; width:33em; min-height:9em; overflow:hidden;
 	background-color:white; opacity:0.9;
 	border-radius:0.8em; -moz-border-radius:0.8em; -webkit-border-radius:0.8em;
-	background-clip:padding-box; -moz-background-clip:padding; -o-background-clip:padding; -webkit-background-clip:padding-box;
+	background-clip:padding-box; -moz-background-clip:padding-box; -webkit-background-clip:padding-box;
 	transition:top 0.5s; -moz-transition:top 0.5s; -o-transition:top 0.5s; -webkit-transition:top 0.5s;
 	box-shadow:0 0 30px #111; -moz-box-shadow:0 0 30px #111; -webkit-box-shadow:0 0 30px #111;
 }
@@ -72,7 +72,7 @@
 	position:relative; top:27%; margin:auto; padding:0.6em 0.8em 2.4em; width:33em; min-height:9em; overflow:hidden;
 	background-color:white;
 	border-radius:0.8em; -moz-border-radius:0.8em; -webkit-border-radius:0.8em;
-	background-clip:padding-box; -moz-background-clip:padding; -o-background-clip:padding; -webkit-background-clip:padding-box;
+	background-clip:padding-box; -moz-background-clip:padding-box; -webkit-background-clip:padding-box;
 	transition:top 0.5s; -moz-transition:top 0.5s; -o-transition:top 0.5s; -webkit-transition:top 0.5s;
 	box-shadow:0 0 30px #BBB; -moz-box-shadow:0 0 30px #BBB; -webkit-box-shadow:0 0 30px #BBB;
 }
@@ -148,13 +148,14 @@
 	font-size:0.85em; color:black; cursor:pointer;
 	border:1px solid #BBB; background-color:#E2E2E2; background-repeat:no-repeat; background-position:4px center;
 	border-radius:0.4em; -moz-border-radius:0.4em; -webkit-border-radius:0.4em;
-	background-clip:padding-box; -moz-background-clip:padding; -o-background-clip:padding; -webkit-background-clip:padding-box;
+	background-clip:padding-box; -moz-background-clip:padding-box; -webkit-background-clip:padding-box;
 	transition:background-color 0.5s, border 0.5s; -moz-transition:background-color 0.5s, border 0.5s;
 	-o-transition:background-color 0.5s, border 0.5s; -webkit-transition:background-color 0.5s, border 0.5s;
 }
 
 #box div.control button.cancel { background-image:url("../images/icons/16/silk-cancel.png"); float:left; margin-right:0.45em; }
 #box div.control button.confirm { background-image:url("../images/icons/16/silk-accept.png"); }
+#box div.control button.back { background-image:url("../images/icons/16/silk-arrow-clock.png"); }
 
 #box div.control button:hover, #box div.control button:active, #box div.control button:focus { border:1px solid #AAA; background-color:#F2F2F2; }
 
@@ -167,7 +168,7 @@
 #box div.navigation.txt button {
 	position:absolute; top:42%; padding:0; width:7em; height:22px; line-height:22px; line-height:22px;
 	font-size:0.8em; color:#CCC; text-align:center; cursor:pointer; border:none; background-color:black;
-	background-clip:padding-box; -moz-background-clip:padding; -o-background-clip:padding; -webkit-background-clip:padding-box;
+	background-clip:padding-box; -moz-background-clip:padding-box; -webkit-background-clip:padding-box;
 	transition:opacity 0.5s; -moz-transition:opacity 0.5s; -o-transition:opacity 0.5s; -webkit-transition:opacity 0.5s;
 }
 
@@ -233,7 +234,7 @@
 	font-size:0.8em; font-weight:bold; text-transform:uppercase; cursor:pointer;
 	color:white; border:2px solid white; background:black; white-space:nowrap;
 	border-radius:0.8em; -moz-border-radius:0.8em; -webkit-border-radius:0.8em;
-	background-clip:padding-box; -moz-background-clip:padding; -o-background-clip:padding; -webkit-background-clip:padding-box;
+	background-clip:padding-box; -moz-background-clip:padding-box; -webkit-background-clip:padding-box;
 	transition:border 0.4s, color 0.4s; -moz-transition:border 0.4s, color 0.4s;
 	-o-transition:border 0.4s, color 0.4s; -webkit-transition:border 0.4s, color 0.4s;
 }
@@ -243,7 +244,11 @@
 
 #box div.close.img button.close { margin:0 0 5em 4em; border:none; background:none; cursor:pointer; }
 #box div.close.img button.close img { font-size:0.7em; color:#999; text-transform:uppercase; text-align:center; }
-#box div.close.img button.close:hover, #box div.close.img button.close:active, #box div.close.img button.close:focus { outline:1px solid #AAA; }
+
+#box div.close.img button.close:hover, #box div.close.img button.close:active, #box div.close.img button.close:focus {
+	margin:-1px -1px 5em 4em; border:1px dashed #AAA;
+	border-radius:10px; -moz-border-radius:10px; -webkit-border-radius:10px;
+}
 
 /* &&&&&&&&&&&&&&&&&&&&&&&&&& lien de téléchargement &&& */
 #box dl dd a.download {
