@@ -1,6 +1,6 @@
 /**
  * Created S/05/06/2010
- * Updated J/07/03/2013
+ * Updated V/05/04/2013
  * Version 30
  *
  * Copyright 2008-2013 | Fabrice Creuzot (luigifab) <code~luigifab~info>
@@ -59,7 +59,6 @@ apijs.core.i18n = function () {
 		browserNoVideo: "[p]Your browser [strong]§ §[/strong] doesn't support the <video> tag.[br]To watch this video, you need to upgrade your browser.[/p][ul][li][a href='http://www.google.com/chrome?hl=en' class='popup']Chrome 4.0+[/a][/li][li][a href='http://www.mozilla-europe.org/en/firefox/' class='popup']Firefox 3.5+[/a][/li][li][a href='http://windows.microsoft.com/en-US/internet-explorer/products/ie/home' class='popup']Internet Explorer 9.0+[/a][/li][li][a href='http://www.opera.com/' class='popup']Opera 10.50+[/a][/li][li][a href='http://www.apple.com/safari/' class='popup']Safari 4.0+[/a][/li][/ul][p]It is also possible that the <video> tag is supported, but the codec used by the video (§) does not.[/p][p class='navigator']Your browser identifies itself as: §[/p]",
 
 		debugInvalidCall: "(debug) Invalid call",
-		debugInvalidUse: "(debug) Invalid use",
 		debugUnknownAction: "(debug) Unknown action",
 		debugKeyDetected: "(debug) Key detected",
 		debugKeyCode: "Code of the seizure key: §",
@@ -104,7 +103,6 @@ apijs.core.i18n = function () {
 		browserNoVideo: "[p]Votre navigateur [strong]§ §[/strong] ne supporte pas la balise <video>.[br]Pour voir cette vidéo, vous devez mettre à jour votre navigateur.[/p][ul][li][a href='http://www.google.com/chrome?hl=fr' class='popup']Chrome 4.0+[/a][/li][li][a href='http://www.mozilla-europe.org/fr/firefox/' class='popup']Firefox 3.5+[/a][/li][li][a href='http://windows.microsoft.com/fr-FR/internet-explorer/products/ie/home' class='popup']Internet Explorer 9.0+[/a][/li][li][a href='http://www.opera.com/' class='popup']Opera 10.50+[/a][/li][li][a href='http://www.apple.com/fr/safari/' class='popup']Safari 4.0+[/a][/li][/ul][p]Il se peut également que la balise <video> soit supportée, mais que le codec utilisé par la vidéo (§) ne le soit pas.[/p][p class='navigator']Votre navigateur s'identifie en tant que : §[/p]",
 
 		debugInvalidCall: "(debug) Appel invalide",
-		debugInvalidUse: "(debug) Utilisation invalide",
 		debugUnknownAction: "(debug) Action inconnue",
 		debugKeyDetected: "(debug) Touche détectée",
 		debugKeyCode: "Code de la touche saisie : §",

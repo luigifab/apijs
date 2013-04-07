@@ -1,7 +1,7 @@
 /**
  * Created L/13/04/2009
- * Updated D/10/03/2013
- * Version 38
+ * Updated V/05/04/2013
+ * Version 39
  *
  * Copyright 2008-2013 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
@@ -142,7 +142,7 @@ apijs.core.upload = function () {
 	// GESTION DE L'ENVOI DU FICHIER
 
 	// #### Vérification du formulaire ################################### i18n ## protected ### //
-	// = révision : 81
+	// = révision : 82
 	// » Vérifie si un fichier a été proposé et si ce fichier est autorisée (extension + taille)
 	// » Valide le formulaire et affiche le dialogue de progression de [TheDialog]
 	// » Lance l'animation générique et temps réel de la barre de progression (appels différés de 50 et 1000 millisecondes)
@@ -167,7 +167,7 @@ apijs.core.upload = function () {
 			else if (filename.lastIndexOf('\\') > 0)
 				filename = filename.slice(filename.lastIndexOf('\\') + 1);
 
-			text = (this.extensions.length < 1) ? apijs.i18n.translate('uploadBadOneType', filename, last) :
+			text = (this.extensions.length < 2) ? apijs.i18n.translate('uploadBadOneType', filename, last) :
 			       apijs.i18n.translate('uploadBadMultiType', filename, this.extensions.slice(0, -1).join(', '), last);
 
 			this.showRetry(text, input.getAttribute('name'));

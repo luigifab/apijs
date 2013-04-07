@@ -1,7 +1,7 @@
 /**
  * Created J/03/12/2009
- * Updated D/10/03/2013
- * Version 64
+ * Updated V/05/04/2013
+ * Version 65
  *
  * Copyright 2008-2013 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
@@ -91,7 +91,7 @@ else if (navigator.userAgent.indexOf('MSIE 8') > -1) {
 
 
 // #### Lancement du programme ############################################## //
-// = révision : 58
+// = révision : 59
 // » Recherche les liens ayant la classe popup
 // » Vérifie si le navigateur supporte les transitions CSS ou pas
 // » Charge les modules disponibles et met en place les gestionnaires d'événements
@@ -132,13 +132,6 @@ function startApijs() {
 
 		apijs.slideshow = new apijs.core.slideshow();
 		apijs.slideshow.init();
-
-		//if (typeof apijs.core.ajax === 'function') {
-		//	if ((typeof apijs.config.ajax === 'object') && (typeof history.pushState === 'function')) {
-		//		apijs.ajax = new apijs.core.ajax();
-		//		apijs.ajax.init();
-		//	}
-		//}
 	}
 }
 

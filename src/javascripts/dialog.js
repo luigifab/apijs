@@ -1,7 +1,7 @@
 /**
  * Created D/12/04/2009
- * Updated D/10/03/2013
- * Version 134
+ * Updated V/05/04/2013
+ * Version 135
  *
  * Copyright 2008-2013 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
@@ -340,7 +340,7 @@ apijs.core.dialog = function () {
 
 
 	// #### Action du bouton Valider ##################### i18n ## debug ## event ## private ### //
-	// = révision : 124
+	// = révision : 125
 	// » Désactive l'action de la touche Échap
 	// » Pour le dialogue de confirmation, appel la fonction de rappel (appel différé d'au moins 500 millisecondes)
 	// » Pour le dialogue d'options, appel la fonction de rappel avant de soumettre le formulaire (envoi différé d'au moins 500 millisecondes)
@@ -430,21 +430,12 @@ apijs.core.dialog = function () {
 		// *** Dialogue d'upload ******************************** //
 		else if (this.classNames.indexOf('upload') > -1) {
 
-			// gestion du formulaire (validation ou pas)
-			if (typeof apijs.core.upload === 'function') {
-
-				if ((apijs.upload.extensions instanceof Array) && (apijs.upload.actionConfirm() === true)) {
-					this.classNames += ' lock';
-					result = true;
-				}
-				else if (!(apijs.upload.extensions instanceof Array) && apijs.config.debug) {
-					this.dialogInformation(apijs.i18n.translate('debugInvalidUse'), '[pre]TheDialog » actionConfirm[br]➩ ' + apijs.i18n.translate('debugBadUse') + '[/pre]');
-				}
+			if ((apijs.upload.extensions instanceof Array) && (apijs.upload.actionConfirm() === true)) {
+				this.classNames += ' lock';
+				result = true;
 			}
-
-			// message de debug
-			else if (apijs.config.debug) {
-				this.dialogInformation(apijs.i18n.translate('debugInvalidUse'), '[pre]TheDialog » actionConfirm[br]➩ TheUpload ' + apijs.i18n.translate('debugNotExist') + '[/pre]');
+			else if (!(apijs.upload.extensions instanceof Array) && apijs.config.debug) {
+				this.dialogInformation(apijs.i18n.translate('debugInvalidUse'), '[pre]TheDialog » actionConfirm[br]➩ ' + apijs.i18n.translate('debugBadUse') + '[/pre]');
 			}
 		}
 
