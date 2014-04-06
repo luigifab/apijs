@@ -1,0 +1,39 @@
+/**
+ * Created J/20/06/2013
+ * Updated S/01/03/2014
+ * Version 7
+ *
+ * Copyright 2008-2014 | Fabrice Creuzot (luigifab) <code~luigifab~info>
+ * http://www.luigifab.info/apijs
+ *
+ * This program is free software, you can redistribute it or modify
+ * it under the terms of the GNU General Public License (GPL) as published
+ * by the free software foundation, either version 2 of the license, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but without any warranty, without even the implied warranty of
+ * merchantability or fitness for a particular purpose. See the
+ * GNU General Public License (GPL) for more details.
+ */
+
+/* ########################################################### Conteneurs ### */
+div.gallery, div.album { font-size:0.85em; }
+div.gallery a, div.album a { display:block; margin:1.75px; text-decoration:none; }
+div.gallery a:after, div.album a:after { display:none; }
+
+div.gallery img, div.album img {
+	display:block; overflow:hidden;
+	font-size:0.85em; line-height:130%; border:1px solid black;
+}
+
+div.gallery { display:inline-block; }
+div.gallery ul { margin:0.2em 0 0; padding:0; list-style:none; }
+div.gallery ul li { display:inline-block; margin:0; padding:0; vertical-align:middle; }
+div.gallery ul li img.current { border-color:gray; }
+
+div.album { text-align:center; }
+div.album dl { display:inline-block; margin:0.5em 0.3em; vertical-align:top; }
+div.album dl dd { margin:0.3em 0 0; font-size:0.85em; }
+
+#apijsDialog { display:none; }
