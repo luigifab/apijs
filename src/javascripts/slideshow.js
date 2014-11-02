@@ -1,8 +1,7 @@
-"use strict";
 /**
  * Created J/13/05/2010
- * Updated S/29/03/2014
- * Version 31
+ * Updated S/27/09/2014
+ * Version 37
  *
  * Copyright 2008-2014 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
@@ -20,6 +19,7 @@
 
 apijs.core.slideshow = function () {
 
+	this.started = 0;
 	this.current = null;
 
 
@@ -27,12 +27,13 @@ apijs.core.slideshow = function () {
 	// GESTION DU DIAPORAMA
 
 	// #### Initialisation ######################################################### private ### //
-	// = révision : 26
+	// = révision : 30
 	// » Recherche les albums puis les photos et vidéos de chaque album
 	// » Met en place les gestionnaires d'événements associés (+click +mouseover)
+	// » Recherche la présence d'une ancre dans l'adresse de la page
 	this.init = function () {
 
-		var i, j, ids = apijs.config.slideshow.ids, hoverload = false;
+		var i, j, id, ids = apijs.config.slideshow.ids, hoverload = false;
 
 		// recherche des albums
 		for (i = 0; document.getElementById(ids + '.' + i) !== null; i++) {
@@ -49,137 +50,129 @@ apijs.core.slideshow = function () {
 			// recherche de l'élément du mode présentation de l'album
 			if (document.getElementById(ids + '.' + i + '.999'))
 				document.getElementById(ids + '.' + i + '.999').addEventListener('click', apijs.slideshow.showMedia.bind(this), false);
+
+			this.started += 1;
+		}
+
+		// recherche d'une ancre
+		// \\. au lieu de \. (pour le caractère .) sinon col 44, Bad or unnecessary escaping
+		if (new RegExp('#(' + ids + '(?:-|\\.)[0-9]+(?:-|\\.)[0-9]+)').test(location.href)) {
+			id = RegExp.$1.replace(/-/g, '.');
+			if (document.getElementById(id))
+				this.showMedia(id);
 		}
 	};
 
 
-	// #### Prépare l'affichage du dialogue ############## event ## debug ## i18n ## private ### //
-	// = révision : 78
+	// #### Prépare l'affichage du dialogue ################################ event ## public ### //
+	// = révision : 92
 	// » Recherche les informations de la photo ou de la vidéo à afficher
-	// » En provenance du survol ou d'un clic sur une des miniatures d'un album, ou d'un appel direct
+	// » Effectue le même traitement lors d'un appel direct ou lors d'un événement (la source étant dans les deux cas une miniature)
+	// » En provenance du survol ou d'un clic sur les miniatures, d'un clic sur l'image principale, ou encore d'un appel direct
+	// » En mode présentation l'image principale contient l'id de la miniature dans son attribut class (sinon c'est la première du lot)
 	// » S'assure de ne pas faire deux fois la même chose en mode présentation
 	this.showMedia = function (ev) {
 
-		var media = {}, source, realsource, mimetype;
+		var source, media = {};
 
-		// *** Recherche de la source *************************** //
-		if (typeof ev !== 'string') {
-
+		// recherche de la source (élément a)
+		// recherche des informations du média (1/4, id)
+		// la source est soit une miniature (ev=click/mouseover/stringId) soit l'image principale (ev=click)
+		if (typeof ev === 'string') {
+			source = document.getElementById(ev);
+			media.id = ev;
+		}
+		else {
 			ev.preventDefault();
+
 			source = (ev.target.nodeName === 'A') ? ev.target : ev.target.parentNode;
 			media.id = source.getAttribute('id');
 
 			// stop sur miniature à jour en mode présentation
-			if (source.hasAttribute('class') && (source.getAttribute('class').indexOf('current') > -1))
+			// ne fait pas deux fois la même chose (après un second survol sur la même miniature)
+			if ((ev.type === 'mouseover') && source.hasAttribute('class') && (source.getAttribute('class').indexOf('current') > -1))
 				return;
 		}
-		else {
-			source = document.getElementById(ev);
-			media.id = ev;
-		}
 
-		// *** Recherche des informations *********************** //
-		// » DEUX MODES DE FONCTIONNEMENT
-		// » avec le dossier web pour les photos ou vidéos optimisés pour le web
-		// » avec le dossier thumb pour les miniatures
-		// » avec le dossier preview pour les mini miniatures
-		// = media.id = slideshow.X.Y  [0]=slideshow [1]=X [2]=Y
-		// = media.config = name|date|legend  [0]=name [1]=date [2]=legend  (mode standard)
-		// # <a href="./web/azerty.jpg" type="image/jpeg" id="slideshow.1.0">
-		// #  <img src="./thumb/azerty.jpg" width="200" height="150" alt="legend" />
-		// #  <input type="hidden" value="name|date|legend" />
-		// # </a>
-		// = media.config = thumb|name|date|legend  [0]=thumb/null [1]=name [2]=date [3]=legend  (mode présentation)
-		// # <a href="./web/azerty.jpg" type="image/jpeg" id="slideshow.0.999">
-		// #  <img src="./thumb/azerty.jpg" width="200" height="150" alt="legend" />
-		// #  <input type="hidden" value="null|name|date|legend" />
-		// # </a>
-		// # <a href="./web/azerty.jpg" type="image/jpeg" id="slideshow.0.0">
-		// #  <img src="./preview/azerty.jpg" width="63" height="47" alt="legend" class="current" />
-		// #  <input type="hidden" value="./thumb/azerty.jpg|name|date|legend" />
-		// # </a>
+		// recherche des informations du média (2/4, prefix|number|numberSrc|presentation)
 		media.prefix = apijs.config.slideshow.ids + '.' + media.id.split('.')[1];
-
-		media.url    = source.getAttribute('href');
-		media.config = source.querySelector('input').getAttribute('value').split('|');
-		media.number = parseInt(media.id.split('.')[2], 10);
-
-		media.styles = document.getElementById(media.prefix).getAttribute('class');
-		media.styles = media.styles.replace(/gallery|album/g, 'slideshow');
-
+		media.number = media.numberSrc = parseInt(media.id.split('.')[2], 10);
 		media.presentation = document.getElementById(media.prefix + '.999');
 
-		// *** Affichage du dialogue **************************** //
-		// » en mode présentation avec présence de l'image principale OU en mode standard
-		if (((media.config.length === 4) && media.presentation) || (media.config.length === 3)) {
+		// SAUF SI SOURCE = IMAGE PRINCIPALE
+		// marque la source avec la class current
+		// prend soin de supprimer les anciennes class current
+		// v5.1: soit sur le lien (avant sur l'image elle même), soit sur le dl
+		if (media.number !== 999) {
 
-			// en mode présentation, met à jour l'image principale si son adresse est présente
-			// - donc lorsque l'utilisateur vient de cliquer ou de survoler une miniature,
-			// - ou lorsque l'utilisateur vient de changer de photo ou de vidéo via le dialogue du diaporama
-			// enregistre l'id de l'image courante sur l'image principale
-			var currentLink = document.getElementById(media.id),
-			    currentImg = currentLink.querySelector('img'),
-			    allImages = document.getElementById(media.prefix).querySelectorAll('img'), i;
+			var allLinks = document.getElementById(media.prefix).querySelectorAll('a[id][type]'),
+			    allConts = document.getElementById(media.prefix).querySelectorAll('dl'), i;
 
-			if ((media.config.length === 4) && (media.config[0] !== 'null')) {
-				media.presentation.setAttribute('href', currentLink.getAttribute('href'));
-				media.presentation.querySelector('img').setAttribute('src', media.config.shift());
-				media.presentation.querySelector('img').setAttribute('alt', currentImg.getAttribute('alt'));
-				media.presentation.querySelector('input').setAttribute('value', media.config.join('|'));
-				media.presentation.setAttribute('class', currentLink.getAttribute('id'));
-			}
-
-			// ATTENTION : media.config.length se réduit à 3 élements
-			if (media.config[0] === 'null')
-				media.config.shift();
-
-			// marque l'image active avec la class current
-			if (currentImg && (media.number !== 999)) {
-				for (i = 0; i < allImages.length; i++) {
-					if (allImages[i].hasAttribute('class'))
-						allImages[i].removeAttribute('class');
+			if ((media.presentation !== null) || (allLinks.length !== allConts.length)) {
+				for (i = 0; i < allLinks.length; i++) {
+					if (allLinks[i].hasAttribute('class'))
+						allLinks[i].removeAttribute('class');
 				}
-				currentImg.setAttribute('class', 'current');
-			}
-
-			// recherche le type de dialogue grâce au type mime du lien de la miniature
-			// en mode présentation :
-			// - ne recherche pas le type mime si l'utilisateur n'est pas sur l'image principale OU s'il n'y a pas de dialogue actif
-			// - autrement dit, uniquement lorsque l'utilisateur ne vient pas de cliquer ou de survoler une miniature du mode présentation
-			// - sur l'image principale, recherche le numéro de la miniature (même s'il peut déjà être correct)
-			// - la recherche consiste à trouver la miniature affichée dans l'image principale
-			// en mode standard :
-			// - fait une simple lecture
-			if (media.presentation) {
-
-				if (media.number === 999) {
-					realsource   = document.getElementById((source.hasAttribute('class')) ? source.getAttribute('class') : media.prefix + '.0');
-					mimetype     = realsource.getAttribute('type');
-					media.number = parseInt(realsource.getAttribute('id').split('.')[2], 10);
-				}
-				else if ((apijs.dialog.styles !== null) && apijs.dialog.styles.has('slideshow')) {
-					mimetype = document.getElementById(media.id).getAttribute('type');
-				}
+				source.setAttribute('class', 'current');
 			}
 			else {
-				mimetype = source.getAttribute('type');
+				for (i = 0; i < allConts.length; i++) {
+					if (allConts[i].hasAttribute('class'))
+						allConts[i].removeAttribute('class');
+				}
+				source.parentNode.parentNode.setAttribute('class', 'current');
+			}
+		}
+
+		// UNIQUEMENT EN MODE PRÉSENTATION
+		// recherche des informations du média (3/4, [number]|config)
+		// réaffecte la source sur la miniature et non sur l'image principale SI SOURCE = IMAGE PRINCIPALE
+		// réaffecte le numéro du média sur la miniature et non sur l'image principale SI SOURCE = IMAGE PRINCIPALE
+		// supprime l'adresse de l'image principale de la configuration du média (media.config = url|name|date|legend)
+		// met à jour l'image principale SAUF SI SOURCE = IMAGE PRINCIPALE (puisque tout est déjà correct)
+		if (media.presentation !== null) {
+
+			if (media.number === 999) {
+				source = (media.presentation.hasAttribute('class')) ? media.presentation.getAttribute('class') : media.prefix + '.0';
+				source = document.getElementById(source);
+				media.number = parseInt(source.getAttribute('id').split('.')[2], 10);
 			}
 
-			// affiche le dialogue lorsque le type de dialogue est défini,
-			// - donc uniquement lorsque l'utilisateur ne vient pas de cliquer ou de survoler une miniature du mode présentation
-			if (typeof mimetype === 'string') {
-				media.type = mimetype.substr(0, 5).replace('image', 'dialogPhoto').replace('video', 'dialogVideo');
-				this.showDialog(media);
+			media.config  = source.querySelector('input').getAttribute('value').split('|');
+			media.mainImg = media.config.shift();
+
+			if (media.numberSrc !== 999) {
+				media.presentation.setAttribute('href', source.getAttribute('href'));
+				media.presentation.querySelector('img').setAttribute('src', media.mainImg);
+				media.presentation.querySelector('img').setAttribute('alt', source.querySelector('img').getAttribute('alt'));
+				media.presentation.setAttribute('class', media.id);
 			}
+
+			media.mainImg = null;
 		}
+		// UNIQUEMENT EN MODE STANDARD
+		// recherche des informations du média (3/4, config)
 		else {
-			apijs.core.error('TheSlideshow.showMedia', 'debugInvalidUse', apijs.i18n.translate('debugUnknownConfig', media.config.join(' | ')));
+			media.config = source.querySelector('input').getAttribute('value').split('|');
 		}
+
+		// recherche des informations du média (4/4, url|type|styles)
+		// définie le type de dialogue à partir du mimetype du lien de la source
+		media.url    = source.getAttribute('href');
+		media.type   = source.getAttribute('type').substr(0, 5).replace('image', 'dialogPhoto').replace('video', 'dialogVideo');
+		media.styles = document.getElementById(media.prefix).getAttribute('class').replace(/gallery|album/g, 'slideshow');
+
+		// demande l'affichage du dialogue
+		// lors d'un clic sur l'image principale du mode présentation,
+		// ou lors d'un clic sur les miniatures en mode standard (en mode standard),
+		// ou lors d'un appel direct
+		if ((media.presentation && (media.numberSrc === 999)) || !media.presentation || (typeof ev === 'string'))
+			this.showDialog(media);
 	};
 
 
 	// #### Affichage du dialogue ################################################## private ### //
-	// = révision : 40
+	// = révision : 41
 	// » Affiche le dialogue et les boutons précédent et suivant
 	// » Vérifie au préalable s'il existe une photo ou vidéo précédente et suivante
 	// » S'assure qu'un dialogue du diaporama est présent avant de faire n'importe quoi
@@ -195,7 +188,7 @@ apijs.core.slideshow = function () {
 			this.current.total = document.getElementById(media.prefix).querySelectorAll('a[id][type]').length - 1;
 			this.current.total = (media.presentation) ? this.current.total - 1 : this.current.total;
 
-			// préparation des variables
+			// mise à jour des variables
 			this.current.first = media.prefix + '.0';
 			this.current.prev  = (media.number > 0) ? media.prefix + '.' + (this.current.number - 1) : null;
 			this.current.next  = (media.number < this.current.total) ? media.prefix + '.' + (this.current.number + 1) : null;

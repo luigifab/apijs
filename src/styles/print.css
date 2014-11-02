@@ -1,7 +1,7 @@
 /**
  * Created J/20/06/2013
- * Updated S/01/03/2014
- * Version 7
+ * Updated M/09/09/2014
+ * Version 10
  *
  * Copyright 2008-2014 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
@@ -19,7 +19,6 @@
 
 /* ########################################################### Conteneurs ### */
 div.gallery, div.album { font-size:0.85em; }
-div.gallery a, div.album a { display:block; margin:1.75px; text-decoration:none; }
 div.gallery a:after, div.album a:after { display:none; }
 
 div.gallery img, div.album img {
@@ -28,12 +27,15 @@ div.gallery img, div.album img {
 }
 
 div.gallery { display:inline-block; }
-div.gallery ul { margin:0.2em 0 0; padding:0; list-style:none; }
+div.gallery a { display:inline-block; text-decoration:none; }
+div.gallery ul { margin:0; padding:0; list-style:none; }
 div.gallery ul li { display:inline-block; margin:0; padding:0; vertical-align:middle; }
-div.gallery ul li img.current { border-color:gray; }
+div.gallery ul li a { display:block; margin:0.2em; }
+div.gallery ul li a.current { border-color:gray; }
 
 div.album { text-align:center; }
-div.album dl { display:inline-block; margin:0.5em 0.3em; vertical-align:top; }
-div.album dl dd { margin:0.3em 0 0; font-size:0.85em; }
+div.album dl { display:inline-block; margin:0.5em 0.4em; vertical-align:top; }
+div.album dl dt a { display:block; text-decoration:none; }
+div.album dl dd { margin:0.4em 0 0; }
 
 #apijsDialog { display:none; }

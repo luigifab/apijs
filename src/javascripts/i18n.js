@@ -1,8 +1,7 @@
-"use strict";
 /**
  * Created S/05/06/2010
- * Updated S/29/03/2014
- * Version 44
+ * Updated S/25/10/2014
+ * Version 48
  *
  * Copyright 2008-2014 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
@@ -39,7 +38,7 @@ apijs.core.i18n = function () {
 		reloadLink: "Reload this page",
 		operationInProgress: "Operation in progress...",
 		uploadInProgress: "Upload in progress...",
-		error404: "Error 404\n The file does not exist.",
+		imageError404: "Error 404\nThe file does not exist.",
 
 		ctrlSlideshowFirstLast: "start/end",
 		ctrlSlideshowNextPrev: "previous/next",
@@ -56,25 +55,72 @@ apijs.core.i18n = function () {
 		uploadOneType: "Accepted file format: §.[br]Maximum size: § MB.",
 		uploadMultiType: "Accepted file formats: § and §.[br]Maximum size: § MB.",
 		uploadDecimal: ".",
-		upload10: "§% (§ KB/s)",
 		upload11: "§% (§ KB/s - § minutes left)",
 		upload12: "§% (§ KB/s - § minute left)",
 		upload13: "§% (§ KB/s - § seconds left)",
-		upload20: "§% (at § KB/s)",
+		upload14: "§% (§ KB/s)",
 		upload21: "§% (at § KB/s in § minutes)",
 		upload22: "§% (at § KB/s in § minute)",
 		upload23: "§% (at § KB/s in § seconds)",
+		upload24: "§% (at § KB/s)",
 
 		uploadBadType: "It's impossible to send the file because the proposed file format isn't allowed. Proposed file format: §.",
 		uploadBadSize: "It's impossible to send the file because the file size is too large. Proposed file size: § MB.",
 		uploadEmpty: "It's impossible to send the file because the file is empty.",
-		uploadError1: "An error occurred while sending the file.[br][em]➩ Erreur §.[/em]",
-		uploadError2: "An error occurred while processing the file.[/p][p]§",
+		uploadError0: "It seems that a unlikely mistake just happened... Please try again.",
+		uploadError1: "An error occurred while sending the file.[br][em]➩ Error §.[/em]",
+		uploadError2: "An error occurred while processing the file.[br][em]➩ §[/em]"
+	};
 
-		debugInvalidCall: "(debug) Invalid call",
-		debugInvalidUse:  "(debug) Invalid use",
-		debugUnknownConfig: "Unknown configuration (§).",
-		debugBadUse: "The upload dialog must be called with §."
+	// = es-ES (español/España)
+	// » Paco Aguayo <francisco.aguayocanela~gmail~com>
+	this.data.es = {
+		buttonOk: "Aceptar",
+		buttonCancel: "Cancelar",
+		buttonConfirm: "Confirmar",
+		buttonClose: "Cerrar",
+		buttonPrev: "Anterior",
+		buttonNext: "Siguiente",
+		buttonBrowse: "Elige un fichero",
+
+		userLeavePage: "Está a punto de abandonar...",
+		operationTooLong: "Esta operación tomará mucho tiempo? ",
+		warningLostChange: "Atención: todos los cambios en curso se perderán.",
+		reloadLink: "Recarga esta página",
+		operationInProgress: "Operación en ejecución...",
+		uploadInProgress: "Subida de datos en ejecución...",
+		imageError404: "Error 404\nEl archivo no existe.",
+
+		ctrlSlideshowFirstLast: "inicio/fin",
+		ctrlSlideshowNextPrev: "anterior/siguiente",
+		ctrlVideoPause: "reproducir/pausa",
+		ctrlVideoTime: "atrás/adelante",
+		ctrlVideoSound: "bajar/subir el volumen",
+		ctrlVideoMute: "silenciar",
+		ctrlDialogFullscreen: "pantalla completa",
+		ctrlDialogQuit: "salir",
+		ctrlKeyEnd: "Fin",
+		ctrlKeyEsc: "Esc",
+
+		uploadAllType: "Se aceptan todos los archivos.[br]Tamaño máximo: § MB.",
+		uploadOneType: "Formato de archivo aceptado: §.[br]Tamaño máximo: § MB.",
+		uploadMultiType: "Formatos de archivos aceptados: § y §.[br]Tamaño máximo: § MB.",
+		uploadDecimal: ".",
+		upload11: "§% (§ KB/s - § minutos restantes)",
+		upload12: "§% (§ KB/s - § minuto restantes)",
+		upload13: "§% (§ KB/s - § segundos restantes)",
+		upload14: "§% (§ KB/s)",
+		upload21: "§% (a § KB/s en § minutos)",
+		upload22: "§% (a § KB/s en § minuto)",
+		upload23: "§% (a § KB/s en § segundos)",
+		upload24: "§% (a § KB/s)",
+
+		uploadBadType: "Ha sido imposible enviar el archivo porque el formato no está permitido. El formato del archivo es: §.",
+		uploadBadSize: "Ha sido imposible enviar el archivo porque el tamaño es muy elevado. El tamaño del archivo es: § MB.",
+		uploadEmpty: "Ha sido imposible enviar el archivo porque el archivo está vacío.",
+		//uploadError0: "!! Por favor, inténtelo de nuevo.",
+		uploadError1: "Se ha producido un error durante el envío del archivo.[br][em]➩ Error §.[/em]",
+		uploadError2: "Se ha producido un error durante el procesamiento del archivo.[br][em]➩ §[/em]"
 	};
 
 	// = fr-FR (français/France)
@@ -94,7 +140,7 @@ apijs.core.i18n = function () {
 		reloadLink: "Rechargez la page",
 		operationInProgress: "Opération en cours...",
 		uploadInProgress: "Envoi du fichier en cours...",
-		error404: "Erreur 404\n Le fichier n'existe pas.",
+		imageError404: "Erreur 404\nLe fichier n'existe pas.",
 
 		ctrlSlideshowFirstLast: "début/fin",
 		ctrlSlideshowNextPrev: "précédent/suivant",
@@ -111,20 +157,21 @@ apijs.core.i18n = function () {
 		uploadOneType: "Format de fichier accepté : §.[br]Taille maximale : § Mo.",
 		uploadMultiType: "Formats de fichier acceptés : § et §.[br]Taille maximale : § Mo.",
 		uploadDecimal: ",",
-		upload10: "§% (§ Ko/s)",
 		upload11: "§% (§ Ko/s - § minutes restantes)",
 		upload12: "§% (§ Ko/s - § minute restante)",
 		upload13: "§% (§ Ko/s - § secondes restantes)",
-		upload20: "§% (à § Ko/s)",
+		upload14: "§% (§ Ko/s)",
 		upload21: "§% (à § Ko/s en § minutes)",
 		upload22: "§% (à § Ko/s en § minute)",
 		upload23: "§% (à § Ko/s en § secondes)",
+		upload24: "§% (à § Ko/s)",
 
 		uploadBadType: "Il est impossible d'envoyer le fichier car le format du fichier proposé n'est pas autorisé. Format du fichier proposé : §.",
 		uploadBadSize: "Il est impossible d'envoyer le fichier car la taille du fichier proposé est trop importante. Taille du fichier proposé : § Mo.",
 		uploadEmpty: "Il est impossible d'envoyer le fichier car le fichier est vide.",
+		uploadError0: "Il semblerait qu'une erreur improbable vient de se produire... Veuillez réessayer.",
 		uploadError1: "Une erreur est survenue lors de l'envoi du fichier.[br][em]➩ Erreur §.[/em]",
-		uploadError2: "Une erreur est survenue lors du traitement du fichier.[/p][p]§"
+		uploadError2: "Une erreur est survenue lors du traitement du fichier.[br][em]➩ §[/em]"
 	};
 
 

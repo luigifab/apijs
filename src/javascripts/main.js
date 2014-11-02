@@ -1,8 +1,7 @@
-"use strict";
 /**
  * Created J/03/12/2009
- * Updated S/11/01/2014
- * Version 99
+ * Updated S/25/10/2014
+ * Version 108
  *
  * Copyright 2008-2014 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
@@ -37,8 +36,9 @@ if (!String.prototype.hasOwnProperty('trim')) {
 }
 
 var apijs = {
+
 	core: {},
-	version: 500,
+	version: 510,
 	config: {
 		lang: 'auto',
 		debug: false,
@@ -52,28 +52,86 @@ var apijs = {
 		},
 		slideshow: {
 			ids: 'slideshow'
+		},
+		upload: {
+			tokenName: 'authenticity_token',
+			tokenValue: null
 		}
 	},
+
+	// démarrage
 	start: function () {
 
-		this.i18n = new apijs.core.i18n();
+		// vérification du navigateur avec information dans la console
+		// ne démarre pas si le navigateur est une épave
+		var ua = navigator.userAgent, test = [], v;
 
+		// Opera < 13 = Presto ou Opera
+		test.push(/Presto|Opera/.test(ua));
+		test.push(0);
+		// Firefox 4 = Gecko 2.0 (attention au like Gecko)
+		v = ua.slice(ua.indexOf('rv:') + 3);
+		v = parseFloat(v.slice(0, v.indexOf(')')));
+		test.push(('Gecko/'.indexOf(ua) > 0) && (v < 2));
+		test.push(v);
+		// Safari 6 = WebKit 536.25, Chromium/Chrome 19 = WebKit 536.5 (Chromium/Chrome 18 = 535.19)
+		v = ua.slice(ua.indexOf('WebKit/') + 7);
+		v = parseFloat(v.slice(0, v.indexOf(' ')));
+		test.push(('WebKit/'.indexOf(ua) > 0) && (v < 536.25));
+		test.push(v);
+
+		try {
+			console.info('APIJS Hello! Starting ' + this.version.toString().replace(/([0-9]+)([0-9])([0-9])$/g, '$1.$2.$3') + '/' + this.config.lang);
+			console.info('APIJS oldPresto=' + test[0] + ' oldGecko=' + test[2] + '/' + test[3] + ' oldWebKit=' + test[4] + '/' + test[5]);
+		}
+		catch (e) {
+			// dans le cas ou la console n'existe pas (par exemple avec IE 9)
+			window.console = { info: function () {}, warn: function () {}, log: function () {} };
+		}
+		if (this.inArray(true, test)) {
+			console.warn('APIJS canceled for old browser');
+			return;
+		}
+
+		// démarrage de l'application
+		this.i18n = new this.core.i18n();
+		this.dialog = new this.core.dialog();
+		this.upload = new this.core.upload();
+		this.slideshow = new this.core.slideshow();
+
+		// appelle des fonctions utilisateurs
+		if (typeof setApijsRewrites === 'function')
+			setApijsRewrites();
 		if (typeof setApijsLang === 'function')
 			setApijsLang();
-
-		this.i18n.init();
-
 		if (typeof setApijsConfig === 'function')
 			setApijsConfig();
 
-		this.dialog = new apijs.core.dialog();
-		this.upload = new apijs.core.upload();
-		this.slideshow = new apijs.core.slideshow();
+		// activation du mode debug
+		if (this.config.debug) {
+			this.logger(this.i18n, 'apijs.i18n.');
+			this.logger(this.dialog, 'apijs.dialog.');
+			this.logger(this.upload, 'apijs.upload.');
+			this.logger(this.slideshow, 'apijs.slideshow.');
+			console.info('APIJS debug mode enabled');
+			console.info('APIJS available languages: ' + Object.keys(this.i18n.data).join(','));
+			console.info('APIJS setApijsLang:' + ((typeof setApijsLang === 'function') ? 'yes' : 'no') + ' setApijsConfig:' + ((typeof setApijsConfig === 'function') ? 'yes' : 'no') + ' setApijsRewrites:' + ((typeof setApijsRewrites === 'function') ? 'yes' : 'no'));
+		}
+
+		// initilisation des traductions
+		// et du diaporama
+		this.i18n.init();
 		this.slideshow.init();
 
-		if (typeof setApijsRewrites === 'function')
-			setApijsRewrites();
+		// finialisation du démarrage
+		if (this.config.debug) {
+			console.info('APIJS language loaded: ' + this.config.lang);
+			console.info('APIJS slideshows loaded: ' + this.slideshow.started);
+			console.info('APIJS Okay! Successfully started');
+		}
 	},
+
+	// utilitaires
 	openTab: function (ev) {
 		ev.preventDefault();
 		window.open(this.href);
@@ -130,8 +188,69 @@ var apijs = {
 		}
 
 		return q.join('&');
+	},
+	error: function (method, data) {
+
+		var key, text = [];
+
+		if (typeof data === 'string') {
+			text.push(data);
+		}
+		else {
+			for (key in data) if (data.hasOwnProperty(key))
+				text.push(key + ': ' + data[key]);
+		}
+
+		if (this.config.debug)
+			this.dialog.dialogInformation('(debug) Invalid call', '[pre]' + method + '[br]➩ ' + text.join('[br]➩ '), 'debug');
+
+		console.warn(method + ' => ' + text.join(' / '));
+	},
+
+	// mode debug (http://stackoverflow.com/a/3919564)
+	methods: {},
+	logger: function (src, scope) {
+
+		for (var func in src) {
+			if (typeof(src[func]) === 'function') {
+
+				// store the original to our global pool
+				apijs.methods[scope + func] = src[func];
+
+				// create an closure to maintain function name
+				(function () {
+					// do not remove this
+					var date, functionName = func;
+					// overwrite the function with our own version
+					src[functionName] = function () {
+
+						// convert arguments to array
+						var args = [].splice.call(arguments, 0);
+
+						// do the logging before callling the method
+						if (functionName.indexOf('nodeTranslate') < 0) {
+
+							date = new Date();
+							date = date.getMinutes() + 'm' + date.getSeconds() + 's' + date.getMilliseconds() + 'ms ';
+
+							if ((functionName.indexOf('dialog') > -1) || (functionName.indexOf('sendFile') > -1))
+								console.info('displaying ' + scope + functionName + '()');
+							else if (functionName.indexOf('translate') > -1)
+								console.log(date + scope + functionName + '(' + args.join(',') + ')');
+							else if (functionName.indexOf('actionKey') > -1)
+								console.log(date + scope + functionName + '(' + args[0].keyCode + ')');
+							else
+								console.log(date + scope + functionName + '(' + args.join(',') + ')');
+						}
+
+						// call the original method but in the src scope, and return the results
+						return apijs.methods[scope + functionName].apply(src, args);
+					};
+				})();
+			}
+		}
 	}
 };
 
-if ((typeof window.addEventListener === 'function') && (!/Presto|Opera.{1}12/.test(navigator.userAgent)))
+if (typeof window.addEventListener === 'function')
 	window.addEventListener('load', apijs.start.bind(apijs), false);

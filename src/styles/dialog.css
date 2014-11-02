@@ -1,7 +1,7 @@
 /**
  * Created V/08/05/2009
- * Updated V/28/02/2014
- * Version 126
+ * Updated D/21/09/2014
+ * Version 130
  *
  * Copyright 2008-2014 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
@@ -22,10 +22,8 @@
 
 #apijsDialog {
 	position:fixed; top:0; right:0; bottom:0; left:0; width:100%; height:100%; text-align:center; z-index:99000;
-	background-color:transparent; opacity:0;
-	transition:background-color 0.5s, opacity 0.5s;
-	-moz-transition:background-color 0.5s, opacity 0.5s;
-	-webkit-transition:background-color 0.5s, opacity 0.5s;
+	background-color:transparent; opacity:0; transition:background-color 0.5s, opacity 0.5s;
+	-moz-transition:background-color 0.5s, opacity 0.5s; -webkit-transition:background-color 0.5s, opacity 0.5s;
 }
 
 #apijsDialog.ready { background-color:rgba(0,0,0,0.65); opacity:1; }
@@ -71,7 +69,6 @@
 
 #apijsBox ul { margin:-0.4em auto 1em; }
 #apijsBox pre { margin:1em auto; font-size:0.7rem; line-height:140%; white-space:pre-wrap; }
-#apijsBox code { font-size:0.8rem; color:#555; }
 
 #apijsBox p { margin:1em auto; font-size:1em; line-height:140%; }
 
@@ -85,10 +82,11 @@
 	animation:apijsSaving 2s infinite linear; -moz-animation:apijsSaving 2s infinite linear; -webkit-animation:apijsSaving 2s infinite linear;
 }
 
-/* &&&&&&&&&&&&&&&&&&&&&&&&&&&&& spécifique &&& */
+/* &&&&&&&&&&&&&&&&&&&&&&&& spécifique &&& */
 #apijsBox.upload div.control.online { position:relative; left:0; padding:0.5em 0 0 12em; }
 #apijsBox.upload div.control.online input { width:0; visibility:hidden; }
 #apijsBox.upload div.control.online button { position:absolute; left:0; }
+#apijsBox.upload div.control.online label.browse { position:absolute; left:0; display:inline-block; font-size:0.85em; cursor:pointer; outline:none; }
 
 #apijsBox.upload div.control.online div.status { margin:1em 0 1.5em -14em; font-size:0.85em; color:red; }
 
@@ -99,7 +97,7 @@
 
 #apijsBox.empty div.close { top:0.3em; right:0.3em; }
 
-/* &&&&&&&&&&&&&&&&&&& barre de progression &&& */
+/* &&&&&&&&&&&&&& barre de progression &&& */
 #apijsBox.progress svg {
 	display:block; position:relative; margin:1.1em auto; width:80%;
 	border:1px solid #333; background-color:#AAA;
@@ -111,7 +109,7 @@
 }
 
 #apijsBox.progress svg rect {
-	display:block; position:absolute; top:0; left:0; bottom:0; width:20%;
+	display:block; position:absolute; top:0; left:0; bottom:0;
 	background-color:#03FF00; background-size:28px 100%;
 	background:repeating-linear-gradient(-45deg, #03FF00 0, #03FF00 10px, #00EF00 10px, #00EF00 20px);
 	background:-moz-repeating-linear-gradient(-45deg, #03FF00 0, #03FF00 10px, #00EF00 10px, #00EF00 20px);
@@ -119,13 +117,17 @@
 }
 
 #apijsBox.progress svg rect.auto {
-	animation:apijsProgressAuto 10s infinite linear; -moz-animation:apijsProgressAuto 10s infinite linear;
-	-webkit-animation:apijsProgressAuto 10s infinite linear;
+	animation:apijsProgress 10s infinite linear; -moz-animation:apijsProgress 10s infinite linear;
+	-webkit-animation:apijsProgress 10s infinite linear;
 }
 
-#apijsBox.progress svg rect.end { width:100%; }
+#apijsBox.progress svg rect.end {
+	width:100%;
+	animation:apijsProgress 10s infinite 3s linear; -moz-animation:apijsProgress 10s infinite 3s linear;
+	-webkit-animation:apijsProgress 10s infinite 3s linear;
+}
 
-/* &&&&&&&&&&&&&&&&&&&&&&&&&&&&& émoticônes &&& */
+/* &&&&&&&&&&&&&&&&&&&&&&&& émoticônes &&& */
 #apijsBox div.bbcode.emotes span.ico { vertical-align:bottom; font:1.1em icomoon; text-transform:none; }
 
 @font-face {
@@ -134,7 +136,7 @@
 	font-family:icomoon; font-style:normal; font-weight:normal;
 }
 
-/* &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& boutons &&& */
+/* &&&&&&&&&&&&&&&&&&&&&&&&&&& boutons &&& */
 #apijsBox button {
 	font-size:0.85em; white-space:nowrap; cursor:pointer;
 	transition:border 0.4s, background-color 0.4s, color 0.4s, opacity 0.4s;
@@ -149,7 +151,7 @@
 /* ################################################## Boutons de contrôle ### */
 #apijsBox div.control { position:absolute; right:0.8em; bottom:0.6em; }
 
-#apijsBox div.control button {
+#apijsBox div.control button, #apijsBox div.control label.browse {
 	padding:0 0.7em 0 26px; min-height:24px; line-height:218%;
 	color:black; border:1px solid #BBB; border-radius:0.4em; background-color:#E2E2E2;
 	background-position:left center; background-size:24px;
@@ -157,10 +159,15 @@
 
 #apijsBox div.control button.cancel  { background-image:url("../images/apijs/humanity-sprites.svg#dialog-no"); float:left; margin-right:0.5em; }
 #apijsBox div.control button.confirm { background-image:url("../images/apijs/humanity-sprites.svg#dialog-ok"); }
-#apijsBox div.control button.browse  { background-image:url("../images/apijs/humanity-sprites.svg#browser-upload"); }
+#apijsBox div.control .browse        { background-image:url("../images/apijs/humanity-sprites.svg#browser-upload"); }
 
+#apijsBox div.control label.browse:hover, #apijsBox div.control label.browse:active, #apijsBox div.control label.browse:focus,
 #apijsBox div.control button:hover, #apijsBox div.control button:active, #apijsBox div.control button:focus { border-color:#777; background-color:#F6F6F6; }
+
+#apijsBox div.control label.browse:focus,
 #apijsBox div.control button:focus { animation:apijsFocus 1s infinite; -moz-animation:apijsFocus 1s infinite; -webkit-animation:apijsFocus 1s infinite; }
+
+#apijsBox div.control label.browse:focus:hover,
 #apijsBox div.control button:focus:hover { animation:inherit; -moz-animation:inherit; -webkit-animation:inherit; }
 
 
@@ -179,7 +186,7 @@
 #apijsBox dl.media dd { position:absolute; right:5%; bottom:2.8em; left:5%; line-height:18px; color:#DDD; }
 #apijsBox dl.media dd span { margin-right:0.6em; font-size:0.85em; color:#AAA; }
 
-/* &&&&&&&&&&&&&&&&&&&&&& chargement/erreur &&& */
+/* &&&&&&&&&&&&&&&&& chargement/erreur &&& */
 #apijsMedia span { display:none; }
 #apijsMedia span:first-line { font-size:2.5em; }
 
@@ -197,7 +204,7 @@
 
 #apijsMedia.loading { cursor:progress; }
 
-/* &&&&&&&&&&&&&&&&&& boutons de navigation &&& */
+/* &&&&&&&&&&&&& boutons de navigation &&& */
 #apijsBox div.navigation button {
 	position:absolute; top:0; bottom:0; padding-bottom:2.5%; width:3%; min-width:2.4em;
 	color:#DDD; border:none; background-color:#222; opacity:0.6;
@@ -216,7 +223,7 @@
 	display:block; transform:rotate(90deg); -moz-transform:rotate(90deg); -ms-transform:rotate(90deg); -webkit-transform:rotate(90deg);
 }
 
-/* &&&&&&&&&&&&&&&&&&&& bouton de fermeture &&& */
+/* &&&&&&&&&&&&&&& bouton de fermeture &&& */
 #apijsBox div.close { position:absolute; top:0.6em; right:0.6em; z-index:99600; }
 
 #apijsBox div.close.txt button {
@@ -231,7 +238,7 @@
 #apijsBox div.close.img button { border:none; background:none; }
 #apijsBox div.close.img button img { font-size:0.7em; color:#999; }
 
-/* &&&&&&&&&&&&&&&&&& navigation au clavier &&& */
+/* &&&&&&&&&&&&& navigation au clavier &&& */
 #apijsBox div.kbd {
 	position:fixed; right:0; bottom:0; left:0; overflow:hidden; z-index:99600;
 	white-space:nowrap; background-color:#555; cursor:default;
@@ -262,9 +269,9 @@
 @-moz-keyframes    apijsSaving { 40% { color:#CCC; } }
 @-webkit-keyframes apijsSaving { 40% { color:#CCC; } }
 
-@keyframes         apijsProgressAuto { 50% { left:80%; } }
-@-moz-keyframes    apijsProgressAuto { 50% { left:80%; } }
-@-webkit-keyframes apijsProgressAuto { 50% { left:80%; } }
+@keyframes         apijsProgress { 0% { width:20%; } 50% { left:80%; } 100% { width:20%; } }
+@-moz-keyframes    apijsProgress { 0% { width:20%; } 50% { left:80%; } 100% { width:20%; } }
+@-webkit-keyframes apijsProgress { 0% { width:20%; } 50% { left:80%; } 100% { width:20%; } }
 
 @keyframes         apijsFocus { 50% { border-color:#BBB; } }
 @-moz-keyframes    apijsFocus { 50% { border-color:#BBB; } }
@@ -296,7 +303,7 @@
 	#apijsBox div.navigation.txt button { font-size:0.95em; }
 }
 
-/* stupid webkit, it doesn't support SVG fragment identifier for SVG sprites (Chrome 31..32, Chromium 28..32, Opera 15..18, Safari 6) */
+/* stupid webkit, it doesn't support SVG fragment identifier for SVG sprites */
 @media screen and (-webkit-min-device-pixel-ratio:0) {
 
 	#apijsBox.information  h1 { background-image:url("../images/apijs/humanity-dialog-information.svg"); }
