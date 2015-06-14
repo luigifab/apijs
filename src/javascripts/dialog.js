@@ -1,9 +1,9 @@
 /**
  * Created D/12/04/2009
- * Updated S/25/10/2014
- * Version 144
+ * Updated D/31/05/2015
+ * Version 153
  *
- * Copyright 2008-2014 | Fabrice Creuzot (luigifab) <code~luigifab~info>
+ * Copyright 2008-2015 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
  *
  * This program is free software, you can redistribute it or modify
@@ -20,30 +20,31 @@
 apijs.core.dialog = function () {
 
 	this.styles = null;
-	this.paused = null;
-	this.image = null;
+	this.media  = null;
+	this.player = null;
+	this.paused = true;
+	this.scrollTime = 0;
 
 	this.timer = null;
 	this.callback = null;
 	this.args = null;
 
-	this.fragment = null;
-	this.elemA = null;
-	this.elemB = null;
-	this.elemC = null;
-	this.elemD = null;
+	this.frag = null;
+	this.a = null;
+	this.b = null;
+	this.c = null;
+	this.d = null;
+	this.e = null;
 
-	this.tagDialog = null;
-	this.tagMedia = null;
-	this.tagTitle = null;
-	this.tagBox = null;
+	this.tDialog = null; // div id=apijsDialog
+	this.tBox = null;    // div/form id=apijsBox
+	this.tTitle = null;  // h1
 
 
-	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// DÉFINITION DES BOÎTES DE DIALOGUE
+	// DÉFINITION DES 8 BOÎTES DE DIALOGUE
 
 	// #### Dialogue d'information ################################################## public ### //
-	// = révision : 88
+	// = révision : 90
 	// » Permet d'afficher un message d'information à l'intention de l'utilisateur
 	// » Composé d'un titre, d'un paragraphe et d'un bouton de dialogue (Ok)
 	// » Fermeture par bouton Ok ou touche Échap
@@ -55,12 +56,11 @@ apijs.core.dialog = function () {
 			this.initDialog('information', icon);
 
 			this.htmlParent();
-			this.htmlTitle(title);
-			this.htmlContent(text);
+			this.htmlContent(title, text);
 			this.htmlButtonOk();
 
 			this.showDialog();
-			this.tagBox.querySelector('button.confirm').focus();
+			this.tBox.querySelector('button.confirm').focus();
 		}
 		else {
 			apijs.error('TheDialog.dialogInformation', {
@@ -73,7 +73,7 @@ apijs.core.dialog = function () {
 
 
 	// #### Dialogue de confirmation ################################################ public ### //
-	// = révision : 104
+	// = révision : 106
 	// » Permet de demander une confirmation à l'utilisateur
 	// » Composé d'un titre, d'un paragraphe et de deux boutons de dialogue (Annuler/Valider)
 	// » Fermeture par bouton Annuler ou touche Échap tant que le dialogue n'est pas validé
@@ -86,15 +86,14 @@ apijs.core.dialog = function () {
 			this.initDialog('confirmation', icon);
 
 			this.htmlParent();
-			this.htmlTitle(title);
-			this.htmlContent(text);
+			this.htmlContent(title, text);
 			this.htmlButtonConfirm('button');
 
 			this.callback = callback;
 			this.args = args;
 
 			this.showDialog();
-			this.tagBox.querySelector('button.confirm').focus();
+			this.tBox.querySelector('button.confirm').focus();
 		}
 		else {
 			if ((typeof callback === 'function') && (typeof callback.name === 'string') && (callback.name.length > 0))
@@ -112,7 +111,7 @@ apijs.core.dialog = function () {
 
 
 	// #### Dialogue d'options ###################################################### public ### //
-	// = révision : 47
+	// = révision : 50
 	// » Permet à l'utilisateur de modifier des options
 	// » Composé d'un formulaire, d'un titre, d'un paragraphe et de deux boutons de dialogue (Annuler/Valider)
 	// » Fermeture par bouton Annuler ou touche Échap tant que le formulaire n'est pas validé
@@ -125,9 +124,8 @@ apijs.core.dialog = function () {
 
 			this.initDialog('options', icon);
 
-			this.htmlParent(null, action);
-			this.htmlTitle(title);
-			this.htmlContent(text);
+			this.htmlParent(action);
+			this.htmlContent(title, text);
 			this.htmlButtonConfirm('submit');
 
 			this.callback = callback;
@@ -136,7 +134,7 @@ apijs.core.dialog = function () {
 			this.showDialog();
 
 			window.setTimeout(function () {
-				apijs.dialog.tagBox.querySelector('input:not([readonly]),textarea:not([readonly]),select:not([disabled])').focus();
+				apijs.dialog.tBox.querySelector('input:not([readonly]),textarea:not([readonly]),select:not([disabled])').focus();
 			}, 12);
 		}
 		else {
@@ -156,7 +154,7 @@ apijs.core.dialog = function () {
 
 
 	// #### Dialogue d'upload ####################################################### public ### //
-	// = révision : 116
+	// = révision : 122
 	// » Permet à l'utilisateur l'envoi de fichier sans avoir à recharger la page
 	// » Composé d'un formulaire, d'un titre, d'un paragraphe (sans émoticône), d'un champ fichier et de deux boutons de dialogue (Annuler/Valider)
 	// » Fermeture par bouton Annuler ou touche Échap tant que le formulaire n'est pas validé
@@ -167,16 +165,15 @@ apijs.core.dialog = function () {
 
 			this.initDialog('upload', icon);
 
-			this.htmlParent(null, action);
-			this.htmlTitle(title);
-			this.htmlContent(text, false);
+			this.htmlParent(action);
+			this.htmlContent(title, text);
 			this.htmlFormUpload(inputname);
 			this.htmlButtonConfirm('submit');
 
 			this.showDialog();
 
 			window.setTimeout(function () {
-				apijs.dialog.tagBox.querySelector('.browse').focus();
+				apijs.dialog.tBox.querySelector('.browse').focus();
 			}, 12);
 		}
 		else {
@@ -192,7 +189,7 @@ apijs.core.dialog = function () {
 
 
 	// #### Dialogue de progression ################################################# public ### //
-	// = révision : 105
+	// = révision : 107
 	// » Permet de faire patienter l'utilisateur en affichant une barre de progression
 	// » Composé d'un titre, d'un paragraphe et d'une barre de progression
 	// » Fermeture automatique (ou pas) et touches CTRL+Q, CTRL+W, CTRL+R, CTRL+F4, CTRL+F5, ALT+F4, Échap et F5 désactivées
@@ -203,8 +200,7 @@ apijs.core.dialog = function () {
 			this.initDialog('progress', icon);
 
 			this.htmlParent();
-			this.htmlTitle(title);
-			this.htmlContent(text, false);
+			this.htmlContent(title, text);
 			this.htmlProgressBar();
 
 			this.showDialog();
@@ -220,7 +216,7 @@ apijs.core.dialog = function () {
 
 
 	// #### Dialogue d'attente ###################################################### public ### //
-	// = révision : 102
+	// = révision : 104
 	// » Permet de faire patienter l'utilisateur en affichant un message d'attente
 	// » Composé d'un titre, d'un paragraphe (sans émoticône) et d'un lien différé de time secondes si time est supérieur à 5 (time * 1000 ms)
 	// » Fermeture automatique (ou pas) et touches CTRL+Q, CTRL+W, CTRL+R, CTRL+F4, CTRL+F5, ALT+F4, Échap et F5 désactivées
@@ -231,8 +227,7 @@ apijs.core.dialog = function () {
 			this.initDialog('waiting', icon);
 
 			this.htmlParent();
-			this.htmlTitle(title);
-			this.htmlContent(text, false);
+			this.htmlContent(title, text);
 
 			this.showDialog();
 
@@ -251,19 +246,18 @@ apijs.core.dialog = function () {
 
 
 	// #### Dialogue photo ########################################################## public ### //
-	// = révision : 140
+	// = révision : 146
 	// » Permet d'afficher une image au premier plan
 	// » Composé d'une image, d'une définition et de trois boutons de dialogue (Précédent/Suivant/Fermer)
-	// » Le paramètre icon n'est disponible/utilisé que {par l'intermédiaire de} et {que pour} TheSlideshow
 	// » Fermeture par bouton Fermer ou touche Échap et Touche F11 pour passer en plein écran
 	// » S'adapte automatiquement à la taille de la fenêtre du navigateur
-	this.dialogPhoto = function (url, name, date, legend, icon) {
+	this.dialogPhoto = function (url, name, date, legend, slideshow) {
 
 		if ((typeof url === 'string') && (typeof name === 'string') && (typeof date === 'string') && (typeof legend === 'string')) {
 
-			if (typeof icon === 'string') {
+			if (typeof slideshow === 'string') {
 				this.initDialog('photo', 'notransition slideshow');
-				this.htmlParent(icon);
+				this.htmlParent(slideshow);
 			}
 			else {
 				this.initDialog('photo', 'notransition');
@@ -271,12 +265,44 @@ apijs.core.dialog = function () {
 			}
 
 			this.htmlMedia(url, name, date, legend);
-			this.htmlHelp((typeof icon === 'string'), false);
+			this.htmlHelp((typeof slideshow === 'string'), false);
 			this.htmlButtonClose();
 			this.htmlButtonNavigation();
 
 			this.showDialog();
-			this.loadImage(url);
+
+			// chargement de l'image
+			// redéfini temporairement this.media
+			// enregistre la taille de l'image sur this.media pour actionResizeMedia
+			// utilise this.a pour enregistrer l'url pour le background-image
+			this.media = new Image();
+			this.media.src = this.a = url;
+
+			this.media.onload = function (width, height) {
+
+				width = this.media.width;
+				height = this.media.height;
+
+				this.media = document.getElementById('apijsMedia');
+
+				if (this.media) {
+					this.media.width = width;
+					this.media.height = height;
+					this.media.setAttribute('class', 'img default');
+					this.media.setAttribute('style', 'background-image:url("' + this.a + '");');
+					this.actionResizeMedia();
+				}
+			}.bind(this);
+
+			this.media.onerror = function () {
+
+				this.media = document.getElementById('apijsMedia');
+
+				if (this.media) {
+					this.media.setAttribute('class', 'img error');
+					this.media.firstChild.appendChild(apijs.i18n.nodeTranslate('imageError404'));
+				}
+			}.bind(this);
 		}
 		else {
 			apijs.error('TheDialog.dialogPhoto', {
@@ -290,19 +316,18 @@ apijs.core.dialog = function () {
 
 
 	// #### Dialogue vidéo ########################################################## public ### //
-	// = révision : 100
+	// = révision : 110
 	// » Permet d'afficher une vidéo au premier plan
 	// » Composé d'une vidéo, d'une définition et de trois boutons de dialogue (Précédent/Suivant/Fermer)
-	// » Le paramètre icon n'est disponible/utilisé que {par l'intermédiaire de} et {que pour} TheSlideshow
 	// » S'adapte automatiquement à la taille de la fenêtre et se met en pause lors d'un changement d'onglet
 	// » Fermeture par bouton Fermer ou touche Échap et Touche F11 pour passer en plein écran
-	this.dialogVideo = function (url, name, date, legend, icon) {
+	this.dialogVideo = function (url, name, date, legend, slideshow) {
 
 		if ((typeof url === 'string') && (typeof name === 'string') && (typeof legend === 'string') && (typeof legend === 'string')) {
 
-			if (typeof icon === 'string') {
+			if (typeof slideshow === 'string') {
 				this.initDialog('video', 'notransition slideshow');
-				this.htmlParent(icon);
+				this.htmlParent(slideshow);
 			}
 			else {
 				this.initDialog('video', 'notransition');
@@ -310,12 +335,18 @@ apijs.core.dialog = function () {
 			}
 
 			this.htmlMedia(url, name, date, legend);
-			this.htmlHelp((typeof icon === 'string'), true);
+			this.htmlHelp((typeof slideshow === 'string'), true);
 			this.htmlButtonClose();
 			this.htmlButtonNavigation();
+			this.htmlPlayer();
 
 			this.showDialog();
-			this.actionResizeMedia();
+
+			// chargement du lecteur
+			if (apijs.config.dialog.player) {
+				this.player = new apijs.core.player();
+				this.player.init(this.media, this.a); // ici, et seulement ici, a = div class player
+			}
 		}
 		else {
 			apijs.error('TheDialog.dialogVideo', {
@@ -328,53 +359,20 @@ apijs.core.dialog = function () {
 	};
 
 
-	// #### Dialogue vide ########################################################### public ### //
-	// = révision : 8
-	// » Permet d'afficher ce que vous souhaitez
-	// » Composé d'un paragraphe et d'un ou deux boutons de dialogue (Ok/Fermer)
-	// » Fermeture par bouton Ok/Fermer ou touche Échap
-	// » Auto-focus sur l'éventuel bouton Ok
-	this.dialogEmpty = function (text, closeButton, okButton, icon) {
 
-		if (typeof text === 'string') {
-
-			this.initDialog('empty', icon);
-
-			this.htmlParent();
-			this.htmlContent(text);
-
-			if (((typeof closeButton === 'boolean') && closeButton) || (okButton !== true))
-				this.htmlButtonClose();
-
-			if ((typeof okButton === 'boolean') && okButton)
-				this.htmlButtonOk();
-
-			this.showDialog();
-
-			if ((typeof okButton === 'boolean') && okButton)
-				this.tagBox.querySelector('button.confirm').focus();
-		}
-		else {
-			apijs.error('TheDialog.dialogEmpty', {
-				'(string) *text': text,
-				'(boolean) closeButton': closeButton,
-				'(boolean) okButton': okButton,
-				'(string) icon': icon
-			});
-		}
-	};
-
-
-
-
-	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// GESTION DE L'INTERACTION ENTRE LE NAVIGATEUR ET LES DIALOGUES
+	// GESTION DES INTERACTIONS ENTRE LE MONDE ET LES DIALOGUES
 
 	// #### Action de fermeture ############################################ event ## public ### //
-	// = révision : 57
+	// = révision : 62
 	// » Supprime la boîte de dialogue
 	// » Sur demande ou au clic mais pour certains dialogues
+	// » Supprime aussi l'éventuelle ancre du mode diaporama
 	this.actionClose = function (ev) {
+
+		if (new RegExp('#(' + apijs.config.slideshow.ids + '(?:-|\\.)[0-9]+(?:-|\\.)[0-9]+)').test(location.href)) {
+			if (apijs.config.slideshow.anchor && (typeof history.pushState === 'function'))
+				history.pushState({}, '', location.href.slice(0, location.href.indexOf('#')));
+		}
 
 		if (typeof ev === 'object') {
 			if ((ev.target.getAttribute('id') === 'apijsDialog') && !apijs.dialog.styles.has('photo', 'video', 'waiting', 'progress', 'lock'))
@@ -388,23 +386,34 @@ apijs.core.dialog = function () {
 
 
 	// #### Action du clavier et du navigateur #################### event ## i18n ## private ### //
-	// = révision : 130
-	// » Gère les actions des touches en fonction des dialogues (Nombreuses combinaisons possibles)
+	// = révision : 145
+	// » Gère les actions des touches en fonction des dialogues
+	// » Passe d'un média à l'autre en mode diaporama avec la molette de la souris (toutes les 2 secondes)
+	// » Passe en mode plein écran lors avec la touche F11 en utilisant l'API Fullscreen
 	// » Empêche la fermeture du navigateur pour les dialogues ayant un verrou
 	// » Empèche le défilement de la page dès qu'un dialogue est présent
 	this.actionKey = function (ev) {
 
-		var styles = apijs.dialog.styles, media = apijs.dialog.tagMedia;
+		var styles = apijs.dialog.styles, media = apijs.dialog.media;
+
+		if (!isNaN(ev))
+			ev = { keyCode: ev, ctrlKey: false, altKey: false, preventDefault: function () { } };
 
 		// * dialogues d'attente et de progresssion, ou tout autre dialogue verrouillé
 		// empèche la fermeture de l'onglet et donc du navigateur
-		// touches : ctrl + q | ctrl + w | ctrl + r | ctrl + f4 | ctrl + f5 // alt + f4 | échap | f5
+		// touches : ctrl + q | ctrl + w | ctrl + r | ctrl + f4 | ctrl + f5 // alt + f4 // échap | f5
 		if (styles.has('waiting', 'progress', 'lock')) {
 
-			if ((ev.ctrlKey && ((ev.keyCode === 81) || (ev.keyCode === 87) || (ev.keyCode === 82) || (ev.keyCode === 115) || (ev.keyCode === 116))) ||
-			    (ev.altKey && (ev.keyCode === 115)) || (ev.keyCode === 27) || (ev.keyCode === 116)) {
+			if ((ev.ctrlKey && [81, 87, 82, 115, 116].has(ev.keyCode)) ||
+			    (ev.altKey && ev.keyCode === 115) || [27, 116].has(ev.keyCode))
 				ev.preventDefault();
-			}
+		}
+		// * dialogues photo et vidéo
+		// passe en plein écran
+		// touche : f11
+		else if (styles.has('photo', 'video') && (ev.keyCode === 122)) {
+			ev.preventDefault();
+			apijs.dialog.actionFullscreen();
 		}
 		// * dialogues photo et vidéo du diaporama
 		// ferme le dialogue, ou affiche le premier ou dernier média, ou affiche le média précédent ou suivant
@@ -440,50 +449,71 @@ apijs.core.dialog = function () {
 			apijs.dialog.actionClose();
 		}
 
-		// dialogue vidéo
+		// * dialogue vidéo
+		// actions sur la vidéo (networkState 3 = NETWORK_NO_SOURCE)
 		// touches : espace | p // haut | page haut // bas | page bas // + // - // m
-		if (styles.has('video') && !isNaN(media.duration)) {
+		if (styles.has('video')) {
 
 			if ((ev.keyCode === 32) || (ev.keyCode === 80)) {
 				ev.preventDefault();
-				if (media.paused) { media.play(); } else { media.pause(); }
+				if (media.networkState !== 3) {
+					if (media.ended || media.paused) // pour media.ended : media.currentTime = 0;
+						media.play();
+					else
+						media.pause();
+				}
 			}
 			else if ((ev.keyCode === 38) || (ev.keyCode === 33)) {
 				ev.preventDefault();
-				if (media.currentTime < (media.duration - 15))
-					media.currentTime += 10;
+				if ((media.networkState !== 3) && (media.duration !== Infinity)) {
+					if (media.currentTime < (media.duration - 10))
+						media.currentTime += 10;
+				}
 			}
 			else if ((ev.keyCode === 40) || (ev.keyCode === 34)) {
 				ev.preventDefault();
-				media.currentTime -= 10;
+				if ((media.networkState !== 3) && (media.duration !== Infinity)) {
+					if (media.currentTime > 10)
+						media.currentTime -= 10;
+					else
+						media.currentTime = 0;
+				}
 			}
 			else if (ev.keyCode === 107) {
 				ev.preventDefault();
-				if (media.volume < 1)
-					media.volume += 0.2;
+				if (media.networkState !== 3) {
+					if (media.muted)
+						media.muted = false;
+					if (media.volume < 0.8)
+						media.volume += 0.2;
+					else
+						media.volume = 1;
+				}
 			}
 			else if (ev.keyCode === 109) {
 				ev.preventDefault();
-				if (media.volume > 0.2)
-					media.volume -= 0.2;
+				if (media.networkState !== 3) {
+					if (media.muted)
+						media.muted = false;
+					if (media.volume > 0.21)
+						media.volume -= 0.2;
+					else
+						media.volume = 0;
+				}
 			}
 			else if (ev.keyCode === 77) {
 				ev.preventDefault();
-				media.muted = !media.muted; // =true si muted=false, =false si muted=true
+				if (media.networkState !== 3)
+					media.muted = !media.muted; // =true si muted=false, =false si muted=true
 			}
 		}
 
-		// défilement de la page pour tous (renvoi sur ..actionScrollBrowser)
-		// touches : espace | page haut | page bas | fin | début // haut | bas
-		// SAUF lorsque ces touches (sauf page haut, page bas) sont dans un formulaire
-		if ((ev.keyCode === 32) || (ev.keyCode === 33) || (ev.keyCode === 34) || (ev.keyCode === 35) || (ev.keyCode === 36) ||
-		    (ev.keyCode === 38) || (ev.keyCode === 40)) {
+		// * défilement de la page pour tous (renvoi sur actionScrollBrowser)
+		// touches : espace | page haut | page bas | fin | début | haut | bas
+		// SAUF lorsque ces touches sont dans un formulaire
+		if ([32, 33, 34, 35, 36, 38, 40].has(ev.keyCode)) {
 
-			var inputText = (ev.target.nodeName === 'INPUT'),
-			    inputTextarea = (ev.target.nodeName === 'TEXTAREA'),
-			    inputSelect = (ev.target.nodeName === 'SELECT');
-
-			if ((!inputText && !inputTextarea && !inputSelect) || (ev.keyCode === 33) || (ev.keyCode === 34))
+			if (!['INPUT', 'TEXTAREA', 'SELECT'].has(ev.target.nodeName))
 				apijs.dialog.actionScrollBrowser(ev);
 		}
 	};
@@ -500,13 +530,33 @@ apijs.core.dialog = function () {
 	};
 
 	this.actionScrollBrowser = function (ev) {
+
+		// dialogues du diaporama
+		// passe au média suivant ou précédent
+		if (apijs.dialog.styles.has('slideshow') && ['DOMMouseScroll','mousewheel'].has(ev.type)) {
+
+			var time = new Date().getTime() / 1000;
+
+			if ((apijs.dialog.scrollTime < 1) || (time > apijs.dialog.scrollTime + 2)) {
+
+				apijs.dialog.scrollTime = time;
+
+				if ((ev.detail > 0) || (ev.wheelDelta < 0))
+					apijs.slideshow.actionNext();
+				else
+					apijs.slideshow.actionPrev();
+			}
+		}
+
+		// empèche le défilement
+		// dans tous les cas
 		ev.preventDefault();
 		ev.stopPropagation();
 	};
 
 
 	// #### Action du bouton Valider ############################## event ## i18n ## private ### // TODO
-	// = révision : 169
+	// = révision : 171
 	// » Pour le dialogue d'options et de confirmation,
 	//  vérifie le dialogue d'options (arrêt du traitement si ce n'est pas bon)
 	//  verrouille le dialogue, masque les boutons et le texte du dialogue, met en place le texte d'attente, active le lien différé (7000 ms)
@@ -527,14 +577,14 @@ apijs.core.dialog = function () {
 			this.styles.add('lock');
 
 			// masque les boutons et le texte du dialogue
-			this.tagBox.querySelector('div.control').style.visibility = 'hidden';
-			this.tagBox.querySelector('div.bbcode').style.visibility = 'hidden';
+			this.tBox.querySelector('div.control').style.visibility = 'hidden';
+			this.tBox.querySelector('div.bbcode').style.visibility = 'hidden';
 
 			// met en place le texte d'attente
-			this.elemA = document.createElement('p');
-			this.elemA.setAttribute('class', 'saving');
-			this.elemA.appendChild(apijs.i18n.nodeTranslate('operationInProgress'));
-			this.tagBox.appendChild(this.elemA);
+			this.a = document.createElement('p');
+			this.a.setAttribute('class', 'saving');
+			this.a.appendChild(apijs.i18n.nodeTranslate('operationInProgress'));
+			this.tBox.appendChild(this.a);
 
 			// active le lien différé (7000 ms)
 			this.timer = window.setTimeout(apijs.dialog.htmlLinkReload, 7000);
@@ -542,14 +592,14 @@ apijs.core.dialog = function () {
 			// appelle la fonction de rappel
 			// ne déverrouille pas le dialogue
 			window.setTimeout(function () {
-				if ((this.tagBox) && (this.tagBox.nodeName === 'FORM'))
-					this.callback(this.tagBox.getAttribute('action'), this.args);
-				else if (this.tagBox)
+				if ((this.tBox) && (this.tBox.nodeName === 'FORM'))
+					this.callback(this.tBox.getAttribute('action'), this.args);
+				else if (this.tBox)
 					this.callback(this.args);
 			}.bind(this), 1000);
 		}
 		else if (this.styles.has('upload')) {
-			apijs.upload.actionConfirm(this.tagBox.getAttribute('action'));
+			apijs.upload.actionConfirm(this.tBox.getAttribute('action'));
 		}
 
 		return false;
@@ -557,96 +607,97 @@ apijs.core.dialog = function () {
 
 
 	// #### Redimensionnement de la fenêtre ############################### event ## private ### //
-	// = révision : 16
-	// » Redimensionne le contenu du dialogue en fonction de la taille de la fenêtre
-	// » Affiche la photo (ou l'image) au centre (center) ou au mieux (contain)
-	// » Empèche la vidéo de dépasser la taille de la fenêtre
+	// = révision : 25
+	// » Affiche la photo (ou l'image) au centre (center=default) ou au mieux (contain=bis)
+	// » Positionne les contrôles de la vidéo juste en dessous de celle-ci (attribut style)
 	this.actionResizeMedia = function () {
 
-		var that = apijs.dialog, bis = false;
+		var that = apijs.dialog, media = that.media, bis = false, width = 0, height = 0, top = 0;
 
-		// mode d'affichage de la photo
-		// si la largeur ou la hauteur est supérieur de l'image est supérieur à la taille de l'affichage disponible (=bis)
-		if (that.image !== null) {
-			if ((that.image.width > Math.round(that.tagMedia.offsetWidth)) || (that.image.height > Math.round(that.tagMedia.offsetHeight)))
+		// mode d'affichage de la photo (DIV et non IMG)
+		if (media.nodeName === 'DIV') {
+
+			if ((media.width > media.offsetWidth) || (media.height > media.offsetHeight))
 				bis = true;
+
+			// img.default { background-position:center; } - img.bis { background-size:contain; }
+			media.setAttribute('class', media.getAttribute('class').replace((bis) ? 'default' : 'bis', (bis) ? 'bis' : 'default'));
 		}
-		// mode d'affichage de la vidéo
-		// si la largeur de la vidéo dans l'affichage disponible est supérieur à la largeur de la fenêtre (=bis)
+		// positionnement des contrôles de la vidéo
+		else if (media.nodeName === 'VIDEO') {
+
+			if ((media.videoWidth > 0) && (media.videoHeight > 0) && (media.duration > 0)) {
+
+				if ((media.videoWidth / media.videoHeight) <= (media.offsetWidth / media.offsetHeight)) {
+					width  = media.videoWidth / (media.videoHeight / media.offsetHeight);
+					height = media.offsetHeight;
+				}
+				else {
+					width  = media.offsetWidth;
+					height = media.videoHeight / (media.videoWidth / media.offsetWidth);
+					top = (media.offsetHeight - height) / 2;
+				}
+			}
+			else {
+				width  = media.offsetHeight * 0.9 * 1.33333;
+				height = media.offsetHeight * 0.9;
+				top = (media.offsetHeight - media.offsetHeight * 0.9) / 2;
+			}
+
+			that.tBox.querySelector('div.player').setAttribute('style', 'width:' + parseInt(width, 10) + 'px;');
+			that.tBox.querySelector('div.player div').setAttribute('style', 'margin-top:' + parseInt(top, 10) +
+				'px; height:' + parseInt(height, 10) + 'px; line-height:' + parseInt(height, 10) + 'px;');
+		}
+	};
+
+
+	// #### Plein écran ou document caché ################################# event ## private ### //
+	// = révision : 4
+	// » Met en pause la vidéo lorsque la page n'est plus visible (utilise l'API JavaScript Page Visibility)
+	// » Entre en mode plein écran pour les dialogues photo et vidéo (utilise l'API JavaScript full screen)
+	this.actionHidden = function () {
+
+		var media = apijs.dialog.media;
+
+		if (!document.hidden && !document.mozHidden && !document.msHidden && !document.webkitHidden) {
+			if (!apijs.dialog.paused)
+				media.play();
+		}
 		else {
-			that.tagMedia.setAttribute('class', that.tagMedia.getAttribute('class').replace('bis', 'default'));
-			if (Math.round(that.tagMedia.offsetWidth) > (window.innerWidth - window.innerWidth * 12 / 100))
-				bis = true;
-			that.tagMedia.setAttribute('class', that.tagMedia.getAttribute('class').replace('default', 'bis'));
+			apijs.dialog.paused = media.paused;
+			media.pause();
 		}
-
-		that.tagMedia.setAttribute('class', that.tagMedia.getAttribute('class').replace((bis) ? 'default' : 'bis', (bis) ? 'bis' : 'default'));
 	};
 
+	this.actionFullscreen = function () {
 
-	// #### Mise en pause de la vidéo ##################################### event ## private ### //
-	// = révision : 16
-	// » Met en pause la vidéo lorsque la page n'est plus visible
-	// » Utilise l'API JavaScript PageVisibility
-	this.actionPauseVideo = function () {
+		var elem = apijs.dialog.tDialog;
 
-		var that = apijs.dialog, hidden;
+		if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement) {
 
-		if (typeof document.hidden === 'boolean')
-			hidden = document.hidden;
-		else if (typeof document.mozHidden === 'boolean')
-			hidden = document.mozHidden;
-		else if (typeof document.msHidden === 'boolean')
-			hidden = document.msHidden;
-		else if (typeof document.webkitHidden === 'boolean')
-			hidden = document.webkitHidden;
-
-		if (hidden) {
-			that.paused = that.tagMedia.paused;
-			that.tagMedia.pause();
+			if (elem.requestFullscreen)
+				elem.requestFullscreen();
+			else if (elem.mozRequestFullScreen)
+				elem.mozRequestFullScreen();
+			else if (elem.webkitRequestFullscreen)
+				elem.webkitRequestFullscreen();
 		}
-		else if (!that.paused) {
-			that.tagMedia.play();
+		else {
+			if (document.cancelFullScreen)
+				document.cancelFullScreen();
+			else if (document.mozCancelFullScreen)
+				document.mozCancelFullScreen();
+			else if (document.webkitCancelFullScreen)
+				document.webkitCancelFullScreen();
 		}
 	};
 
 
-	// #### Chargement de la photo ######################################### i18n ## private ### //
-	// = révision : 38
-	// » Définie l'arrière plan de la fausse balise image du dialogue photo
-	// » Prend soin d'attendre le temps que la photo soit intégralement chargée avant de l'afficher
-	// » Ne supprime pas (plus) le lien de téléchargement en cas d'erreur si celui-ci est présent
-	this.loadImage = function (url) {
 
-		this.image = new Image();
-		this.image.src = url;
-
-		// eventListener:load
-		this.image.addEventListener('load', function () {
-			if (this.tagMedia) {
-				this.tagMedia.setAttribute('class', this.tagMedia.getAttribute('class').replace('loading', 'default'));
-				this.tagMedia.setAttribute('style', 'background-image:url("' + this.image.src + '");');
-				this.actionResizeMedia();
-			}
-		}.bind(this), false);
-
-		// eventListener:error
-		this.image.addEventListener('error', function () {
-			if (this.tagMedia) {
-				this.tagMedia.setAttribute('class', this.tagMedia.getAttribute('class').replace(/loading|default/, 'error'));
-				this.tagMedia.firstChild.appendChild(apijs.i18n.nodeTranslate('imageError404'));
-			}
-		}.bind(this), false);
-	};
-
-
-
-
-	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// GESTION DES CONTENEURS
 
 	// #### Prépare le terrain ##################################################### private ### //
-	// = révision : 102
+	// = révision : 103
 	// » Supprime l'ancien dialogue
 	// » Empêche la navigation au clavier avec la touche TAB de quitter la boîte de dialogue
 	// » Met en place les gestionnaires d'événements du dialogue (+keydown, +beforeunload, +DOMMouseScroll, +mousewheel, +touchmove)
@@ -660,7 +711,7 @@ apijs.core.dialog = function () {
 		this.styles.init(type, icon);
 
 		// création du fragment
-		this.fragment = document.createDocumentFragment();
+		this.frag = document.createDocumentFragment();
 
 		// surveillance des touches et du navigateur
 		document.addEventListener('keydown', apijs.dialog.actionKey, false);
@@ -682,32 +733,37 @@ apijs.core.dialog = function () {
 
 
 	// #### Affiche le dialogue #################################################### private ### //
-	// = révision : 50
+	// = révision : 54
 	// » Accroche le fragment DOM au document HTML (sur body ou sur #apijsDialog)
 	// » Diffère le changement de la classe CSS de start vers ready pour permettre les transitions CSS lorsque nécessaire (12 ms)
 	// » Met en place les gestionnaires d'événements du contenu du dialogue (+click, +resize, +visibilitychange)
 	this.showDialog = function () {
 
+		// si un dialogue en cours de transition existe, on le dégage de suite
+		// il serait dommage qu'une boîte de dialogue invisible reste affichée et porte préjudice
+		if (document.getElementById('apijsDialog') && (document.getElementById('apijsDialog').getAttribute('class') === 'end'))
+			document.body.removeChild(document.getElementById('apijsDialog'));
+
 		// sans transitions CSS ou avec transitions CSS
 		if (document.getElementById('apijsDialog') || this.styles.has('notransition')) {
 
-			this.tagDialog.setAttribute('class', this.tagDialog.getAttribute('class').replace('start', 'ready'));
-			this.tagBox.setAttribute('class', this.tagBox.getAttribute('class').replace('start', 'ready'));
+			this.tDialog.setAttribute('class', this.tDialog.getAttribute('class').replace('start', 'ready'));
+			this.tBox.setAttribute('class', this.tBox.getAttribute('class').replace('start', 'ready'));
 
 			if (document.getElementById('apijsDialog')) {
-				document.getElementById('apijsDialog').appendChild(this.tagBox);
-				this.tagDialog = document.getElementById('apijsDialog'); // important
+				document.getElementById('apijsDialog').appendChild(this.tBox);
+				this.tDialog = document.getElementById('apijsDialog'); // important
 			}
 			else {
-				document.body.appendChild(this.fragment);
+				document.body.appendChild(this.frag);
 			}
 		}
 		else {
-			document.body.appendChild(this.fragment);
+			document.body.appendChild(this.frag);
 
 			window.setTimeout(function () {
-				this.tagDialog.setAttribute('class', this.tagDialog.getAttribute('class').replace('start', 'ready'));
-				this.tagBox.setAttribute('class', this.tagBox.getAttribute('class').replace('start', 'ready'));
+				this.tDialog.setAttribute('class', this.tDialog.getAttribute('class').replace('start', 'ready'));
+				this.tBox.setAttribute('class', this.tBox.getAttribute('class').replace('start', 'ready'));
 			}.bind(this), 12);
 		}
 
@@ -715,7 +771,7 @@ apijs.core.dialog = function () {
 		if (apijs.config.dialog.closeOnClick && !this.styles.has('waiting', 'progress', 'lock'))
 			document.addEventListener('click', apijs.dialog.actionClose, false);
 
-		// adapatation de la taille du média
+		// adaptation de la taille du média
 		if (this.styles.has('photo', 'video'))
 			window.addEventListener('resize', apijs.dialog.actionResizeMedia, false);
 
@@ -723,23 +779,23 @@ apijs.core.dialog = function () {
 		if (this.styles.has('video')) {
 
 			if (typeof document.hidden === 'boolean')
-				document.addEventListener('visibilitychange', apijs.dialog.actionPauseVideo, false);
+				document.addEventListener('visibilitychange', apijs.dialog.actionHidden, false);
 			else if (typeof document.mozHidden === 'boolean')
-				document.addEventListener('mozvisibilitychange', apijs.dialog.actionPauseVideo, false);
+				document.addEventListener('mozvisibilitychange', apijs.dialog.actionHidden, false);
 			else if (typeof document.msHidden === 'boolean')
-				document.addEventListener('msvisibilitychange', apijs.dialog.actionPauseVideo, false);
+				document.addEventListener('msvisibilitychange', apijs.dialog.actionHidden, false);
 			else if (typeof document.webkitHidden === 'boolean')
-				document.addEventListener('webkitvisibilitychange', apijs.dialog.actionPauseVideo, false);
+				document.addEventListener('webkitvisibilitychange', apijs.dialog.actionHidden, false);
 		}
 	};
 
 
 	// #### Supprime le dialogue ################################################### private ### //
-	// = révision : 155
-	// » Supprime la boîte de dialogue (totalement ou pas)
+	// = révision : 171
+	// » Supprime la boîte de dialogue totalement ou pas
 	// » Annule les gestionnaires d'événements du dialogue (-keydown, -beforeunload, -DOMMouseScroll, -mousewheel, -touchmove)
 	// » Annule les gestionnaires d'événements du contenu du dialogue (-click, -resize, -visibilitychange)
-	// » Utilise l'évnement qui détecte la fin des transitions (+transitionend ou +webkitTransitionEnd)
+	// » Utilise l'évnement qui détecte la fin des transitions (+webkitTransitionEnd ou +transitionend)
 	// » Réinitialise les variables
 	this.deleteDialog = function (all) {
 
@@ -767,18 +823,19 @@ apijs.core.dialog = function () {
 		if (apijs.config.dialog.closeOnClick)
 			document.removeEventListener('click', apijs.dialog.actionClose, false);
 
-		// adapatation de la taille du média (depuis showDialog)
+		// adaptation de la taille du média (depuis showDialog)
 		if (this.styles.has('photo', 'video'))
 			window.removeEventListener('resize', apijs.dialog.actionResizeMedia, false);
 
 		// mise en pause de la vidéo (depuis showDialog)
 		if (this.styles.has('video')) {
 
-			if (typeof this.tagMedia.pause === 'function') {
+			if (typeof this.media.pause === 'function') {
 
-				this.tagMedia.pause();
+				this.media.onpause = null;
+				this.media.pause();
 
-				// pour au moins Chrome/Chromium 30 et Opera 17, pour la raison suivante : la vidéo plante au deuxième chargement sans lecture
+				// la vidéo plante au deuxième chargement sans lecture avec au moins Chrome/Chromium 30-33 et Opera 17
 				// 1) l'utilisateur est là, il clic sur une vidéo
 				// 2) le programme crée le dialogue et l'affiche
 				// 3) la première image de la vidéo s'affiche tout de suite
@@ -787,36 +844,37 @@ apijs.core.dialog = function () {
 				// 6) l'utilisateur est là, il reclic sur la même vidéo
 				// 7) le programme crée le dialogue et l'affiche
 				// 8) la première image de la vidéo ne s'affiche pas
-				this.tagMedia.setAttribute('src', '');
+				if (navigator.userAgent.indexOf('WebKit/') > 0)
+					this.media.setAttribute('src', '');
 			}
 
 			if (typeof document.hidden === 'boolean')
-				document.removeEventListener('visibilitychange', apijs.dialog.actionPauseVideo, false);
+				document.removeEventListener('visibilitychange', apijs.dialog.actionHidden, false);
 			else if (typeof document.mozHidden === 'boolean')
-				document.removeEventListener('mozvisibilitychange', apijs.dialog.actionPauseVideo, false);
+				document.removeEventListener('mozvisibilitychange', apijs.dialog.actionHidden, false);
 			else if (typeof document.msHidden === 'boolean')
-				document.removeEventListener('msvisibilitychange', apijs.dialog.actionPauseVideo, false);
+				document.removeEventListener('msvisibilitychange', apijs.dialog.actionHidden, false);
 			else if (typeof document.webkitHidden === 'boolean')
-				document.removeEventListener('webkitvisibilitychange', apijs.dialog.actionPauseVideo, false);
+				document.removeEventListener('webkitvisibilitychange', apijs.dialog.actionHidden, false);
 		}
 
 		// supprime le dialogue
-		this.tagDialog = document.getElementById('apijsDialog');
-		this.tagBox = document.getElementById('apijsBox');
+		this.tDialog = document.getElementById('apijsDialog');
+		this.tBox = document.getElementById('apijsBox');
 
 		if (all) {
 			// avec ou sans transitions CSS
 			// ici on s'assure que les transitions fonctionnent (style CSS, valeur calculée)
 			// il serait dommage qu'une boîte de dialogue invisible reste affichée et porte préjudice
-			var styles = window.getComputedStyle(this.tagBox, null),
-			    event = (typeof this.tagBox.style.webkitTransition === 'string') ? 'webkitTransitionEnd' : 'transitionend';
+			var styles = window.getComputedStyle(this.tBox, null),
+			    event = (typeof this.tBox.style.webkitTransition === 'string') ? 'webkitTransitionEnd' : 'transitionend';
 
-			if (!this.styles.has('notransition') && (styles.transitionDuration !== '0s') && (styles.transitionDuration !== undefined)) {
+			if (!this.styles.has('notransition') && (styles.transitionDuration !== '0s') && (typeof styles.transitionDuration === 'string')) {
 
-				this.tagDialog.setAttribute('class', this.tagDialog.getAttribute('class').replace('ready', 'end'));
-				this.tagBox.setAttribute('class', this.tagBox.getAttribute('class').replace('ready', 'end'));
+				this.tDialog.setAttribute('class', this.tDialog.getAttribute('class').replace('ready', 'end'));
+				this.tBox.setAttribute('class', this.tBox.getAttribute('class').replace('ready', 'end'));
 
-				this.tagDialog.addEventListener(event, function () {
+				this.tDialog.addEventListener(event, function () {
 					if (document.getElementById('apijsDialog'))
 						document.body.removeChild(document.getElementById('apijsDialog'));
 				}, false);
@@ -825,113 +883,103 @@ apijs.core.dialog = function () {
 				document.body.removeChild(document.getElementById('apijsDialog'));
 			}
 		}
-		else if (this.tagBox) {
-			this.tagBox.parentNode.removeChild(this.tagBox);
+		else if (this.tBox) {
+			this.tBox.parentNode.removeChild(this.tBox);
 		}
 
 		// réinitialise les variables
-		// toutes ou presque
+		// toutes ou presque SAUF timer
 		this.styles = null;
-		this.paused = null;
-		this.image = null;
+		this.media  = null;
+		this.player = null;
+		this.paused = true;
 
-		this.timer = null;
 		if (all) {
+			this.scrollTime = 0;
 			this.callback = null;
 			this.args = null;
 		}
 
-		this.fragment = null;
-		this.elemA = null;
-		this.elemB = null;
-		this.elemC = null;
-		this.elemD = null;
+		this.frag = null;
+		this.a = null;
+		this.b = null;
+		this.c = null;
+		this.d = null;
+		this.e = null;
 
-		this.tagDialog = null;
-		this.tagMedia = null;
-		this.tagTitle = null;
-		this.tagBox = null;
+		this.tDialog = null; // div id=apijsDialog
+		this.tBox = null;    // div/form id=apijsBox
+		this.tTitle = null;  // h1
 	};
 
 
 
-
-	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// DÉFINITION DU CONTENU DES BOÎTES DE DIALOGUE
+	// CONTENU DES BOÎTES DE DIALOGUE
 
 	// #### Éléments parents ####################################################### private ### //
-	// = révision : 100
+	// = révision : 109
 	// » Crée le conteneur parent et le conteneur du contenu du dialogue
-	// » Le paramètre icon n'est disponible/utilisé que {par l'intermédiaire de} et {que pour} TheSlideshow
-	// # <div class="start [{icon}]" id="apijsDialog">
+	// » Met en place le titre du dialogue
+	// # <div class="start [{data}]" id="apijsDialog">
 	// #  [<div class="start {this.styles}" id="apijsBox"></div>]
-	// #  [<form action="{action}" method="post" enctype="multipart/form-data"
-	// #    onsubmit="return..actionConfirm();" class="start {this.styles}" id="apijsBox"></form>]
+	// #  [<form action="{data}" method="post" enctype="multipart/form-data"
+	// #    onsubmit="return apijs.dialog.actionConfirm();" class="start {this.styles}" id="apijsBox"></form>]
 	// # </div>
-	this.htmlParent = function (icon, action) {
+	this.htmlParent = function (data) {
 
-		// Élément div (apijsDialog)
-		this.tagDialog = document.createElement('div');
-		this.tagDialog.setAttribute('class', (typeof icon === 'string') ? 'start ' + icon : 'start');
-		this.tagDialog.setAttribute('id', 'apijsDialog');
+		this.tDialog = document.createElement('div');
+		this.tDialog.setAttribute('class', (this.styles.has('slideshow')) ? 'start ' + data : 'start');
+		this.tDialog.setAttribute('id', 'apijsDialog');
 
-			// Élément div ou form (apijsBox)
-			if (typeof action !== 'string') {
-				this.tagBox = document.createElement('div');
+			if (!this.styles.has('options', 'upload')) {
+				this.tBox = document.createElement('div');
 			}
 			else {
-				this.tagBox = document.createElement('form');
-				this.tagBox.setAttribute('action', action);
-				this.tagBox.setAttribute('method', 'post');
-				this.tagBox.setAttribute('enctype', 'multipart/form-data');
-				this.tagBox.setAttribute('onsubmit', 'return apijs.dialog.actionConfirm();');
+				this.tBox = document.createElement('form');
+				this.tBox.setAttribute('action', data);
+				this.tBox.setAttribute('method', 'post');
+				this.tBox.setAttribute('enctype', 'multipart/form-data');
+				this.tBox.setAttribute('onsubmit', 'return apijs.dialog.actionConfirm();');
 			}
 
-			this.tagBox.setAttribute('class', 'start ' + this.styles.toString()); // .toString() pour IE
-			this.tagBox.setAttribute('id', 'apijsBox');
+			this.tBox.setAttribute('class', 'start ' + this.styles.toString()); // .toString() pour IE
+			this.tBox.setAttribute('id', 'apijsBox');
 
-		this.tagDialog.appendChild(this.tagBox);
-
-		// sauvegarde des éléments
-		this.fragment.appendChild(this.tagDialog);
-	};
-
-
-	// #### Titre ################################################################## private ### //
-	// = révision : 55
-	// » Met en place le titre du dialogue
-	// # <h1>{title}</h1>
-	this.htmlTitle = function (title) {
-
-		this.tagTitle = document.createElement('h1');
-		this.tagTitle.appendChild(document.createTextNode(title));
-
-		this.tagBox.appendChild(this.tagTitle);
+		this.tDialog.appendChild(this.tBox);
+		this.frag.appendChild(this.tDialog);
 	};
 
 
 	// #### Texte ################################################################## private ### //
-	// = révision : 89
-	// » Met en place le paragraphe du dialogue
+	// = révision : 98
+	// » Met en place le titre et le paragraphe du dialogue
 	// » Prend en charge le bbcode via innerHTML ainsi que les émoticônes
 	// » Ouvre les liens ayant la classe CSS popup dans un nouvel onglet
-	// # <div class="bbcode [config.dialog.emotes/allowEmotes]">
-	// #  [<p>]{data}[</p>]
-	// # </div>
-	this.htmlContent = function (data, allowEmotes) {
+	// # [<h1>{title}</h1>]
+	// #  <div class="bbcode">
+	// #   [<p>]{data}[</p>]
+	// #  </div>
+	this.htmlContent = function (title, data) {
 
-		allowEmotes = (typeof allowEmotes === 'boolean') ? allowEmotes : true;
+		// titre
+		if (title.length > 0) {
 
-		this.elemA = document.createElement('div');
-		this.elemA.setAttribute('class', (apijs.config.dialog.emotes) ? 'bbcode emotes' : 'bbcode');
+			this.tTitle = document.createElement('h1');
+			this.tTitle.appendChild(document.createTextNode(title));
 
-		// ajout d'un éventuel paragraphe
+			this.tBox.appendChild(this.tTitle);
+		}
+
+		// contenu
+		this.a = document.createElement('div');
+		this.a.setAttribute('class', 'bbcode');
+
 		if (data[0] !== '[')
 			data = '[p]' + data + '[/p]';
 
 		// http://icomoon.io/app/
-		// avec le fichier de session ../fonts/icomoon.json
-		if (apijs.config.dialog.emotes && allowEmotes) {
+		// avec le fichier de session fonts/icomoon.json
+		if (apijs.config.dialog.emotes) {
 
 			data = data.replace(/ (\(L\))/g,  '`$1`00¤')
 				.replace(/ (\(u\))/ig, '`$1`01¤')
@@ -956,171 +1004,155 @@ apijs.core.dialog = function () {
 				.replace(/`(.{2,4})`([0-9a-f]{2})¤/g, ' [span title="$1" class="ico"]&#xe6$2;[/span]');
 		}
 
-		// interprétation du texte... enfin des données
-		this.elemA.innerHTML = data.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\[/g, '<').replace(/\]/g, '>');
+		this.a.innerHTML = data.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\[/g, '<').replace(/\]/g, '>');
 
-		// ouverture des liens dans un nouvel onglet
-		var link, links = this.elemA.querySelectorAll('a.popup');
+		// liens dans un nouvel onglet
+		var link, links = this.a.querySelectorAll('a.popup');
 		for (link = 0; link < links.length; link++)
 			links[link].addEventListener('click', apijs.openTab, false);
 
-		// sauvegarde des éléments
-		this.tagBox.appendChild(this.elemA);
+		this.tBox.appendChild(this.a);
 	};
 
 
 	// #### Bouton Ok ###################################################### i18n ## private ### //
-	// = révision : 71
+	// = révision : 75
 	// » Met en place le bouton Ok du dialogue d'information
 	// » Auto-focus différé sur le bouton Ok
 	// # <div class="control">
-	// #  <button type="button" onclick="apijs.dialog.actionClose();" class="confirm">{i18n.buttonOk}</button>
+	// #  <button type="button" onclick="...actionClose();" class="confirm">{i18n.buttonOk}</button>
 	// # </div>
 	this.htmlButtonOk = function () {
 
-		// Élément div
-		this.elemA = document.createElement('div');
-		this.elemA.setAttribute('class', 'control');
+		this.a = document.createElement('div');
+		this.a.setAttribute('class', 'control');
 
-			// Élément button (Ok)
-			this.elemB = document.createElement('button');
-			this.elemB.setAttribute('type', 'button');
-			this.elemB.setAttribute('onclick', 'apijs.dialog.actionClose();');
-			this.elemB.setAttribute('class', 'confirm');
-			this.elemB.appendChild(apijs.i18n.nodeTranslate('buttonOk'));
+			this.b = document.createElement('button');
+			this.b.setAttribute('type', 'button');
+			this.b.setAttribute('onclick', 'apijs.dialog.actionClose();');
+			this.b.setAttribute('class', 'confirm');
+			this.b.appendChild(apijs.i18n.nodeTranslate('buttonOk'));
 
-		this.elemA.appendChild(this.elemB);
-
-		// sauvegarde des éléments
-		this.tagBox.appendChild(this.elemA);
+		this.a.appendChild(this.b);
+		this.tBox.appendChild(this.a);
 	};
 
 
 	// #### Boutons Annuler/Valider ######################################## i18n ## private ### //
-	// = révision : 91
+	// = révision : 95
 	// » Met en place les boutons Annuler et Valider des dialogues de confirmation, d'options et d'upload
 	// » Auto-focus différé sur le bouton Valider du dialogue de confirmation et sur le champ fichier du dialogue d'upload
 	// # <div class="control">
-	// #  <button type="{type}" class="confirm" [onclick="apijs.dialog.actionConfirm();"]>{i18n.buttonConfirm}</button>
-	// #  <button type="button" class="cancel" onclick="apijs.dialog.actionClose();">{i18n.buttonCancel}</button>
+	// #  <button type="{type}" class="confirm" [onclick="...actionConfirm();"]>{i18n.buttonConfirm}</button>
+	// #  <button type="button" class="cancel" onclick="...actionClose();">{i18n.buttonCancel}</button>
 	// # </div>
 	this.htmlButtonConfirm = function (type) {
 
-		// Élément div
-		this.elemA = document.createElement('div');
-		this.elemA.setAttribute('class', 'control');
+		this.a = document.createElement('div');
+		this.a.setAttribute('class', 'control');
 
-			// Élément button (Valider)
-			this.elemB = document.createElement('button');
-			this.elemB.setAttribute('type', type);
-			this.elemB.setAttribute('class', 'confirm');
+			this.b = document.createElement('button');
+			this.b.setAttribute('type', type);
+			this.b.setAttribute('class', 'confirm');
 
 			if (type !== 'submit')
-				this.elemB.setAttribute('onclick', 'apijs.dialog.actionConfirm();');
+				this.b.setAttribute('onclick', 'apijs.dialog.actionConfirm();');
 
-			this.elemB.appendChild(apijs.i18n.nodeTranslate('buttonConfirm'));
+			this.b.appendChild(apijs.i18n.nodeTranslate('buttonConfirm'));
 
-		this.elemA.appendChild(this.elemB);
+		this.a.appendChild(this.b);
 
-			// Élément button (Annuler)
-			this.elemB = document.createElement('button');
-			this.elemB.setAttribute('type', 'button');
-			this.elemB.setAttribute('class', 'cancel');
-			this.elemB.setAttribute('onclick', 'apijs.dialog.actionClose();');
-			this.elemB.appendChild(apijs.i18n.nodeTranslate('buttonCancel'));
+			this.b = document.createElement('button');
+			this.b.setAttribute('type', 'button');
+			this.b.setAttribute('class', 'cancel');
+			this.b.setAttribute('onclick', 'apijs.dialog.actionClose();');
+			this.b.appendChild(apijs.i18n.nodeTranslate('buttonCancel'));
 
-		this.elemA.appendChild(this.elemB);
-
-		// sauvegarde des éléments
-		this.tagBox.appendChild(this.elemA);
+		this.a.appendChild(this.b);
+		this.tBox.appendChild(this.a);
 	};
 
 
 	// #### Boutons Précédent/Suivant ###################################### i18n ## private ### //
-	// = révision : 48
+	// = révision : 55
 	// » Met en place les boutons Précédent et Suivant des dialogues photo et vidéo
 	// » À savoir un bouton à gauche et un bouton à droite de la boîte de dialogue
 	// » Boutons au format image ou texte en fonction de la configuration
 	// # <div class="navigation [txt|img]">
-	// #  <button type="button" disabled="disabled" onclick="apijs.slideshow.actionPrev();" class="prev" id="apijsPrev">
+	// #  <button type="button" disabled="disabled" onclick="...actionPrev();" class="prev" id="apijsPrev">
 	// #   [<img src="{config.dialog.imagePrev.src}" width="{config.dialog.imagePrev.width}" height="{config.dialog.imagePrev.height}"
-	// #    alt="{i18n.buttonPrev}" />][<span>{i18n.buttonPrev}</span>]
+	// #    alt="{i18n.buttonPrev}" />]
+	// #   [<span>{i18n.buttonPrev}</span>]
 	// #  </button>
-	// #  <button type="button" disabled="disabled" onclick="apijs.slideshow.actionNext();" class="next" id="apijsNext">
+	// #  <button type="button" disabled="disabled" onclick="...actionNext();" class="next" id="apijsNext">
 	// #   [<img src="{config.dialog.imageNext.src}" width="{config.dialog.imageNext.width}" height="{config.dialog.imageNext.height}"
-	// #    alt="{i18n.buttonNext}" />][<span>{i18n.buttonNext}</span>]
+	// #    alt="{i18n.buttonNext}" />]
+	// #   [<span>{i18n.buttonNext}</span>]
 	// #  </button>
 	// # </div>
 	this.htmlButtonNavigation = function () {
 
 		var txt = ((apijs.config.dialog.imagePrev === null) || (apijs.config.dialog.imageNext === null));
 
-		// Élément div
-		this.elemA = document.createElement('div');
-		this.elemA.setAttribute('class', (txt) ? 'navigation txt' : 'navigation img');
+		this.a = document.createElement('div');
+		this.a.setAttribute('class', (txt) ? 'navigation txt' : 'navigation img');
 
-			// Élément button (Précédent)
-			this.elemB = document.createElement('button');
-			this.elemB.setAttribute('type', 'button');
-			this.elemB.setAttribute('disabled', 'disabled');
-			this.elemB.setAttribute('onclick', 'apijs.slideshow.actionPrev();');
-			this.elemB.setAttribute('class', 'prev');
-			this.elemB.setAttribute('id', 'apijsPrev');
+			this.b = document.createElement('button');
+			this.b.setAttribute('type', 'button');
+			this.b.setAttribute('disabled', 'disabled');
+			this.b.setAttribute('onclick', 'apijs.slideshow.actionPrev();');
+			this.b.setAttribute('class', 'prev');
+			this.b.setAttribute('id', 'apijsPrev');
 
-			// Élément span ou Élément img
 			if (txt) {
-				this.elemC = document.createElement('span');
-				this.elemC.appendChild(apijs.i18n.nodeTranslate('buttonPrev'));
+				this.c = document.createElement('span');
+				this.c.appendChild(apijs.i18n.nodeTranslate('buttonPrev'));
 			}
 			else {
-				this.elemC = document.createElement('img');
-				this.elemC.setAttribute('src', apijs.config.dialog.imagePrev.src);
-				this.elemC.setAttribute('width', apijs.config.dialog.imagePrev.width);
-				this.elemC.setAttribute('height', apijs.config.dialog.imagePrev.height);
-				this.elemC.setAttribute('alt', apijs.i18n.translate('buttonPrev'));
+				this.c = document.createElement('img');
+				this.c.setAttribute('src', apijs.config.dialog.imagePrev.src);
+				this.c.setAttribute('width', apijs.config.dialog.imagePrev.width);
+				this.c.setAttribute('height', apijs.config.dialog.imagePrev.height);
+				this.c.setAttribute('alt', apijs.i18n.translate('buttonPrev'));
 			}
 
-			this.elemB.appendChild(this.elemC);
+			this.b.appendChild(this.c);
 
-		this.elemA.appendChild(this.elemB);
+		this.a.appendChild(this.b);
 
-			// Élément button (Suivant)
-			this.elemB = document.createElement('button');
-			this.elemB.setAttribute('type', 'button');
-			this.elemB.setAttribute('disabled', 'disabled');
-			this.elemB.setAttribute('onclick', 'apijs.slideshow.actionNext();');
-			this.elemB.setAttribute('class', 'next');
-			this.elemB.setAttribute('id', 'apijsNext');
+			this.b = document.createElement('button');
+			this.b.setAttribute('type', 'button');
+			this.b.setAttribute('disabled', 'disabled');
+			this.b.setAttribute('onclick', 'apijs.slideshow.actionNext();');
+			this.b.setAttribute('class', 'next');
+			this.b.setAttribute('id', 'apijsNext');
 
-			// Élément span ou Élément img
 			if (txt) {
-				this.elemC = document.createElement('span');
-				this.elemC.appendChild(apijs.i18n.nodeTranslate('buttonNext'));
+				this.c = document.createElement('span');
+				this.c.appendChild(apijs.i18n.nodeTranslate('buttonNext'));
 			}
 			else {
-				this.elemC = document.createElement('img');
-				this.elemC.setAttribute('src', apijs.config.dialog.imageNext.src);
-				this.elemC.setAttribute('width', apijs.config.dialog.imageNext.width);
-				this.elemC.setAttribute('height', apijs.config.dialog.imageNext.height);
-				this.elemC.setAttribute('alt', apijs.i18n.translate('buttonNext'));
+				this.c = document.createElement('img');
+				this.c.setAttribute('src', apijs.config.dialog.imageNext.src);
+				this.c.setAttribute('width', apijs.config.dialog.imageNext.width);
+				this.c.setAttribute('height', apijs.config.dialog.imageNext.height);
+				this.c.setAttribute('alt', apijs.i18n.translate('buttonNext'));
 			}
 
-			this.elemB.appendChild(this.elemC);
+			this.b.appendChild(this.c);
 
-		this.elemA.appendChild(this.elemB);
-
-		// sauvegarde des éléments
-		this.tagBox.appendChild(this.elemA);
+		this.a.appendChild(this.b);
+		this.tBox.appendChild(this.a);
 	};
 
 
 	// #### Bouton Fermer ################################################## i18n ## private ### //
-	// = révision : 99
+	// = révision : 103
 	// » Met en place le bouton Fermer des dialogues photo et vidéo
 	// » À savoir un bouton dans le coin en haut à droite de la boîte de dialogue
 	// » Bouton au format image ou texte en fonction de la configuration
 	// # <div class="close [txt|img]">
-	// #  <button type="button" onclick="apijs.dialog.actionClose();" class="close">
+	// #  <button type="button" onclick="...actionClose();" class="close">
 	// #   [<img src="{config.dialog.imageClose.src}" width="{config.dialog.imageClose.width}" height="{config.dialog.imageClose.height}"
 	// #    alt="{i18n.buttonClose}" />][{i18n.buttonClose}]
 	// #  </button>
@@ -1129,38 +1161,33 @@ apijs.core.dialog = function () {
 
 		var txt = (apijs.config.dialog.imageClose === null);
 
-		// Élément div
-		this.elemA = document.createElement('div');
-		this.elemA.setAttribute('class', (txt) ? 'close txt' : 'close img');
+		this.a = document.createElement('div');
+		this.a.setAttribute('class', (txt) ? 'close txt' : 'close img');
 
-			// Élément button (Fermer)
-			this.elemB = document.createElement('button');
-			this.elemB.setAttribute('type', 'button');
-			this.elemB.setAttribute('onclick', 'apijs.dialog.actionClose();');
-			this.elemB.setAttribute('class', 'close');
+			this.b = document.createElement('button');
+			this.b.setAttribute('type', 'button');
+			this.b.setAttribute('onclick', 'apijs.dialog.actionClose();');
+			this.b.setAttribute('class', 'close');
 
-			// Nœud texte ou Élément img
 			if (txt) {
-				this.elemB.appendChild(apijs.i18n.nodeTranslate('buttonClose'));
+				this.b.appendChild(apijs.i18n.nodeTranslate('buttonClose'));
 			}
 			else {
-				this.elemC = document.createElement('img');
-				this.elemC.setAttribute('src', apijs.config.dialog.imageClose.src);
-				this.elemC.setAttribute('width', apijs.config.dialog.imageClose.width);
-				this.elemC.setAttribute('height', apijs.config.dialog.imageClose.height);
-				this.elemC.setAttribute('alt', apijs.i18n.translate('buttonClose'));
-				this.elemB.appendChild(this.elemC);
+				this.c = document.createElement('img');
+				this.c.setAttribute('src', apijs.config.dialog.imageClose.src);
+				this.c.setAttribute('width', apijs.config.dialog.imageClose.width);
+				this.c.setAttribute('height', apijs.config.dialog.imageClose.height);
+				this.c.setAttribute('alt', apijs.i18n.translate('buttonClose'));
+				this.b.appendChild(this.c);
 			}
 
-		this.elemA.appendChild(this.elemB);
-
-		// sauvegarde des éléments
-		this.tagBox.appendChild(this.elemA);
+		this.a.appendChild(this.b);
+		this.tBox.appendChild(this.a);
 	};
 
 
 	// #### Lien différé ######################################## timeout ## i18n ## private ### //
-	// = révision : 81
+	// = révision : 85
 	// » Appel différé dans le temps comme son nom ne le suggère pas
 	// » Met en place le lien différé des dialogues de confirmation, d'options et d'attente
 	// # <p class="reload">{i18n.operationTooLong} <a href="{location.href}">{i18n.reloadLink}</a>.
@@ -1169,150 +1196,129 @@ apijs.core.dialog = function () {
 
 		var that = apijs.dialog;
 
-		// Élément p
-		that.elemA = document.createElement('p');
-		that.elemA.setAttribute('class', 'reload');
-		that.elemA.appendChild(apijs.i18n.nodeTranslate('operationTooLong'));
+		that.a = document.createElement('p');
+		that.a.setAttribute('class', 'reload');
+		that.a.appendChild(apijs.i18n.nodeTranslate('operationTooLong'));
 
-			// Élément a (lien recharger)
-			that.elemB = document.createElement('a');
-			that.elemB.setAttribute('href', 'javascript:location.reload();');
-			that.elemB.appendChild(apijs.i18n.nodeTranslate('reloadLink'));
+			that.b = document.createElement('a');
+			that.b.setAttribute('href', 'javascript:location.reload();');
+			that.b.appendChild(apijs.i18n.nodeTranslate('reloadLink'));
 
-		that.elemA.appendChild(that.elemB);
-		that.elemA.appendChild(document.createTextNode('.'));
+		that.a.appendChild(that.b);
+		that.a.appendChild(document.createTextNode('.'));
 
-			// Élément br
-			that.elemB = document.createElement('br');
+			that.b = document.createElement('br');
 
-		that.elemA.appendChild(that.elemB);
-		that.elemA.appendChild(apijs.i18n.nodeTranslate('warningLostChange'));
+		that.a.appendChild(that.b);
+		that.a.appendChild(apijs.i18n.nodeTranslate('warningLostChange'));
 
-		// mise à jour du document
-		that.tagBox.appendChild(that.elemA);
+		that.tBox.appendChild(that.a);
 	};
 
 
 	// #### Formulaire d'envoi de fichier ################################## i18n ## private ### //
-	// = révision : 170
+	// = révision : 174
 	// » Met en place le contenu du formulaire du dialogue d'upload
-	// » Bascule automatiquement le focus entre le champ fichier et le bouton Valider
-	// ! [Firefox 4/10] Le champ fichier n'est pas en 'display:none' mais en 'width:0; visibility:hidden;' car sinon il ne fonctionne pas
-	// ! [IE 9/10] Le input.click() ne fonctionne pas d'où le label à la place du bouton [non documenté / touche entrée sans effet sur le label]
-	// ! [IE 9] Le this.files ne fonctionne pas d'où le this.value
-	// # <div class="control online">
+	// » Bascule automatiquement le focus entre le bouton/label fichier et le bouton Valider
+	// » [Firefox 4/10] Le champ fichier n'est pas en 'display:none' mais en 'width:0; visibility:hidden;' car sinon il ne fonctionne pas
+	// » [IE 9/10] Le input.click() ne fonctionne pas d'où le label à la place du bouton [touche entrée sans effet sur le label]
+	// » [IE 9] Le this.files ne fonctionne pas d'où le this.value
+	// # <div class="control upload">
 	// #  [<input type="hidden" name="{config.upload.tokenName}" value="{config.upload.tokenValue}" />]
-	// #  <input type="file" name="{inputname}" id="apijsFile" onchange="apijs..button..focus(); apijs..span..=..;" [style="..."] />
-	// #  <button type="button" class="browse" onclick="apijs..input..click();" [style="..."]>{i18n.buttonBrowse}</button>
-	// #  <span class="filename"></span>
-	// #  <div class="status"></div>
+	// #   <input type="file" name="{inputname}" id="apijsFile" onchange="..." />
+	// #  [<label for="apijsFile" tabindex="1" class="browse">{i18n.buttonBrowse}</label>]
+	// #  [<button type="button" onclick="..." class="browse">{i18n.buttonBrowse}</button>]
+	// #   <span class="filename"></span>
+	// #   <div class="status"></div>
 	// # </div>
 	this.htmlFormUpload = function (inputname) {
 
-		// Élément div
-		this.elemA = document.createElement('div');
-		this.elemA.setAttribute('class', 'control online');
+		this.a = document.createElement('div');
+		this.a.setAttribute('class', 'control upload');
 
-			// Élément input (token)
 			if (typeof apijs.config.upload.tokenValue === 'string') {
 
-				this.elemB = document.createElement('input');
-				this.elemB.setAttribute('type', 'hidden');
-				this.elemB.setAttribute('name', apijs.config.upload.tokenName);
-				this.elemB.setAttribute('value', apijs.config.upload.tokenValue);
+				this.b = document.createElement('input');
+				this.b.setAttribute('type', 'hidden');
+				this.b.setAttribute('name', apijs.config.upload.tokenName);
+				this.b.setAttribute('value', apijs.config.upload.tokenValue);
 
-				this.elemA.appendChild(this.elemB);
+				this.a.appendChild(this.b);
 			}
 
-			// Élément input (fichier)
-			this.elemB = document.createElement('input');
-			this.elemB.setAttribute('type', 'file');
-			this.elemB.setAttribute('name', inputname);
-			this.elemB.setAttribute('id', 'apijsFile');
-			this.elemB.setAttribute('onchange', "apijs.dialog.tagBox.querySelector('button.confirm').focus(); apijs.dialog.tagBox.querySelector('span').innerHTML = (this.files) ? this.files[0].name : this.value.slice(12);");
+			this.b = document.createElement('input');
+			this.b.setAttribute('type', 'file');
+			this.b.setAttribute('name', inputname);
+			this.b.setAttribute('id', 'apijsFile');
+			this.b.setAttribute('onchange', "apijs.dialog.tBox.querySelector('button.confirm').focus(); apijs.dialog.tBox.querySelector('span').innerHTML = (this.files) ? this.files[0].name : this.value.slice(12);");
 
-		this.elemA.appendChild(this.elemB);
+		this.a.appendChild(this.b);
 
 			// Élément label (parcourir) pour IE 9/10 ou Élément button (parcourir)
+			// un bouton sur IE9/10 = access denied
 			if (navigator.userAgent.indexOf('MSIE') > 0) {
-				this.elemB = document.createElement('label');
-				this.elemB.setAttribute('for', 'apijsFile');
-				this.elemB.setAttribute('tabindex', '1');     // pour autoriser le focus
+				this.b = document.createElement('label');
+				this.b.setAttribute('for', 'apijsFile');
+				this.b.setAttribute('tabindex', '1');
 			}
 			else {
-				this.elemB = document.createElement('button');
-				this.elemB.setAttribute('type', 'button');
-				this.elemB.setAttribute('onclick', "document.getElementById('apijsFile').click();");
+				this.b = document.createElement('button');
+				this.b.setAttribute('type', 'button');
+				this.b.setAttribute('onclick', "document.getElementById('apijsFile').click();");
 			}
-			this.elemB.setAttribute('class', 'browse');
-			this.elemB.appendChild(apijs.i18n.nodeTranslate('buttonBrowse'));
+			this.b.setAttribute('class', 'browse');
+			this.b.appendChild(apijs.i18n.nodeTranslate('buttonBrowse'));
 
-		this.elemA.appendChild(this.elemB);
+		this.a.appendChild(this.b);
 
-			// Élément span (nom du fichier)
-			this.elemB = document.createElement('span');
-			this.elemB.setAttribute('class', 'filename');
+			this.b = document.createElement('span');
+			this.b.setAttribute('class', 'filename');
 
-		this.elemA.appendChild(this.elemB);
+		this.a.appendChild(this.b);
 
-			// Élément div
-			this.elemB = document.createElement('div');
-			this.elemB.setAttribute('class', 'status');
-			this.elemB.appendChild(document.createTextNode(''));
+			this.b = document.createElement('div');
+			this.b.setAttribute('class', 'status');
+			this.b.appendChild(document.createTextNode(''));
 
-		this.elemA.appendChild(this.elemB);
-
-		// sauvegarde des éléments
-		this.tagBox.appendChild(this.elemA);
+		this.a.appendChild(this.b);
+		this.tBox.appendChild(this.a);
 	};
 
 
 	// #### Barre de progression ################################################### private ### //
-	// = révision : 65
+	// = révision : 73
 	// » Met en place le graphique SVG du dialogue de progression
-	// » Rien ne s'affiche lorsque le format SVG n'est pas géré par le navigateur
-	// # <svg xmlns="http://www.w3.org/2000/svg" version="1.1" id="apijsProgress">
+	// » Utilise une image SVG inline
+	// # <svg xmlns="http://www.w3.org/2000/svg" id="apijsProgress">
 	// #  <rect class="auto" />
-	// #  <text> </text>
 	// # </svg>
 	this.htmlProgressBar = function () {
 
-		// Élément svg
-		this.elemA = document.createElement('svg');
-		this.elemA.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
-		this.elemA.setAttribute('version', '1.1');
-		this.elemA.setAttribute('id', 'apijsProgress');
+		this.a = document.createElement('svg');
+		this.a.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+		this.a.setAttribute('id', 'apijsProgress');
 
-			// Élément rect
-			this.elemB = document.createElement('rect');
-			this.elemB.setAttribute('class', 'auto');
+			this.b = document.createElement('rect');
+			this.b.setAttribute('class', 'auto');
 
-		this.elemA.appendChild(this.elemB);
-
-			// Élément text
-			this.elemB = document.createElement('text');
-			this.elemB.appendChild(document.createTextNode('\u00A0'));
-
-		this.elemA.appendChild(this.elemB);
-
-		// sauvegarde des éléments
-		this.tagBox.appendChild(this.elemA);
+		this.a.appendChild(this.b);
+		this.tBox.appendChild(this.a);
 	};
 
 
 	// #### Média et légende ####################################################### private ### //
-	// = révision : 182
+	// = révision : 194
 	// » Met en place la photo ou vidéo (le média) et la légende du dialogue photo ou vidéo
-	// » Affiche un lien pour télécharger le média si la configuration le permet
-	// » Rien ne s'affiche lorsque la balise vidéo n'est pas gérée par le navigateur
+	// » La balise image n'est pas utilisée pour le dialogue photo (utilise à la place l'arrière plan d'une div)
+	// » Extrait les sources de vidéo à partir de l'adresse de la vidéo (par exemple ./video.webm?get=1#ogv,mp4)
 	// # <dl class="media">
 	// #  <dt>
-	// #   [<div class="img loading|error|default|bis" id="apijsMedia">]
-	// #    [<span />]
-	// #   [</div>]
-	// #   [<video controls="controls" class="default|bis" id="apijsMedia">]
-	// #     [<source src="..." type="video/..." />]
-	// #   [</video>]
+	// #   [<div class="img loading" id="apijsMedia">
+	// #     <span />
+	// #    </div>]
+	// #   [<video controls="controls" preload="metadata" onloadstart="...actionResizeMedia();" id="apijsMedia">
+	// #      <source src="..." type="video/..." />
+	// #   </video>]
 	// #  </dt>
 	// #  <dd>
 	// #   [<span>{fileid/name} ({date})</span>] {legend}
@@ -1320,125 +1326,207 @@ apijs.core.dialog = function () {
 	// # </dl>
 	this.htmlMedia = function (url, name, date, legend) {
 
-		var i, fileid = url.slice((url.lastIndexOf('/') + 1), url.lastIndexOf('.')),
-		    list, ext, src, mimes = { ogv: 'video/ogg', webm: 'video/webm', mp4: 'video/mp4', m4v: 'video/mp4' };
+		var i, fileid = url.slice(url.lastIndexOf('/') + 1),
+		    arr, ext, src, mimes = { ogv: 'video/ogg', webm: 'video/webm', mp4: 'video/mp4', m4v: 'video/mp4' };
 
-		// Élément dl (média et légende)
-		this.elemA = document.createElement('dl');
-		this.elemA.setAttribute('class', 'media');
+		this.a = document.createElement('dl');
+		this.a.setAttribute('class', 'media');
 
-			// Élément dt (terme)
-			this.elemB = document.createElement('dt');
-			this.tagMedia = null;
+			this.b = document.createElement('dt');
 
+			// traitement très très différent entre une photo et une vidéo
+			// affichage d'une image dans une balise DIV (et non IMG) ou affichage d'une vidéo dans la balise VIDÉO
 			if (this.styles.has('photo')) {
 
-				// Élément div (et non img...)
-				// # <div class="img loading|error|default|bis" id="apijsMedia" />
-				this.tagMedia = document.createElement('div');
-				this.tagMedia.setAttribute('class', 'img loading');
-				this.tagMedia.setAttribute('id', 'apijsMedia');
+				this.media = document.createElement('div');
+				this.media.setAttribute('class', 'img loading');
 
-				// Élement span
-				// # <span />
-				this.elemD = document.createElement('span');
-				this.tagMedia.appendChild(this.elemD);
+				this.d = document.createElement('span');
+				this.media.appendChild(this.d);
 			}
-			else if (this.styles.has('video')) {
-
-				// Élément video
-				// # <video controls="controls" class="default|bis" id="apijsMedia">
-				this.tagMedia = document.createElement('video');
-				this.tagMedia.setAttribute('controls', 'controls');
-				this.tagMedia.setAttribute('class', 'default');
-				this.tagMedia.setAttribute('id', 'apijsMedia');
+			else {
+				this.media = document.createElement('video');
+				this.media.setAttribute('controls', 'controls');
+				this.media.setAttribute('preload', 'metadata');
+				this.media.setAttribute('onloadstart', 'apijs.dialog.actionResizeMedia();');
 
 				// recherche des extensions de la vidéo
 				// une balise source par extension
-				// 3.../video.webm?get=1#ogv,mp4  3.../video.webm#ogv,mp4  1.../video.webm?get=1  1.../video.webm
-				//           .webm?get=1#ogv,mp4  |         .webm#ogv,mp4  |         .webm?get=1  |         .webm
-				//           .webm      #ogv,mp4  |         .webm#ogv,mp4  |         .webm?get=1  |         .webm
-				//           .webm      #ogv,mp4  |         .webm#ogv,mp4  |         .webm        |         .webm
-				//           .webm      .ogv.mp4  |         .webm.ogv.mp4  |         .webm        |         .webm
-				list = url.slice(url.lastIndexOf('.') + 1);
-				list = ((list.indexOf('?') > 0) && (list.indexOf('#') > 0)) ? list.slice(0, list.indexOf('?')) + list.slice(list.indexOf('#')) : list;
-				list = ((list.indexOf('?') > 0) && (list.indexOf('#') < 0)) ? list.slice(0, list.indexOf('?')) : list;
-				list = list.replace('#', '.').replace(',', '.').split('.');
+				// 3./video.webm?get=1#ogv,mp4  3./video.webm#ogv,mp4  1./video.webm?get=1  1./video.webm
+				//         .webm?get=1#ogv,mp4  |       .webm#ogv,mp4  |       .webm?get=1  |       .webm
+				//         .webm      #ogv,mp4  |       .webm#ogv,mp4  |       .webm?get=1  |       .webm
+				//         .webm      #ogv,mp4  |       .webm#ogv,mp4  |       .webm        |       .webm
+				//         .webm      .ogv.mp4  |       .webm.ogv.mp4  |       .webm        |       .webm
+				arr = url.slice(url.lastIndexOf('.') + 1);
+				arr = ((arr.indexOf('?') > 0) && (arr.indexOf('#') > 0)) ? arr.slice(0, arr.indexOf('?')) + arr.slice(arr.indexOf('#')) : arr;
+				arr = ((arr.indexOf('?') > 0) && (arr.indexOf('#') < 0)) ? arr.slice(0, arr.indexOf('?')) : arr;
+				arr = arr.replace('#', '.').replace(',', '.').split('.');
 
-				// Élément(s) source
-				// # <source src="..." type="video/..." />
-				for (i = 0; i < list.length; i++) {
+				for (i = 0; i < arr.length; i++) {
 
-					ext = list[i];
+					ext = arr[i];
 
 					// reconstruction de l'adresse de la vidéo
-					// 3.../video.webm?get=1#ogv,mp4  3.../video.webm#ogv,mp4  1.../video.webm?get=1  1.../video.webm
-					//  .../video.XXXX                 .../video.XXXX           .../video.XXXX         .../video.XXXX
-					//  .../video.XXXX?get=1           .../video.XXXX           .../video.XXXX         .../video.XXXX
-					//  .../video.XXXX                 .../video.XXXX           .../video.XXXX?get=1   .../video.XXXX
+					// 3./video.webm?get=1#ogv,mp4  3./video.webm#ogv,mp4  1./video.webm?get=1  1./video.webm
+					//  ./video.XXXX                 ./video.XXXX           ./video.XXXX         ./video.XXXX
+					//  ./video.XXXX?get=1           ./video.XXXX           ./video.XXXX         ./video.XXXX
+					//  ./video.XXXX                 ./video.XXXX           ./video.XXXX?get=1   ./video.XXXX
 					src = url.slice(0, url.lastIndexOf('.') + 1) + ext;
 					src = ((url.indexOf('?') > 0) && (url.indexOf('#') > 0)) ? src + url.slice(url.indexOf('?'), url.indexOf('#')) : src;
 					src = ((url.indexOf('?') > 0) && (url.indexOf('#') < 0)) ? src + url.slice(url.indexOf('?')) : src;
 
-					this.elemD = document.createElement('source');
-					this.elemD.setAttribute('src', src);
+					this.c = document.createElement('source');
+					this.c.setAttribute('src', src);
 					if (mimes.hasOwnProperty(ext))
-						this.elemD.setAttribute('type', mimes[ext]);
+						this.c.setAttribute('type', mimes[ext]);
 
-					this.tagMedia.appendChild(this.elemD);
+					this.media.appendChild(this.c);
 				}
 			}
 
-			if (this.tagMedia !== null)
-				this.elemB.appendChild(this.tagMedia);
+			this.media.setAttribute('id', 'apijsMedia');
+			this.b.appendChild(this.media);
 
-		this.elemA.appendChild(this.elemB);
+		this.a.appendChild(this.b);
 
-			// Élément dd (définition)
-			this.elemB = document.createElement('dd');
+			this.b = document.createElement('dd');
 
 			if ((name !== 'false') || (date !== 'false')) {
 
-				// Élément span
-				// # <span>{fileid/name} ({date})</span>
-				this.elemC = document.createElement('span');
+				this.c = document.createElement('span');
 
 				// name + date
 				if ((name !== 'false') && (name !== 'auto') && (date !== 'false'))
-					this.elemC.appendChild(document.createTextNode(name + ' (' + date + ')'));
+					this.c.appendChild(document.createTextNode(name + ' (' + date + ')'));
 				// name
 				else if ((name !== 'false') && (name !== 'auto'))
-					this.elemC.appendChild(document.createTextNode(name));
+					this.c.appendChild(document.createTextNode(name));
 				// auto name + date
 				else if ((name === 'auto') && (date !== 'false'))
-					this.elemC.appendChild(document.createTextNode(fileid + ' (' + date + ')'));
+					this.c.appendChild(document.createTextNode(fileid + ' (' + date + ')'));
 				// auto name
 				else if (name === 'auto')
-					this.elemC.appendChild(document.createTextNode(fileid));
+					this.c.appendChild(document.createTextNode(fileid));
 				// date
 				else if (date !== 'false')
-					this.elemC.appendChild(document.createTextNode('(' + date + ')'));
+					this.c.appendChild(document.createTextNode('(' + date + ')'));
 
-				this.elemB.appendChild(this.elemC);
+				this.b.appendChild(this.c);
 			}
 
-			// Nœud texte
-			// # {legend}
-			this.elemB.appendChild(document.createTextNode(' ' + legend + ' '));
+			this.b.appendChild(document.createTextNode(' ' + legend + ' '));
 
-		this.elemA.appendChild(this.elemB);
+		this.a.appendChild(this.b);
+		this.tBox.appendChild(this.a);
+	};
 
-		// sauvegarde des éléments
-		this.tagBox.appendChild(this.elemA);
+
+	// #### Lecteur vidéo ################################################## i18n ## private ### //
+	// = révision : 12
+	// » Met en place les contrôles du lecteur vidéo
+	// » Utilise des images SVG inline
+	// # <div class="player">
+	// #  <div onclick="...actionStartVideo();">
+	// #   <span class="run">▶</span>
+	// #  </div>
+	// #  <div>
+	// #   <span class="play" onclick="...actionKey(80);">▶</span>  // 80 = P
+	// #   <span class="bar">
+	// #    <svg xmlns="http://www.w3.org/2000/svg" class="bar" onclick="...actionPositionVideo(event);">
+	// #     <rect />
+	// #    </svg>
+	// #   </span>
+	// #   <span class="time">00:00 / 00:00</span>
+	// #   <span class="vol">
+	// #    <svg xmlns="http://www.w3.org/2000/svg" class="vol" onclick="...actionVolumeVideo(event);">
+	// #     <rect />
+	// #    </svg>
+	// #   </span>
+	// #   <span class="full" title="{i18n.ctrlDialogFullscreen}" onclick="...actionKey(122);">+</span>  // 122 = F11
+	// #  </div>
+	// # </div>
+	this.htmlPlayer = function () {
+
+		this.a = document.createElement('div');
+		this.a.setAttribute('class', 'player');
+
+			this.b = document.createElement('div');
+			this.b.setAttribute('onclick', 'apijs.dialog.actionKey(80);');
+
+				this.c = document.createElement('span');
+				this.c.setAttribute('class', 'run');
+				this.c.appendChild(document.createTextNode('▶'));
+
+			this.b.appendChild(this.c);
+
+		this.a.appendChild(this.b);
+
+			this.b = document.createElement('div');
+
+				this.c = document.createElement('span');
+				this.c.setAttribute('class', 'play');
+				this.c.setAttribute('onclick', 'apijs.dialog.actionKey(80);');
+				this.c.appendChild(document.createTextNode('▶'));
+
+			this.b.appendChild(this.c);
+
+				this.c = document.createElement('span');
+				this.c.setAttribute('class', 'bar');
+
+					this.d = document.createElement('svg');
+					this.d.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+					this.d.setAttribute('class', 'bar');
+					this.d.setAttribute('onclick', 'apijs.dialog.player.actionPositionVideo(event);');
+
+						this.e = document.createElement('rect');
+
+					this.d.appendChild(this.e);
+
+				this.c.appendChild(this.d);
+
+			this.b.appendChild(this.c);
+
+				this.c = document.createElement('span');
+				this.c.setAttribute('class', 'time');
+				this.c.appendChild(document.createTextNode('00:00 / 00:00'));
+
+			this.b.appendChild(this.c);
+
+				this.c = document.createElement('span');
+				this.c.setAttribute('class', 'vol');
+
+					this.d = document.createElement('svg');
+					this.d.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+					this.d.setAttribute('class', 'vol');
+					this.d.setAttribute('onclick', 'apijs.dialog.player.actionVolumeVideo(event);');
+
+						this.e = document.createElement('rect');
+
+					this.d.appendChild(this.e);
+
+				this.c.appendChild(this.d);
+
+			this.b.appendChild(this.c);
+
+				this.c = document.createElement('span');
+				this.c.setAttribute('class', 'full');
+				this.c.setAttribute('title', apijs.i18n.translate('ctrlDialogFullscreen'));
+				this.c.setAttribute('onclick', 'apijs.dialog.actionKey(122);');
+				this.c.appendChild(document.createTextNode('+'));
+
+			this.b.appendChild(this.c);
+
+		this.a.appendChild(this.b);
+		this.media.parentNode.appendChild(this.a);
 	};
 
 
 	// #### Aide à la navigation ########################################### i18n ## private ### //
-	// = révision : 10
+	// = révision : 17
 	// » Affiche la liste des commandes disponibles
+	// » Pour les diaporamas : ↖|Fin début/fin ; ←|→ précédent/suivant
+	// » Pour les vidéos : ↓|↑ reculer/avancer ; -|+ baisser/augmenter le volume ; m couper le son ; p lecture/pause
 	// » Pour tous : F11 plein écran ; Échap quitter
-	// » Pour les diaporamas : ↖|Fin début/fin ; ←|→ suivant/précédent
-	// » Pour les vidéos : p lecture/pause ; ↑|↓ avancer/reculer ; +|- augmenter/baisser le volume ; m couper le son
 	// # <div class="kbd">
 	// #  <ul>
 	// #   <li>
@@ -1451,56 +1539,52 @@ apijs.core.dialog = function () {
 
 		var i, j, tmp, total, data = [];
 
+		// préparation de la liste des contrôles
 		if (slideshow) {
 			data.push(['start;↖', 'ctrlKeyEnd', 'ctrlSlideshowFirstLast']);
 			data.push(['left;←', 'right;→', 'ctrlSlideshowNextPrev']);
 		}
 		if (video) {
-			data.push(['p', 'ctrlVideoPause']);
-			data.push(['top;↑', 'bot;↓', 'ctrlVideoTime']);
-			data.push(['more;+', 'less;-', 'ctrlVideoSound']);
+			data.push(['bot;↓', 'top;↑', 'ctrlVideoTime']);
+			data.push(['less;-', 'more;+', 'ctrlVideoSound']);
 			data.push(['m', 'ctrlVideoMute']);
+			data.push(['p', 'ctrlVideoPause']);
 		}
-		data.push(['F11', 'ctrlDialogFullscreen']);
 		data.push(['ctrlKeyEsc', 'ctrlDialogQuit']);
 
-		// Élément div
-		this.elemA = document.createElement('div');
-		this.elemA.setAttribute('class', 'kbd');
+		// génération des éléments
+		this.a = document.createElement('div');
+		this.a.setAttribute('class', 'kbd');
 
-			// Élément ul
-			this.elemB = document.createElement('ul');
+			this.b = document.createElement('ul');
 
-				// Éléments li et kbd
-				for (i = 0; i < data.length; i++) {
+			for (i = 0; i < data.length; i++) {
 
-					total = data[i].length - 1;
-					this.elemC = document.createElement('li');
+				total = data[i].length - 1;
+				this.c = document.createElement('li');
 
-					for (j = 0; j < total; j++) {
+				for (j = 0; j < total; j++) {
 
-						this.elemD = document.createElement('kbd');
+					this.d = document.createElement('kbd');
 
-						if (data[i][j].indexOf(';') > 0) {
-							tmp = data[i][j].split(';');
-							this.elemD.setAttribute('class', tmp[0]);
-							this.elemD.setAttribute('title', tmp[1]);
-						}
-						else {
-							this.elemD.appendChild(apijs.i18n.nodeTranslate(data[i][j]));
-						}
-
-						this.elemC.appendChild(this.elemD);
+					if (data[i][j].indexOf(';') > 0) {
+						tmp = data[i][j].split(';');
+						this.d.setAttribute('class', tmp[0]);
+						this.d.setAttribute('title', tmp[1]);
+					}
+					else {
+						this.d.appendChild(apijs.i18n.nodeTranslate(data[i][j]));
 					}
 
-					this.elemC.appendChild(apijs.i18n.nodeTranslate(data[i][total]));
-					this.elemB.appendChild(this.elemC);
+					this.c.appendChild(this.d);
 				}
 
-			this.elemA.appendChild(this.elemB);
+				this.c.appendChild(apijs.i18n.nodeTranslate(data[i][total]));
+				this.b.appendChild(this.c);
+			}
 
-		// sauvegarde des éléments
-		this.tagBox.appendChild(this.elemA);
+		this.a.appendChild(this.b);
+		this.tBox.appendChild(this.a);
 	};
 };
 
@@ -1528,7 +1612,7 @@ apijs.core.styles = function () {
 	};
 
 	this.has = function () {
-		return (this.data !== null) ? apijs.inArray(this.data, Array.prototype.slice.call(arguments, 0)) : false;
+		return this.data.has(Array.prototype.slice.call(arguments, 0));
 	};
 
 	this.remove = function () {

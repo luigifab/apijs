@@ -1,9 +1,9 @@
 /**
  * Created L/13/04/2009
- * Updated S/25/10/2014
- * Version 52
+ * Updated D/31/05/2015
+ * Version 56
  *
- * Copyright 2008-2014 | Fabrice Creuzot (luigifab) <code~luigifab~info>
+ * Copyright 2008-2015 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
  *
  * This program is free software, you can redistribute it or modify
@@ -19,22 +19,21 @@
 
 apijs.core.upload = function () {
 
-	this.title = null;
-	this.maxsize = 0;
 	this.extensions = null;
 	this.callback = null;
 	this.args = null;
 	this.icon = null;
+	this.title = null;
 
+	this.maxsize = 0;
 	this.startTime = 0;
 	this.lastTime = 0;
 
 
-	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// GESTION DU DIALOGUE D'UPLOAD
 
 	// #### Dialogue d'upload ############################################### i18n ## public ### //
-	// = révision : 56
+	// = révision : 57
 	// » Permet à l'utilisateur l'envoi de fichier sans avoir à recharger la page
 	// » Prépare et affiche le dialogue d'upload de [TheDialog]
 	this.sendFile = function (title, action, inputname, maxsize, extensions, callback, args, icon) {
@@ -44,12 +43,12 @@ apijs.core.upload = function () {
 		if ((typeof title === 'string') && (typeof action === 'string') && (typeof inputname === 'string') &&
 		    (typeof maxsize === 'number') && (typeof extensions === 'string') && (typeof callback === 'function')) {
 
-			this.title = title;
-			this.maxsize = maxsize;
 			this.extensions = extensions.split(',');
 			this.callback = callback;
 			this.args = args;
 			this.icon = icon;
+			this.title = title;
+			this.maxsize = maxsize;
 
 			maxsize = maxsize.toFixed(2).replace('.00', '').replace('.', apijs.i18n.translate('uploadDecimal'));
 
@@ -80,15 +79,15 @@ apijs.core.upload = function () {
 	};
 
 
-	// #### Vérification du formulaire ##################################### i18n ## private ### //
-	// = révision : 133
+	// #### Vérification du formulaire ##################################### i18n ## private ### // TODO
+	// = révision : 135
 	// » Vérifie la présence du fichier ; le type du fichier ; la taille du fichier (avec l'API File si disponible)
 	// » Lorsque le fichier est bon lance l'envoi du fichier vers le serveur en mode asynchrone ou en mode synchrone
 	// » Lorsque le fichier n'est pas bon (présence, type ou taille) affiche un message d'erreur détaillé
 	this.actionConfirm = function (action) {
 
 		var tagInput = document.getElementById('apijsFile'),
-		    tagError = apijs.dialog.tagBox.querySelector('div.status').firstChild,
+		    tagError = apijs.dialog.tBox.querySelector('div.status').firstChild,
 		    checks = { filePresent: false, fileType: true, fileSize: false, type: '', size: this.maxsize };
 
 		// vérifications du fichier
@@ -100,7 +99,7 @@ apijs.core.upload = function () {
 			// type du fichier (à la base, admis valide)
 			if (this.extensions[0] !== '*') {
 				checks.type = tagInput.value.slice(tagInput.value.lastIndexOf('.') + 1).toLowerCase();
-				if (!apijs.inArray(checks.type, this.extensions))
+				if (!this.extensions.has(checks.type))
 					checks.fileType = false;
 			}
 
@@ -120,7 +119,7 @@ apijs.core.upload = function () {
 
 			try {
 				if (action.indexOf('noAjax') > 0) {
-					apijs.dialog.tagBox.submit();
+					apijs.dialog.tBox.submit();
 					window.setTimeout(apijs.upload.onStart.bind(this), 12);
 				}
 				else {
@@ -128,7 +127,7 @@ apijs.core.upload = function () {
 				}
 			}
 			catch (e) {
-				apijs.dialog.tagBox.submit();
+				apijs.dialog.tBox.submit();
 				window.setTimeout(apijs.upload.onStart.bind(this), 12);
 				console.warn(e);
 			}
@@ -146,21 +145,21 @@ apijs.core.upload = function () {
 				tagError.replaceData(0, tagError.nodeValue.length, apijs.i18n.translate('uploadEmpty'));
 			}
 
-			apijs.dialog.tagBox.querySelector('.browse').focus();
+			apijs.dialog.tBox.querySelector('.browse').focus();
 		}
 	};
 
 
 
-
-	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// GESTION DE L'UPLOAD
 
 	// #### Gestion de l'envoi asynchrone ########################## xhr ## event ## private ### // TODO
-	// = révision : 132
+	// = révision : 135
 	// » Utilise l'adresse de l'action du formulaire de la boite de dialogue comme destination
 	// » Crée un formulaire pour y envoyer le fichier sur POST et le paramètre isAjax=true sur GET
-	// » Ajoute le champ X-CSRF-Token si besoin
+	// » Ajoute le champ X-CSRF-Token au formulaire si disponible
+	// » Met en place les gestionnaires d'événements associés (lonreadystatechange/oadstart/progress/load/error)
+	// » En cas de succès, appelle la fonction callback avec ses paramètres [ callback(fileid, args) ]
 	this.startUpload = function (action) {
 
 		var form = new FormData(), xhr = new XMLHttpRequest();
@@ -185,11 +184,14 @@ apijs.core.upload = function () {
 			if ((xhr.readyState === 4) && (xhr.status === 200)) {
 				var text = xhr.responseText.trim();
 				if (apijs.config.debug)
-					console.info('(onreadystatechange) upload ended with status 200: ' + text);
-				if (text.indexOf('success-') === 0)
-					apijs.upload.onSuccess(text.slice(8));
-				else
+					console.warn('(onreadystatechange) upload ended with status 200: ' + text);
+				if (text.indexOf('success-') === 0) {
+					apijs.upload.updateTitle();
+					apijs.upload.callback(text.slice(8), apijs.upload.args);
+				}
+				else {
 					apijs.upload.onError('uploadError2', text);
+				}
 			}
 			else if (xhr.readyState === 4) {
 				if (apijs.config.debug)
@@ -198,19 +200,19 @@ apijs.core.upload = function () {
 			}
 		};
 
-		xhr.upload.addEventListener('loadstart', apijs.upload.onStart.bind(this), false);
-		xhr.upload.addEventListener('progress',  apijs.upload.onProgress.bind(this), false);
-		xhr.upload.addEventListener('load',      apijs.upload.onProgress.bind(this), false);
-		xhr.upload.addEventListener('error',     apijs.upload.onError.bind(this), false);
+		xhr.upload.onloadstart = apijs.upload.onStart.bind(this);
+		xhr.upload.onprogress  = apijs.upload.onProgress.bind(this);
+		xhr.upload.onload      = apijs.upload.onProgress.bind(this);
+		xhr.upload.onerror     = apijs.upload.onError.bind(this);
 
 		xhr.send(form);
 	};
 
 
 	// #### Gestion des erreurs ############################################ i18n ## private ### // TODO
-	// = révision : 21
+	// = révision : 23
 	// » Affiche un message d'erreur détaillé
-	// » Réinitialise les variables
+	// » Ne réinitialise plus les variables
 	this.onError = function (key, text) {
 
 		if (typeof key === 'string')
@@ -222,65 +224,32 @@ apijs.core.upload = function () {
 		this.icon = (this.icon !== null) ? 'upload error ' + this.icon : 'upload error';
 
 		apijs.dialog.dialogInformation(this.title, text, this.icon);
-
-		// réinitialise les variables
-		this.title = null;
-		this.maxsize = 0;
-		this.extensions = null;
-		this.callback = null;
-		this.args = null;
-		this.icon = null;
-
-		this.startTime = 0;
-		this.lastTime = 0;
-	};
-
-
-	// #### Gestion du succcès ##################################################### private ### //
-	// = révision : 21
-	// » Appelle la fonction callback avec ses paramètres [ callback(fileid, args) ]
-	// » Réinitialise les variables
-	this.onSuccess = function (fileid) {
-
-		// callback
-		this.updateTitle();
-		this.callback(fileid, this.args);
-
-		// réinitialise les variables
-		this.title = null;
-		this.maxsize = 0;
-		this.extensions = null;
-		this.callback = null;
-		this.args = null;
-		this.icon = null;
-		this.startTime = 0;
-		this.lastTime = 0;
 	};
 
 
 
-
-	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// GESTION DE LA BARRE DE PROGRESSION
 
-	// #### Affichage du dialogue ########################################## i18n ## private ### //
-	// = révision : 3
-	// » Affiche le dialogue de progression (avec son animation indéterminée)
+	// #### Affichage du dialogue ######################### event/timeout ## i18n ## private ### //
+	// = révision : 6
 	// » Sauvegarde l'heure de démarrage de l'upload
+	// » Affiche le dialogue de progression (avec son animation indéterminée)
+	// » Math.floor = entier inférieur, Math.ceil = entier supérieur, Math.round = au mieux
 	this.onStart = function () {
+
 		this.startTime = this.lastTime = Math.round(new Date().getTime() / 1000);
-		apijs.dialog.dialogProgress(this.title, apijs.i18n.translate('uploadInProgress'), this.icon);
+		apijs.dialog.dialogProgress(this.title, apijs.i18n.translate('uploadInProgress') + ' [span] [/span]', this.icon);
 	};
 
 
-	// #### Gestion de l'avancement ####################################### event ## private ### // TODO
+	// #### Gestion de l'avancement ####################################### event ## private ### //
 	// = révision : 130
 	// » Cherche à actualiser la barre de progression toutes les 2 secondes (uniquement de 1 à 99%)
 	//  affiche le pourcentage, la vitesse à partir de 25 secondes, le temps restant à partir de 40 secondes ET 90 secondes de temps total
 	// » Cherche à actualiser la barre de progression lorsque l'envoi du fichier est terminé (donc à 100%)
 	//  affiche le pourcentage, le temps total à partir de 20 secondes, la vitesse si possible
 	// » Dans tous les cas actualise également le titre de la page avec le pourcentage
-	// » Math.. .floor = entier inférieur, .ceil = entier supérieur, .round = au mieux
+	// » Math.floor = entier inférieur, Math.ceil = entier supérieur, Math.round = au mieux
 	this.onProgress = function (ev) {
 
 		var percent, key, rate, time, elapsedTime, totalTime, currentTime = Math.round(new Date().getTime() / 1000), mins;
@@ -348,13 +317,13 @@ apijs.core.upload = function () {
 
 
 	// #### Gestion du graphique ########################################### i18n ## private ### //
-	// = révision : 108
+	// = révision : 109
 	// » Fait avancer la barre de progression en fonction des paramètres d'appels (de 1 à 100%)
 	// » Tous les paramètres peuvent être null sauf le premier
 	this.updateProgress = function (percent, key, rate, time) {
 
 		var rect = document.getElementById('apijsProgress').querySelector('rect'),
-		    text = document.getElementById('apijsProgress').querySelector('text').firstChild,
+		    text = apijs.dialog.tBox.querySelector('p span').firstChild,
 		    data;
 
 		if (percent > 99) {

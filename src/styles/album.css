@@ -1,9 +1,9 @@
 /**
  * Created V/08/05/2009
- * Updated J/23/10/2014
- * Version 41
+ * Updated W/31/12/2014
+ * Version 42
  *
- * Copyright 2008-2014 | Fabrice Creuzot (luigifab) <code~luigifab~info>
+ * Copyright 2008-2015 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
  *
  * This program is free software, you can redistribute it or modify
@@ -19,7 +19,7 @@
 
 /* ########################################################### Conteneurs ### */
 div.gallery img, div.album img {
-	display:block; overflow:hidden;
+	display:block; margin:auto; overflow:hidden;
 	font-size:0.85em; line-height:120%; background-color:white;
 }
 

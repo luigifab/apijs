@@ -1,9 +1,9 @@
 /**
  * Created J/03/12/2009
- * Updated S/25/10/2014
- * Version 108
+ * Updated L/25/05/2015
+ * Version 116
  *
- * Copyright 2008-2014 | Fabrice Creuzot (luigifab) <code~luigifab~info>
+ * Copyright 2008-2015 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
  *
  * This program is free software, you can redistribute it or modify
@@ -35,23 +35,44 @@ if (!String.prototype.hasOwnProperty('trim')) {
 	};
 }
 
+if (!Array.prototype.hasOwnProperty('has')) {
+	Array.prototype.has = function (needle) {
+		var key;
+		if (needle instanceof Array) {
+			for (key in needle) if (needle.hasOwnProperty(key)) {
+				if (this.has(needle[key]))
+					return true;
+			}
+		}
+		else {
+			for (key in this) if (this.hasOwnProperty(key)) {
+				if (!isNaN(key) && (this[key] === needle))
+					return true;
+			}
+		}
+		return false;
+	};
+}
+
 var apijs = {
 
 	core: {},
-	version: 510,
+	version: 520,
 	config: {
 		lang: 'auto',
 		debug: false,
 		dialog: {
+			emotes: true,
+			player: true,
 			closeOnClick: false,
 			restrictNavigation: true,
-			emotes: true,
 			imagePrev: null,
 			imageNext: null,
 			imageClose: null
 		},
 		slideshow: {
-			ids: 'slideshow'
+			ids: 'slideshow',
+			anchor: true
 		},
 		upload: {
 			tokenName: 'authenticity_token',
@@ -59,11 +80,10 @@ var apijs = {
 		}
 	},
 
-	// démarrage
 	start: function () {
 
 		// vérification du navigateur avec information dans la console
-		// ne démarre pas si le navigateur est une épave
+		// ne démarre pas si le navigateur correspond à une épave
 		var ua = navigator.userAgent, test = [], v;
 
 		// Opera < 13 = Presto ou Opera
@@ -81,14 +101,14 @@ var apijs = {
 		test.push(v);
 
 		try {
-			console.info('APIJS Hello! Starting ' + this.version.toString().replace(/([0-9]+)([0-9])([0-9])$/g, '$1.$2.$3') + '/' + this.config.lang);
+			console.info('APIJS ' + this.version.toString().replace(/([0-9]+)([0-9])([0-9])$/g, '$1.$2.$3') + ' Hello!');
 			console.info('APIJS oldPresto=' + test[0] + ' oldGecko=' + test[2] + '/' + test[3] + ' oldWebKit=' + test[4] + '/' + test[5]);
 		}
 		catch (e) {
 			// dans le cas ou la console n'existe pas (par exemple avec IE 9)
 			window.console = { info: function () {}, warn: function () {}, log: function () {} };
 		}
-		if (this.inArray(true, test)) {
+		if (test.has(true)) {
 			console.warn('APIJS canceled for old browser');
 			return;
 		}
@@ -123,38 +143,46 @@ var apijs = {
 		this.i18n.init();
 		this.slideshow.init();
 
-		// finialisation du démarrage
+		// if (apijs.config.slideshow.anchor)
+		// attention, si désactivé cela empèche les ancres de fonctionner
+		window.addEventListener('popstate', apijs.slideshow.popState, false);
+		window.addEventListener('hashchange', apijs.slideshow.popState, false);
+
+		// finalisation du démarrage
 		if (this.config.debug) {
 			console.info('APIJS language loaded: ' + this.config.lang);
 			console.info('APIJS slideshows loaded: ' + this.slideshow.started);
-			console.info('APIJS Okay! Successfully started');
+			console.info('APIJS successfully started');
 		}
 	},
 
-	// utilitaires
+	error: function (method, data) {
+
+		var key, text = [];
+
+		if (typeof data === 'string') {
+			text.push(data);
+		}
+		else {
+			for (key in data) if (data.hasOwnProperty(key))
+				text.push(key + ': ' + data[key]);
+		}
+
+		if (this.config.debug)
+			this.dialog.dialogInformation('(debug) Invalid call', '[pre]' + method + '[br]➩ ' + text.join('[br]➩ '), 'debug');
+
+		console.warn(method + ' => ' + text.join(' / '));
+	},
+
 	openTab: function (ev) {
 		ev.preventDefault();
 		window.open(this.href);
 	},
-	inArray: function (needle, haystack) {
-		var key;
-		if (needle instanceof Array) {
-			for (key in needle) if (needle.hasOwnProperty(key)) {
-				if (apijs.inArray(needle[key], haystack))
-					return true;
-			}
-		}
-		else {
-			for (key in haystack) if (haystack.hasOwnProperty(key)) {
-				if (!isNaN(key) && (haystack[key] === needle))
-					return true;
-			}
-		}
-		return false;
-	},
+
+	// fonction basée sur form-serialize 0.2
+	// http://code.google.com/p/form-serialize/
 	serialize: function (form) {
 
-		// Basé sur form-serialize 0.2 (http://code.google.com/p/form-serialize/)
 		var nodeName, nodeType, i, j, q = [];
 
 		for (i = form.elements.length - 1; i >= 0; i = i - 1) {
@@ -163,11 +191,11 @@ var apijs = {
 			nodeType = form.elements[i].type;
 
 			if (nodeName === 'INPUT') {
-				if (this.inArray(nodeType, ['checkbox', 'radio'])) {
+				if (['checkbox', 'radio'].has(nodeType)) {
 					if (form.elements[i].checked)
 						q.push(form.elements[i].getAttribute('name') + '=' + encodeURIComponent(form.elements[i].value));
 				}
-				else if (!this.inArray(nodeType, ['file', 'button', 'reset', 'submit'])) {
+				else if (['file', 'button', 'reset', 'submit'].has(nodeType)) {
 					q.push(form.elements[i].getAttribute('name') + '=' + encodeURIComponent(form.elements[i].value));
 				}
 			}
@@ -189,26 +217,9 @@ var apijs = {
 
 		return q.join('&');
 	},
-	error: function (method, data) {
 
-		var key, text = [];
-
-		if (typeof data === 'string') {
-			text.push(data);
-		}
-		else {
-			for (key in data) if (data.hasOwnProperty(key))
-				text.push(key + ': ' + data[key]);
-		}
-
-		if (this.config.debug)
-			this.dialog.dialogInformation('(debug) Invalid call', '[pre]' + method + '[br]➩ ' + text.join('[br]➩ '), 'debug');
-
-		console.warn(method + ' => ' + text.join(' / '));
-	},
-
-	// mode debug (http://stackoverflow.com/a/3919564)
-	methods: {},
+	// activation par configuration via setApijsConfig (sinon cela ne fonctionnera pas)
+	// http://stackoverflow.com/a/3919564
 	logger: function (src, scope) {
 
 		for (var func in src) {
@@ -220,7 +231,7 @@ var apijs = {
 				// create an closure to maintain function name
 				(function () {
 					// do not remove this
-					var date, functionName = func;
+					var functionName = func;
 					// overwrite the function with our own version
 					src[functionName] = function () {
 
@@ -228,19 +239,17 @@ var apijs = {
 						var args = [].splice.call(arguments, 0);
 
 						// do the logging before callling the method
-						if (functionName.indexOf('nodeTranslate') < 0) {
-
-							date = new Date();
-							date = date.getMinutes() + 'm' + date.getSeconds() + 's' + date.getMilliseconds() + 'ms ';
+						// sauf pour i18n.*ranslate
+						if (functionName.indexOf('ranslate') < 0) {
 
 							if ((functionName.indexOf('dialog') > -1) || (functionName.indexOf('sendFile') > -1))
 								console.info('displaying ' + scope + functionName + '()');
-							else if (functionName.indexOf('translate') > -1)
-								console.log(date + scope + functionName + '(' + args.join(',') + ')');
+							else if (functionName.indexOf('popState') > -1)
+								console.info('history ' + scope + functionName + '()');
 							else if (functionName.indexOf('actionKey') > -1)
-								console.log(date + scope + functionName + '(' + args[0].keyCode + ')');
+								console.log(scope + functionName + '(' + (isNaN(args[0]) ? args[0].keyCode : args[0]) + ')');
 							else
-								console.log(date + scope + functionName + '(' + args.join(',') + ')');
+								console.log(scope + functionName + '(' + args.join(', ') + ')');
 						}
 
 						// call the original method but in the src scope, and return the results
@@ -249,7 +258,8 @@ var apijs = {
 				})();
 			}
 		}
-	}
+	},
+	methods: {}
 };
 
 if (typeof window.addEventListener === 'function')

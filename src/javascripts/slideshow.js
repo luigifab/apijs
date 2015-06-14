@@ -1,9 +1,9 @@
 /**
  * Created J/13/05/2010
- * Updated S/27/09/2014
- * Version 37
+ * Updated L/25/05/2015
+ * Version 38
  *
- * Copyright 2008-2014 | Fabrice Creuzot (luigifab) <code~luigifab~info>
+ * Copyright 2008-2015 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
  *
  * This program is free software, you can redistribute it or modify
@@ -23,11 +23,10 @@ apijs.core.slideshow = function () {
 	this.current = null;
 
 
-	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// GESTION DU DIAPORAMA
 
 	// #### Initialisation ######################################################### private ### //
-	// = révision : 30
+	// = révision : 32
 	// » Recherche les albums puis les photos et vidéos de chaque album
 	// » Met en place les gestionnaires d'événements associés (+click +mouseover)
 	// » Recherche la présence d'une ancre dans l'adresse de la page
@@ -64,14 +63,14 @@ apijs.core.slideshow = function () {
 	};
 
 
-	// #### Prépare l'affichage du dialogue ################################ event ## public ### //
-	// = révision : 92
+	// #### Prépare l'affichage du dialogue ################################ event ## public ### // TODO
+	// = révision : 95
 	// » Recherche les informations de la photo ou de la vidéo à afficher
 	// » Effectue le même traitement lors d'un appel direct ou lors d'un événement (la source étant dans les deux cas une miniature)
 	// » En provenance du survol ou d'un clic sur les miniatures, d'un clic sur l'image principale, ou encore d'un appel direct
 	// » En mode présentation l'image principale contient l'id de la miniature dans son attribut class (sinon c'est la première du lot)
 	// » S'assure de ne pas faire deux fois la même chose en mode présentation
-	this.showMedia = function (ev) {
+	this.showMedia = function (ev, push) {
 
 		var source, media = {};
 
@@ -167,16 +166,17 @@ apijs.core.slideshow = function () {
 		// ou lors d'un clic sur les miniatures en mode standard (en mode standard),
 		// ou lors d'un appel direct
 		if ((media.presentation && (media.numberSrc === 999)) || !media.presentation || (typeof ev === 'string'))
-			this.showDialog(media);
+			this.showDialog(media, push);
 	};
 
 
 	// #### Affichage du dialogue ################################################## private ### //
-	// = révision : 41
+	// = révision : 45
 	// » Affiche le dialogue et les boutons précédent et suivant
 	// » Vérifie au préalable s'il existe une photo ou vidéo précédente et suivante
 	// » S'assure qu'un dialogue du diaporama est présent avant de faire n'importe quoi
-	this.showDialog = function (media) {
+	// » Met ensuite à jour l'ancre uniquement si l'utilisateur ne joue pas avec son historique
+	this.showDialog = function (media, push) {
 
 		apijs.dialog[media.type](media.url, media.config[0], media.config[1], media.config[2], media.styles);
 
@@ -200,6 +200,16 @@ apijs.core.slideshow = function () {
 
 			if (this.current.next !== null)
 				document.getElementById('apijsNext').removeAttribute('disabled');
+
+			// gestion de l'historique
+			if (apijs.config.slideshow.anchor && (typeof history.pushState === 'function') && ((typeof push === 'boolean') ? push : true)) {
+
+				var hash = location.href;
+				hash  = (hash.indexOf('#') > 0) ? hash.slice(0, hash.indexOf('#')) : hash;
+				hash += '#' + (media.prefix + '.' + ((media.number !== 999) ? media.number : 0)).replace(/\./g,'-');
+
+				history.pushState({}, '', hash);
+			}
 		}
 		else {
 			this.current = null;
@@ -207,10 +217,28 @@ apijs.core.slideshow = function () {
 	};
 
 
+	// #### Changement d'ancre ############################################ event ## private ### //
+	// = révision : 4
+	// » Se déclenche lorsque l'ancre change (mais ne modifie pas l'ancre ici)
+	// » Affiche le dialogue photo ou vidéo correspondant en mode diaporama si possible
+	// » Supprime l'éventuel dialogue photo ou vidéo du mode diaporama
+	this.popState = function () {
+
+		// recherche d'une ancre
+		// \\. au lieu de \. (pour le caractère .) sinon col 44, Bad or unnecessary escaping
+		if (new RegExp('#(' + apijs.config.slideshow.ids + '(?:-|\\.)[0-9]+(?:-|\\.)[0-9]+)').test(location.href)) {
+			var id = RegExp.$1.replace(/-/g, '.');
+			if (document.getElementById(id))
+				apijs.slideshow.showMedia(id, false);
+		}
+		else if (apijs.slideshow.current !== null) {
+			apijs.dialog.actionClose(true);
+		}
+	};
 
 
-	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// DÉFINITION DES ACTIONS DES BOUTONS ET DES TOUCHES DU CLAVIER
+
+	// ACTIONS DES BOUTONS ET DES TOUCHES DU CLAVIER
 
 	// #### Action de la touche Début ###################################### event ## public ### //
 	// = révision : 10
