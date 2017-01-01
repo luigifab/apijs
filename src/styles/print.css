@@ -1,9 +1,8 @@
 /**
  * Created J/20/06/2013
- * Updated M/09/09/2014
- * Version 10
+ * Updated M/08/11/2016
  *
- * Copyright 2008-2015 | Fabrice Creuzot (luigifab) <code~luigifab~info>
+ * Copyright 2008-2017 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
  *
  * This program is free software, you can redistribute it or modify
@@ -17,7 +16,7 @@
  * GNU General Public License (GPL) for more details.
  */
 
-/* ########################################################### Conteneurs ### */
+/* &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& conteneurs &&& */
 div.gallery, div.album { font-size:0.85em; }
 div.gallery a:after, div.album a:after { display:none; }
 
@@ -29,13 +28,13 @@ div.gallery img, div.album img {
 div.gallery { display:inline-block; }
 div.gallery a { display:inline-block; text-decoration:none; }
 div.gallery ul { margin:0; padding:0; list-style:none; }
-div.gallery ul li { display:inline-block; margin:0; padding:0; vertical-align:middle; }
-div.gallery ul li a { display:block; margin:0.2em; }
-div.gallery ul li a.current { border-color:gray; }
+div.gallery li { display:inline-block; margin:0; padding:0; vertical-align:middle; }
+div.gallery li a { display:block; margin:0.2em; }
+div.gallery li a.current { border-color:gray; }
 
 div.album { text-align:center; }
 div.album dl { display:inline-block; margin:0.5em 0.4em; vertical-align:top; }
-div.album dl dt a { display:block; text-decoration:none; }
-div.album dl dd { margin:0.4em 0 0; }
+div.album dt a { display:block; text-decoration:none; }
+div.album dd { margin:0.4em 0 0; }
 
 #apijsDialog { display:none; }

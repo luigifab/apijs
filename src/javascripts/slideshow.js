@@ -1,9 +1,8 @@
 /**
  * Created J/13/05/2010
- * Updated L/25/05/2015
- * Version 38
+ * Updated V/23/12/2016
  *
- * Copyright 2008-2015 | Fabrice Creuzot (luigifab) <code~luigifab~info>
+ * Copyright 2008-2017 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
  *
  * This program is free software, you can redistribute it or modify
@@ -19,14 +18,20 @@
 
 apijs.core.slideshow = function () {
 
-	this.started = 0;
+	// Totalement testé et approuvé sur
+	// Debian testing/64 : Firefox 45, Chromium 53
+	// Windows 7/32 : IE 11, Firefox 22, Chrome 55, Opera 42
+	// Windows 10/64 : Edge 14
+
+	"use strict";
+	this.ready = 0;
 	this.current = null;
 
 
 	// GESTION DU DIAPORAMA
 
 	// #### Initialisation ######################################################### private ### //
-	// = révision : 32
+	// = révision : 35
 	// » Recherche les albums puis les photos et vidéos de chaque album
 	// » Met en place les gestionnaires d'événements associés (+click +mouseover)
 	// » Recherche la présence d'une ancre dans l'adresse de la page
@@ -35,36 +40,36 @@ apijs.core.slideshow = function () {
 		var i, j, id, ids = apijs.config.slideshow.ids, hoverload = false;
 
 		// recherche des albums
-		for (i = 0; document.getElementById(ids + '.' + i) !== null; i++) {
+		for (i = 0; apijs.html(ids + '.' + i) !== null; i++) {
 
-			hoverload = (document.getElementById(ids + '.' + i).getAttribute('class').indexOf('hoverload') > -1);
+			hoverload = (apijs.html(ids + '.' + i).getAttribute('class').indexOf('hoverload') > -1);
 
-			// recherche des éléments de l'album
-			for (j = 0; document.getElementById(ids + '.' + i + '.' + j) !== null; j++) {
-				document.getElementById(ids + '.' + i + '.' + j).addEventListener('click', apijs.slideshow.showMedia.bind(this), false);
+			// recherche les éléments de l'album
+			for (j = 0; apijs.html(ids + '.' + i + '.' + j) !== null; j++) {
+				apijs.html(ids + '.' + i + '.' + j).addEventListener('click', apijs.slideshow.showMedia, false);
 				if (hoverload)
-					document.getElementById(ids + '.' + i + '.' + j).addEventListener('mouseover', apijs.slideshow.showMedia.bind(this), false);
+					apijs.html(ids + '.' + i + '.' + j).addEventListener('mouseover', apijs.slideshow.showMedia, false);
 			}
 
-			// recherche de l'élément du mode présentation de l'album
-			if (document.getElementById(ids + '.' + i + '.999'))
-				document.getElementById(ids + '.' + i + '.999').addEventListener('click', apijs.slideshow.showMedia.bind(this), false);
+			// recherche l'élément du mode présentation de l'album
+			if (apijs.html(ids + '.' + i + '.999'))
+				apijs.html(ids + '.' + i + '.999').addEventListener('click', apijs.slideshow.showMedia, false);
 
-			this.started += 1;
+			this.ready += 1;
 		}
 
 		// recherche d'une ancre
 		// \\. au lieu de \. (pour le caractère .) sinon col 44, Bad or unnecessary escaping
 		if (new RegExp('#(' + ids + '(?:-|\\.)[0-9]+(?:-|\\.)[0-9]+)').test(location.href)) {
 			id = RegExp.$1.replace(/-/g, '.');
-			if (document.getElementById(id))
+			if (apijs.html(id))
 				this.showMedia(id);
 		}
 	};
 
 
 	// #### Prépare l'affichage du dialogue ################################ event ## public ### // TODO
-	// = révision : 95
+	// = révision : 99
 	// » Recherche les informations de la photo ou de la vidéo à afficher
 	// » Effectue le même traitement lors d'un appel direct ou lors d'un événement (la source étant dans les deux cas une miniature)
 	// » En provenance du survol ou d'un clic sur les miniatures, d'un clic sur l'image principale, ou encore d'un appel direct
@@ -78,7 +83,7 @@ apijs.core.slideshow = function () {
 		// recherche des informations du média (1/4, id)
 		// la source est soit une miniature (ev=click/mouseover/stringId) soit l'image principale (ev=click)
 		if (typeof ev === 'string') {
-			source = document.getElementById(ev);
+			source = apijs.html(ev);
 			media.id = ev;
 		}
 		else {
@@ -96,7 +101,7 @@ apijs.core.slideshow = function () {
 		// recherche des informations du média (2/4, prefix|number|numberSrc|presentation)
 		media.prefix = apijs.config.slideshow.ids + '.' + media.id.split('.')[1];
 		media.number = media.numberSrc = parseInt(media.id.split('.')[2], 10);
-		media.presentation = document.getElementById(media.prefix + '.999');
+		media.presentation = apijs.html(media.prefix + '.999');
 
 		// SAUF SI SOURCE = IMAGE PRINCIPALE
 		// marque la source avec la class current
@@ -104,21 +109,15 @@ apijs.core.slideshow = function () {
 		// v5.1: soit sur le lien (avant sur l'image elle même), soit sur le dl
 		if (media.number !== 999) {
 
-			var allLinks = document.getElementById(media.prefix).querySelectorAll('a[id][type]'),
-			    allConts = document.getElementById(media.prefix).querySelectorAll('dl'), i;
+			var allLinks = apijs.html(media.prefix).querySelectorAll('a[id][type]'),
+			    allConts = apijs.html(media.prefix).querySelectorAll('dl');
 
 			if ((media.presentation !== null) || (allLinks.length !== allConts.length)) {
-				for (i = 0; i < allLinks.length; i++) {
-					if (allLinks[i].hasAttribute('class'))
-						allLinks[i].removeAttribute('class');
-				}
+				allLinks.invokeAll('removeAttribute', 'class');
 				source.setAttribute('class', 'current');
 			}
 			else {
-				for (i = 0; i < allConts.length; i++) {
-					if (allConts[i].hasAttribute('class'))
-						allConts[i].removeAttribute('class');
-				}
+				allConts.invokeAll('removeAttribute', 'class');
 				source.parentNode.parentNode.setAttribute('class', 'current');
 			}
 		}
@@ -133,7 +132,7 @@ apijs.core.slideshow = function () {
 
 			if (media.number === 999) {
 				source = (media.presentation.hasAttribute('class')) ? media.presentation.getAttribute('class') : media.prefix + '.0';
-				source = document.getElementById(source);
+				source = apijs.html(source);
 				media.number = parseInt(source.getAttribute('id').split('.')[2], 10);
 			}
 
@@ -156,22 +155,23 @@ apijs.core.slideshow = function () {
 		}
 
 		// recherche des informations du média (4/4, url|type|styles)
-		// définie le type de dialogue à partir du mimetype du lien de la source
+		// défini le type de dialogue à partir du mimetype du lien de la source si cela est possible
 		media.url    = source.getAttribute('href');
 		media.type   = source.getAttribute('type').substr(0, 5).replace('image', 'dialogPhoto').replace('video', 'dialogVideo');
-		media.styles = document.getElementById(media.prefix).getAttribute('class').replace(/gallery|album/g, 'slideshow');
+		media.type   = (media.type.indexOf('dialog') === 0) ? media.type : 'dialogPhoto';
+		media.styles = apijs.html(media.prefix).getAttribute('class').replace(/gallery|album/g, '').trim();
 
 		// demande l'affichage du dialogue
 		// lors d'un clic sur l'image principale du mode présentation,
 		// ou lors d'un clic sur les miniatures en mode standard (en mode standard),
 		// ou lors d'un appel direct
 		if ((media.presentation && (media.numberSrc === 999)) || !media.presentation || (typeof ev === 'string'))
-			this.showDialog(media, push);
+			apijs.slideshow.showDialog(media, push);
 	};
 
 
-	// #### Affichage du dialogue ################################################## private ### //
-	// = révision : 45
+	// #### Affichage du dialogue ################################################## private ### // TODO
+	// = révision : 46
 	// » Affiche le dialogue et les boutons précédent et suivant
 	// » Vérifie au préalable s'il existe une photo ou vidéo précédente et suivante
 	// » S'assure qu'un dialogue du diaporama est présent avant de faire n'importe quoi
@@ -185,7 +185,7 @@ apijs.core.slideshow = function () {
 			this.current = { number: media.number, first: null, prev: null, next: null, last: null, total: null };
 
 			// recherche du nombre de miniature
-			this.current.total = document.getElementById(media.prefix).querySelectorAll('a[id][type]').length - 1;
+			this.current.total = apijs.html(media.prefix).querySelectorAll('a[id][type]').length - 1;
 			this.current.total = (media.presentation) ? this.current.total - 1 : this.current.total;
 
 			// mise à jour des variables
@@ -196,10 +196,10 @@ apijs.core.slideshow = function () {
 
 			// boutons précédent et suivant
 			if (this.current.prev !== null)
-				document.getElementById('apijsPrev').removeAttribute('disabled');
+				apijs.html('#Prev').removeAttribute('disabled');
 
 			if (this.current.next !== null)
-				document.getElementById('apijsNext').removeAttribute('disabled');
+				apijs.html('#Next').removeAttribute('disabled');
 
 			// gestion de l'historique
 			if (apijs.config.slideshow.anchor && (typeof history.pushState === 'function') && ((typeof push === 'boolean') ? push : true)) {
@@ -218,17 +218,17 @@ apijs.core.slideshow = function () {
 
 
 	// #### Changement d'ancre ############################################ event ## private ### //
-	// = révision : 4
+	// = révision : 5
 	// » Se déclenche lorsque l'ancre change (mais ne modifie pas l'ancre ici)
-	// » Affiche le dialogue photo ou vidéo correspondant en mode diaporama si possible
-	// » Supprime l'éventuel dialogue photo ou vidéo du mode diaporama
+	// » Affiche le dialogue photo ou vidéo correspondant en mode diaporama
+	// » OU supprime l'éventuel dialogue photo ou vidéo du mode diaporama
 	this.popState = function () {
 
 		// recherche d'une ancre
 		// \\. au lieu de \. (pour le caractère .) sinon col 44, Bad or unnecessary escaping
 		if (new RegExp('#(' + apijs.config.slideshow.ids + '(?:-|\\.)[0-9]+(?:-|\\.)[0-9]+)').test(location.href)) {
 			var id = RegExp.$1.replace(/-/g, '.');
-			if (document.getElementById(id))
+			if (apijs.html(id))
 				apijs.slideshow.showMedia(id, false);
 		}
 		else if (apijs.slideshow.current !== null) {

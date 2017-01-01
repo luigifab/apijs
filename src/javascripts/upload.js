@@ -1,9 +1,8 @@
 /**
  * Created L/13/04/2009
- * Updated D/31/05/2015
- * Version 56
+ * Updated V/23/12/2016
  *
- * Copyright 2008-2015 | Fabrice Creuzot (luigifab) <code~luigifab~info>
+ * Copyright 2008-2017 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
  *
  * This program is free software, you can redistribute it or modify
@@ -19,11 +18,19 @@
 
 apijs.core.upload = function () {
 
+	// Totalement testé et approuvé sur
+	// Debian testing/64 : Firefox 45, Chromium 53
+	// Windows 7/32 : IE 11, Firefox 22, Chrome 55, Opera 42
+	// Windows 10/64 : Edge 14
+
+	"use strict";
+	this.title = null;
+	this.action = null;
+	this.inputname = null;
 	this.extensions = null;
 	this.callback = null;
 	this.args = null;
 	this.icon = null;
-	this.title = null;
 
 	this.maxsize = 0;
 	this.startTime = 0;
@@ -33,39 +40,48 @@ apijs.core.upload = function () {
 	// GESTION DU DIALOGUE D'UPLOAD
 
 	// #### Dialogue d'upload ############################################### i18n ## public ### //
-	// = révision : 57
+	// = révision : 64
 	// » Permet à l'utilisateur l'envoi de fichier sans avoir à recharger la page
+	// » Enregistre toutes les variables pour une utilisation ultérieure
+	// » Le paramètre title vaut true lorsque l'utilisateur clique sur réessayer
 	// » Prépare et affiche le dialogue d'upload de [TheDialog]
 	this.sendFile = function (title, action, inputname, maxsize, extensions, callback, args, icon) {
 
 		var text;
 
-		if ((typeof title === 'string') && (typeof action === 'string') && (typeof inputname === 'string') &&
-		    (typeof maxsize === 'number') && (typeof extensions === 'string') && (typeof callback === 'function')) {
-
-			this.extensions = extensions.split(',');
-			this.callback = callback;
+		if (arguments.length >= 6) {
+			this.title  = title;
+			this.action = action;
+			this.inputname  = inputname;
+			this.extensions = (typeof extensions === 'string') ? extensions.split(',') : [];
+			this.callback   = callback;
 			this.args = args;
 			this.icon = icon;
-			this.title = title;
 			this.maxsize = maxsize;
+		}
+		else if (title !== true) {
+			this.title = null;
+		}
 
-			maxsize = maxsize.toFixed(2).replace('.00', '').replace('.', apijs.i18n.translate('uploadDecimal'));
+		if ((typeof this.title === 'string') && (typeof this.action === 'string') && (typeof this.inputname === 'string') &&
+		    (typeof this.maxsize === 'number') && (this.extensions.length > 0) && (typeof this.callback === 'function')) {
+
+			maxsize = this.maxsize.toFixed(2).replace('.00', '').replace('.', apijs.i18n.translate('uploadDecimal'));
 
 			if (this.extensions[0] === '*')
 				text = apijs.i18n.translate('uploadAllType', maxsize);
 			else if (this.extensions.length === 1)
-				text = apijs.i18n.translate('uploadOneType', extensions, maxsize);
+				text = apijs.i18n.translate('uploadOneType', this.extensions.join(','), maxsize);
 			else
 				text = apijs.i18n.translate('uploadMultiType', this.extensions.slice(0, -1).join(', '), this.extensions.slice(-1), maxsize);
 
-			apijs.dialog.dialogFormUpload(title, text, action, inputname, icon);
+			apijs.dialog.dialogFormUpload(this.title, text, this.action, this.inputname, this.icon);
 		}
 		else {
 			if ((typeof callback === 'function') && (typeof callback.name === 'string') && (callback.name.length > 0))
 				callback = callback.name;
 
-			apijs.error('TheUpload.sendFile', {
+			apijs.error('TheUpload:sendFile', {
 				'(string) *title': title,
 				'(string) *action': action,
 				'(string) *inputname': inputname,
@@ -80,14 +96,15 @@ apijs.core.upload = function () {
 
 
 	// #### Vérification du formulaire ##################################### i18n ## private ### // TODO
-	// = révision : 135
+	// = révision : 141
 	// » Vérifie la présence du fichier ; le type du fichier ; la taille du fichier (avec l'API File si disponible)
 	// » Lorsque le fichier est bon lance l'envoi du fichier vers le serveur en mode asynchrone ou en mode synchrone
 	// » Lorsque le fichier n'est pas bon (présence, type ou taille) affiche un message d'erreur détaillé
-	this.actionConfirm = function (action) {
+	// » Le mode asynchrone est déclenché uniquement si le paramètre noAjax est présent
+	this.actionConfirm = function () {
 
-		var tagInput = document.getElementById('apijsFile'),
-		    tagError = apijs.dialog.tBox.querySelector('div.status').firstChild,
+		var tagInput = apijs.html('#File'),
+		    tagError = apijs.html('div.status').firstChild,
 		    checks = { filePresent: false, fileType: true, fileSize: false, type: '', size: this.maxsize };
 
 		// vérifications du fichier
@@ -117,19 +134,12 @@ apijs.core.upload = function () {
 		// lorsque le fichier n'est pas bon (présence, type ou taille) affiche un message d'erreur détaillé
 		if (checks.filePresent && checks.fileType && checks.fileSize) {
 
-			try {
-				if (action.indexOf('noAjax') > 0) {
-					apijs.dialog.tBox.submit();
-					window.setTimeout(apijs.upload.onStart.bind(this), 12);
-				}
-				else {
-					this.startUpload(action);
-				}
-			}
-			catch (e) {
-				apijs.dialog.tBox.submit();
+			if (this.action.indexOf('noAjax') > 0) {
+				apijs.html('form').submit();
 				window.setTimeout(apijs.upload.onStart.bind(this), 12);
-				console.warn(e);
+			}
+			else {
+				this.ajaxSend();
 			}
 		}
 		else if (this.extensions !== null) {
@@ -145,7 +155,7 @@ apijs.core.upload = function () {
 				tagError.replaceData(0, tagError.nodeValue.length, apijs.i18n.translate('uploadEmpty'));
 			}
 
-			apijs.dialog.tBox.querySelector('.browse').focus();
+			apijs.html('button.browse').focus();
 		}
 	};
 
@@ -154,18 +164,18 @@ apijs.core.upload = function () {
 	// GESTION DE L'UPLOAD
 
 	// #### Gestion de l'envoi asynchrone ########################## xhr ## event ## private ### // TODO
-	// = révision : 135
+	// = révision : 141
 	// » Utilise l'adresse de l'action du formulaire de la boite de dialogue comme destination
 	// » Crée un formulaire pour y envoyer le fichier sur POST et le paramètre isAjax=true sur GET
 	// » Ajoute le champ X-CSRF-Token au formulaire si disponible
 	// » Met en place les gestionnaires d'événements associés (lonreadystatechange/oadstart/progress/load/error)
 	// » En cas de succès, appelle la fonction callback avec ses paramètres [ callback(fileid, args) ]
-	this.startUpload = function (action) {
+	this.ajaxSend = function () {
 
 		var form = new FormData(), xhr = new XMLHttpRequest();
-		form.append(document.getElementById('apijsFile').getAttribute('name'), document.getElementById('apijsFile').files[0]);
+		form.append(apijs.html('#File').getAttribute('name'), apijs.html('#File').files[0]);
 
-		xhr.open('POST', action + ((action.indexOf('?') > 0) ? '&isAjax=true' : '?isAjax=true'), true);
+		xhr.open('POST', this.action + ((this.action.indexOf('?') > 0) ? '&isAjax=true' : '?isAjax=true'), true);
 
 		if (typeof apijs.config.upload.tokenValue === 'string')
 			xhr.setRequestHeader('X-CSRF-Token', apijs.config.upload.tokenValue);
@@ -183,8 +193,7 @@ apijs.core.upload = function () {
 
 			if ((xhr.readyState === 4) && (xhr.status === 200)) {
 				var text = xhr.responseText.trim();
-				if (apijs.config.debug)
-					console.warn('(onreadystatechange) upload ended with status 200: ' + text);
+				apijs.log('ajaxSend:onreadystatechange status:200 message:' + text);
 				if (text.indexOf('success-') === 0) {
 					apijs.upload.updateTitle();
 					apijs.upload.callback(text.slice(8), apijs.upload.args);
@@ -194,8 +203,7 @@ apijs.core.upload = function () {
 				}
 			}
 			else if (xhr.readyState === 4) {
-				if (apijs.config.debug)
-					console.warn('(onreadystatechange) upload ended with status ' + xhr.status + ': ' + xhr.responseText);
+				apijs.log('ajaxSend:onreadystatechange status:' + xhr.status + ' message: ' + xhr.responseText);
 				apijs.upload.onError('uploadError1', xhr.status);
 			}
 		};
@@ -209,47 +217,44 @@ apijs.core.upload = function () {
 	};
 
 
-	// #### Gestion des erreurs ############################################ i18n ## private ### // TODO
-	// = révision : 23
-	// » Affiche un message d'erreur détaillé
-	// » Ne réinitialise plus les variables
-	this.onError = function (key, text) {
-
-		if (typeof key === 'string')
-			text = ((key === 'uploadError2') && (text.indexOf('[/') > 0)) ? text : apijs.i18n.translate(key, text);
-		else
-			text = apijs.i18n.translate('uploadError0');
+	// #### Gestion des erreurs ################################### event ## i18n ## private ### //
+	// = révision : 31
+	// » Affiche un message d'erreur détaillé après avoir réinitialisé le titre de la page
+	// » Ne réinitialise plus les variables, conserve tout pour pouvoir relancer l'opération
+	// » key=uploadError2 ou key=uploadError1 ou key=null
+	this.onError = function (key, txt) {
 
 		this.updateTitle();
-		this.icon = (this.icon !== null) ? 'upload error ' + this.icon : 'upload error';
 
-		apijs.dialog.dialogInformation(this.title, text, this.icon);
+		txt = ((typeof key === 'string') ? apijs.i18n.translate(key, txt) : apijs.i18n.translate('uploadError0')) + '[br][br]' + apijs.i18n.translate('uploadRestart', 'href="apijs://restart" onclick="apijs.upload.sendFile(true); return false;"');
+
+		apijs.dialog.dialogInformation(this.title, txt, ([null, undefined].indexOf(this.icon) < 0) ? 'upload error ' + this.icon : 'upload error');
 	};
 
 
 
-	// GESTION DE LA BARRE DE PROGRESSION
+	// GESTION DE LA PROGRESSION
+	// Math.floor = entier inférieur, Math.ceil = entier supérieur, Math.round = au mieux
 
-	// #### Affichage du dialogue ######################### event/timeout ## i18n ## private ### //
-	// = révision : 6
-	// » Sauvegarde l'heure de démarrage de l'upload
-	// » Affiche le dialogue de progression (avec son animation indéterminée)
-	// » Math.floor = entier inférieur, Math.ceil = entier supérieur, Math.round = au mieux
+	// #### Affichage du dialogue ################################# event ## i18n ## private ### //
+	// = révision : 11
+	// » Sauvegarde l'heure de démarrage et affiche le dialogue de progression (avec son animation indéterminée)
 	this.onStart = function () {
 
 		this.startTime = this.lastTime = Math.round(new Date().getTime() / 1000);
-		apijs.dialog.dialogProgress(this.title, apijs.i18n.translate('uploadInProgress') + ' [span] [/span]', this.icon);
+		apijs.dialog.dialogProgress(this.title, apijs.i18n.translate('uploadInProgress'), this.icon);
+
+		apijs.log('onStart:sending...');
 	};
 
 
-	// #### Gestion de l'avancement ####################################### event ## private ### //
-	// = révision : 130
+	// #### Gestion de l'avancement ####################################### event ## private ### // TODO?
+	// = révision : 131
 	// » Cherche à actualiser la barre de progression toutes les 2 secondes (uniquement de 1 à 99%)
-	//  affiche le pourcentage, la vitesse à partir de 25 secondes, le temps restant à partir de 40 secondes ET 90 secondes de temps total
+	//   affiche le pourcentage, la vitesse à partir de 25 secondes, le temps restant à partir de 40 secondes ET 90 secondes de temps total
 	// » Cherche à actualiser la barre de progression lorsque l'envoi du fichier est terminé (donc à 100%)
-	//  affiche le pourcentage, le temps total à partir de 20 secondes, la vitesse si possible
+	//   affiche le pourcentage, le temps total à partir de 20 secondes, la vitesse si possible
 	// » Dans tous les cas actualise également le titre de la page avec le pourcentage
-	// » Math.floor = entier inférieur, Math.ceil = entier supérieur, Math.round = au mieux
 	this.onProgress = function (ev) {
 
 		var percent, key, rate, time, elapsedTime, totalTime, currentTime = Math.round(new Date().getTime() / 1000), mins;
@@ -282,10 +287,10 @@ apijs.core.upload = function () {
 					// vitesse = taille téléchargé / temps écoulé / 1024
 					rate = Math.round(ev.loaded / elapsedTime / 1024);
 
-					if ((elapsedTime < 40) || (totalTime < 90)) { key = 14; time = null; } //upload14 "§% (§ Ko/s)"
-					else if (mins > 1)  { key = 11; time = mins; } //upload11 "§% (§ Ko/s - § minutes restantes)"
-					else if (time > 50) { key = 12; time = 1; }    //upload12 "§% (§ Ko/s - § minute restante)"
-					else                { key = 13; }              //upload13 "§% (§ Ko/s - § secondes restantes)"
+					if ((elapsedTime < 40) || (totalTime < 90)) { key = 14; time = null; } // upload14 "§% - § ko/s"
+					else if (mins > 1)  { key = 11; time = mins; } // upload11 "§% - § ko/s - § minutes restantes"
+					else if (time > 50) { key = 12; time = 1; }    // upload12 "§% - § ko/s - § minute restante"
+					else                { key = 13; }              // upload13 "§% - § ko/s - § secondes restantes"
 				}
 
 				this.updateProgress(percent, key, rate, time);
@@ -301,10 +306,10 @@ apijs.core.upload = function () {
 			rate = Math.round(ev.loaded / time / 1024);
 
 			if ((rate > 0) && (rate !== Infinity)) {
-				if      (mins > 1)  { key = 21; time = mins; } //upload21 "§% (à § Ko/s en § minutes)"
-				else if (time > 50) { key = 22; time = 1; }    //upload22 "§% (à § Ko/s en § minute)"
-				else if (time > 20) { key = 23; }              //upload23 "§% (à § Ko/s en § secondes)"
-				else                { key = 24; time = null; } //upload24 "§% (à § Ko/s)"
+				if      (mins > 1)  { key = 21; time = mins; } // upload21 "§% - à § ko/s en § minutes"
+				else if (time > 50) { key = 22; time = 1; }    // upload22 "§% - à § ko/s en § minute"
+				else if (time > 20) { key = 23; }              // upload23 "§% - à § ko/s en § secondes"
+				else                { key = 24; time = null; } // upload24 "§% - à § ko/s"
 			}
 			else {
 				rate = null; time = null; // 100%
@@ -317,19 +322,19 @@ apijs.core.upload = function () {
 
 
 	// #### Gestion du graphique ########################################### i18n ## private ### //
-	// = révision : 109
-	// » Fait avancer la barre de progression en fonction des paramètres d'appels (de 1 à 100%)
-	// » Tous les paramètres peuvent être null sauf le premier
+	// = révision : 114
+	// » Fait avancer la barre de progression (de 1 à 100%)
+	// » Les paramètres peuvent être null sauf le premier
+	// » Lorsque la barre de progression atteint 100%, on change le texte du dialogue
 	this.updateProgress = function (percent, key, rate, time) {
 
-		var rect = document.getElementById('apijsProgress').querySelector('rect'),
-		    text = apijs.dialog.tBox.querySelector('p span').firstChild,
-		    data;
+		var rect = apijs.html('rect'), text = apijs.html('span.info'), data;
 
 		if (percent > 99) {
 			rect.setAttribute('class', 'end');
 			rect.style.width = '';
 			data = '100%';
+			apijs.html('p').textContent = apijs.i18n.translate('uploadInEnding');
 		}
 		else {
 			rect.style.width = data = percent + '%';
@@ -342,7 +347,7 @@ apijs.core.upload = function () {
 		else if ((typeof key === 'number') && (typeof rate === 'number'))
 			data = apijs.i18n.translate('upload' + key, percent, rate);
 
-		text.replaceData(0, text.length, data);
+		text.textContent = data;
 	};
 
 

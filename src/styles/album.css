@@ -1,9 +1,8 @@
 /**
  * Created V/08/05/2009
- * Updated W/31/12/2014
- * Version 42
+ * Updated M/08/11/2016
  *
- * Copyright 2008-2015 | Fabrice Creuzot (luigifab) <code~luigifab~info>
+ * Copyright 2008-2017 | Fabrice Creuzot (luigifab) <code~luigifab~info>
  * http://www.luigifab.info/apijs
  *
  * This program is free software, you can redistribute it or modify
@@ -17,7 +16,7 @@
  * GNU General Public License (GPL) for more details.
  */
 
-/* ########################################################### Conteneurs ### */
+/* &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& conteneurs &&& */
 div.gallery img, div.album img {
 	display:block; margin:auto; overflow:hidden;
 	font-size:0.85em; line-height:120%; background-color:white;
@@ -30,9 +29,9 @@ div.gallery {
 
 div.gallery a { display:block; text-decoration:none; border:1px solid transparent; }
 div.gallery ul { margin:0.3em 0 0; padding:0; list-style:none; }
-div.gallery ul li { display:inline-block; margin:0; padding:0; vertical-align:middle; }
-div.gallery ul li a { margin:0.125em; opacity:0.7; }
-div.gallery ul li a.current { border:1px solid white; opacity:1; }
+div.gallery li { display:inline-block; margin:0; padding:0; vertical-align:middle; }
+div.gallery li a { margin:0.125em; opacity:0.7; }
+div.gallery li a.current { border:1px solid white; opacity:1; }
 
 div.album {
 	padding:0.4em; text-align:center;
@@ -41,19 +40,17 @@ div.album {
 
 div.album dl {
 	display:inline-block; margin:0.3em 0.1em; padding:0.5em 0.55em 0.35em; width:200px; vertical-align:top;
-	transition:border-color 0.3s; -moz-transition:border-color 0.3s; -webkit-transition:border-color 0.3s;
-	border:1px solid transparent; border-radius:0.6em; background-color:#CCC;
+	border:1px solid transparent; border-radius:0.6em; background-color:#CCC; transition:border-color 0.3s;
 }
 
-div.album dl.current { border:1px solid white; background-color:#ABABAB; }
+div.album dl.current { border:1px solid white; background-color:#AAA; }
 div.album dl.current dd, div.album dl.current:hover dd { color:black; }
 
-div.album dl dt a { display:block; text-decoration:none; border:1px solid transparent; }
+div.album dt a { display:block; text-decoration:none; border:1px solid transparent; }
 
-div.album dl dd {
+div.album dd {
 	margin:0.5em 0.5em 0; overflow:hidden;
-	font-size:0.8em; color:#555; white-space:nowrap; text-overflow:ellipsis;
-	transition:color 0.3s; -moz-transition:color 0.3s; -webkit-transition:color 0.3s;
+	font-size:0.8em; color:#555; white-space:nowrap; text-overflow:ellipsis; transition:color 0.3s;
 }
 
 div.album dl:hover { border-color:#999; }
