@@ -1,9 +1,9 @@
 /**
  * Created V/08/05/2009
- * Updated M/08/11/2016
+ * Updated J/12/09/2019
  *
- * Copyright 2008-2017 | Fabrice Creuzot (luigifab) <code~luigifab~info>
- * http://www.luigifab.info/apijs
+ * Copyright 2008-2020 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
+ * https://www.luigifab.fr/apijs
  *
  * This program is free software, you can redistribute it or modify
  * it under the terms of the GNU General Public License (GPL) as published
@@ -16,42 +16,38 @@
  * GNU General Public License (GPL) for more details.
  */
 
-/* &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& conteneurs &&& */
+/* &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& conteneurs &&& */
 div.gallery img, div.album img {
 	display:block; margin:auto; overflow:hidden;
-	font-size:0.85em; line-height:120%; background-color:white;
+	color:transparent; background-color:#EFEFEF; transition:background-color 0.3s;
 }
 
-div.gallery {
-	display:inline-block; padding:0.5em; text-align:center;
-	border-radius:0.6em; background-color:#DDD;
-}
+div.gallery a:before, div.gallery a:after, div.album a:before, div.album a:after { display:none; content:""; }
+
+/* &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& gallery &&& */
+div.gallery { display:inline-flex; flex-direction:column; padding:0.5em; vertical-align:top; }
 
 div.gallery a { display:block; text-decoration:none; border:1px solid transparent; }
-div.gallery ul { margin:0.3em 0 0; padding:0; list-style:none; }
-div.gallery li { display:inline-block; margin:0; padding:0; vertical-align:middle; }
-div.gallery li a { margin:0.125em; opacity:0.7; }
+div.gallery ul { display:flex; flex-wrap:wrap; justify-content:space-around; margin:0.3em 0 0; padding:0; list-style:none; }
+div.gallery li { margin:0.1em 0; padding:0; }
+div.gallery li a { opacity:0.7; }
 div.gallery li a.current { border:1px solid white; opacity:1; }
 
-div.album {
-	padding:0.4em; text-align:center;
-	border-radius:1em; background-color:#EEE;
-}
+/* &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& album &&& */
+div.album { padding:0.4em; text-align:center; }
 
 div.album dl {
-	display:inline-block; margin:0.3em 0.1em; padding:0.5em 0.55em 0.35em; width:200px; vertical-align:top;
-	border:1px solid transparent; border-radius:0.6em; background-color:#CCC; transition:border-color 0.3s;
+	display:inline-block; margin:0.3em 0.1em; padding:0.5em 0.5em 0.45em; vertical-align:top;
+	border:1px solid #EFEFEF; border-radius:0.6em; background-color:transparent; transition:border-color 0.3s, background-color 0.3s;
 }
 
-div.album dl.current { border:1px solid white; background-color:#AAA; }
-div.album dl.current dd, div.album dl.current:hover dd { color:black; }
-
+div.album dl.current { border:1px solid white; background-color:#EFEFEF; }
 div.album dt a { display:block; text-decoration:none; border:1px solid transparent; }
 
 div.album dd {
 	margin:0.5em 0.5em 0; overflow:hidden;
-	font-size:0.8em; color:#555; white-space:nowrap; text-overflow:ellipsis; transition:color 0.3s;
+	font-size:0.8em; white-space:nowrap; text-overflow:ellipsis; transition:color 0.3s;
 }
 
-div.album dl:hover { border-color:#999; }
-div.album dl:hover dd { color:#222; }
+div.album dl:hover { border-color:#CCC; background-color:#EFEFEF; }
+div.album dl:hover img, div.album dl.current img { background-color:white; }

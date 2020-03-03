@@ -1,9 +1,9 @@
 /**
  * Created S/05/06/2010
- * Updated D/18/12/2016
+ * Updated S/29/02/2020
  *
- * Copyright 2008-2017 | Fabrice Creuzot (luigifab) <code~luigifab~info>
- * http://www.luigifab.info/apijs
+ * Copyright 2008-2020 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
+ * https://www.luigifab.fr/apijs
  *
  * This program is free software, you can redistribute it or modify
  * it under the terms of the GNU General Public License (GPL) as published
@@ -19,404 +19,396 @@
 apijs.core.i18n = function () {
 
 	"use strict";
-	this.data = {};
-
-	// ici et ailleurs, dans les adresses emails, remplacer ~ par @ et .
-	// dernière version des traductions sur le document magique
-	// https://docs.google.com/spreadsheets/d/1UUpKZ-YAAlcfvGHYwt6aUM9io390j0-fIL0vMRh1pW0/edit?usp=sharing
-
-	// = de-DE (deutsch/Deutschland) = 44/44
-	// » Philip Junietz <info~label-park~com>
-	// » Pamela Steinborn <st.pamela~laposte~net>
-	this.data.de = {
-		buttonOk: "Ok",
-		buttonCancel: "Abbrechen",
-		buttonConfirm: "Bestätigen",
-		buttonClose: "Schließen",
-		buttonPrev: "Zurück",
-		buttonNext: "Weiter",
-		buttonBrowse: "Datei wählen",
-		operationTooLong: "Diese Operation dauert zu lange? ",
-		warningLostChange: "Achtung: Alle derzeitigen Änderungen werden nicht gespeichert!",
-		reloadLink: "laden Sie diese Seite",
-		operationInProgress: "Verarbeitung läuft...",
-		uploadInProgress: "Upload Vorgang...",
-		uploadInEnding: "Datenverarbeitung im Vorgang...",
-		imageError: "Leider kann das Bild momentan nicht angezeigt werden. Es ist möglich, dass die Datei vorübergehend nicht verfügbar ist.",
-		videoError: "Leider kann das Video momentan nicht wiedergegeben werden. Es ist möglich, dass die Datei vorübergehend nicht verfügbar ist oder dass Dein Browser das Video Format nicht lesen kann.[br][br]Versuche das Video [a href='§' download='']downzuloaden[/a].",
-		ctrlSlideshowFirstLast: "anfang/ende",
-		ctrlSlideshowNextPrev: "zurück/weiter",
-		ctrlVideoPause: "wiedergabe/pause",
-		ctrlVideoTime: "rückwärts/vorwärts",
-		ctrlVideoSound: "leiser/lauter",
-		ctrlVideoMute: "stumm",
-		ctrlDialogFullscreen: "vollbild",
-		ctrlDialogQuit: "beenden",
-		ctrlKeyEnd: "Ende",
-		ctrlKeyEsc: "Esc",
-		uploadAllType: "Alle Dateien wurden akzeptiert.[br]Maximale Größe: § MB.",
-		uploadOneType: "Akzeptiertes Dateiformat: §.[br]Maximale Größe: § MB.",
-		uploadMultiType: "Akzeptiertes Dateiformate: § und §.[br]Maximale Größe: § MB.",
-		uploadDecimal: ",",
-		upload11: "§% - § kB/s - Noch § Minuten",
-		upload12: "§% - § kB/s - Noch § Minute",
-		upload13: "§% - § kB/s - Noch § Sekunden",
-		upload14: "§% - § kB/s",
-		upload21: "§% - bis § kB/s in § Minuten",
-		upload22: "§% - bis § kB/s in § Minute",
-		upload23: "§% - bis § kB/s in § Sekunden",
-		upload24: "§% - bis § kB/s",
-		uploadBadType: "Es ist nicht möglich die Datei zu senden weil das Dateiformat nicht unterstützt wird. Aktuelles Dateiformat: §.",
-		uploadBadSize: "Es ist nicht möglich die Datei zu senden weil die Datei zu gross ist. Aktuelle Dateigrösse: §\u00a0MB.",
-		uploadEmpty: "Es ist nicht möglich die Datei zu senden weil die Datei keine Daten enthält.",
-		uploadError0: "Es ist ein unerwarteter Fehler aufgetreten... Bitte versuchen Sie es noch einmal.",
-		uploadError1: "Es ist ein Fehler beim Senden der Datei aufgetreten.[br][em]➩ Fehler §.[/em]",
-		uploadError2: "Es ist ein Fehler bei der Verarbeitung der Datei aufgetreten.[br][em]➩ §[/em]",
-		uploadRestart: "Wir laden Sie ein es erneut zu [a §]versuchen[/a]."
+	this.data = {
+		// https://docs.google.com/spreadsheets/d/1UUpKZ-YAAlcfvGHYwt6aUM9io390j0-fIL0vMRh1pW0/edit?usp=sharing
+		// auto start
+		cs: {
+			103: "Zrušit",
+			104: "Potvrzení",
+			105: "Zavřít",
+			106: "Předchozí",
+			107: "Další",
+			142: "předchozí/další"
+		},
+		de: {
+			103: "Abbrechen",
+			104: "Bestätigen",
+			105: "Schließen",
+			106: "Zurück",
+			107: "Weiter",
+			108: "Datei wählen",
+			109: "Dateien wählen",
+			124: "Verarbeitung läuft...",
+			141: "anfang/ende",
+			142: "zurück/weiter",
+			143: "wiedergabe/pause",
+			144: "rückwärts/vorwärts",
+			145: "leiser/lauter",
+			146: "stumm",
+			147: "vollbild",
+			148: "beenden",
+			149: "Ende",
+			150: "Esc",
+			161: "Alle Dateien wurden akzeptiert.",
+			162: "Akzeptiertes Dateiformat: §.",
+			163: "Akzeptiertes Dateiformate: § und §.",
+			164: "Maximale Größe: § MB.",
+			167: "Unerlaubtes Format",
+			168: "Format zu gross",
+			169: "Leere Datei",
+			181: "§% - § kB/s - Noch § Minuten",
+			182: "§% - § kB/s - Noch § Minute",
+			183: "§% - § kB/s - Noch § Sekunden",
+			185: "§% - bis § kB/s in § Minuten",
+			186: "§% - bis § kB/s in § Minute",
+			187: "§% - bis § kB/s in § Sekunden",
+			188: "§% - bis § kB/s",
+			191: "Abbrechen",
+			192: "Sind Sie sicher? [span]Ja[/span] - Nein",
+			193: "Es ist ein unerwarteter Fehler aufgetreten... Bitte versuchen Sie es noch einmal.",
+			194: "Es ist ein Fehler beim Senden.",
+			195: "Es ist ein Fehler bei der Verarbeitung.",
+			196: "Wir laden Sie ein es erneut zu [a §]versuchen[/a]."
+		},
+		en: {
+			102: "Ok",
+			103: "Cancel",
+			104: "Confirm",
+			105: "Close",
+			106: "Previous",
+			107: "Next",
+			108: "Choose a file",
+			109: "Choose one or multiple files",
+			124: "Operation in progress...",
+			125: "Upload in progress...",
+			126: "Processing file in progress...",
+			131: "video",
+			132: "audio",
+			133: "original",
+			134: "subtitles",
+			135: "off",
+			141: "start/end",
+			142: "previous/next",
+			143: "play/pause",
+			144: "backward/forward",
+			145: "decrease/increase the volume",
+			146: "mute",
+			147: "full screen",
+			148: "quit",
+			149: "End",
+			150: "Escape",
+			161: "All files are accepted.",
+			162: "Accepted file format: §.",
+			163: "Accepted file formats: § and §.",
+			164: "Maximum size: § MB.",
+			165: "Maximum size by file: § MB.|Total maximum size: § MB.",
+			166: "§ MB",
+			167: "Format not allowed",
+			168: "Size too large",
+			169: "File empty",
+			181: "§% - § kB/s - § minutes left",
+			182: "§% - § kB/s - § minute left",
+			183: "§% - § kB/s - § seconds left",
+			184: "§% - § kB/s",
+			185: "§% - at § kB/s in § minutes",
+			186: "§% - at § kB/s in § minute",
+			187: "§% - at § kB/s in § seconds",
+			188: "§% - at § kB/s",
+			191: "Interrupt",
+			192: "Are you sure? [span]Yes[/span] - No",
+			193: "It seems that an unlikely mistake just happened... Please try again.",
+			194: "An error occurred while sending.",
+			195: "An error occurred while processing.",
+			196: "We invite you to [a §]try again[/a]."
+		},
+		es: {
+			102: "Aceptar",
+			103: "Cancelar",
+			104: "Confirmar",
+			105: "Cerrar",
+			106: "Anterior",
+			107: "Siguiente",
+			108: "Elegir un fichero",
+			109: "Elegir uno o varios ficheros",
+			124: "Operación en curso...",
+			125: "Envío en progreso...",
+			126: "Tratamiento en curso...",
+			141: "inicio/fin",
+			142: "anterior/siguiente",
+			143: "reproducir/pausa",
+			144: "retroceder/avanzar",
+			145: "bajar/subir el volumen",
+			146: "silenciar",
+			147: "pantalla completa",
+			148: "salir",
+			149: "Fin",
+			150: "Esc",
+			161: "Se aceptan todos los archivos.",
+			162: "Formato de archivo aceptado: §.",
+			163: "Formatos de archivos aceptados: § y §.",
+			164: "Tamaño máximo: § MB.",
+			167: "Formato no autorizado",
+			168: "Tamaño demasiado importante",
+			181: "§% - § kB/s - § minutos restantes",
+			182: "§% - § kB/s - § minuto restantes",
+			183: "§% - § kB/s - § segundos restantes",
+			185: "§% - a § kB/s en § minutos",
+			186: "§% - a § kB/s en § minuto",
+			187: "§% - a § kB/s en § segundos",
+			188: "§% - a § kB/s",
+			192: "¿Está seguro? [span]Sí[/span] - No",
+			193: "Parece que un error improbable acabo de ocurrir... Por favor, inténtelo de nuevo.",
+			194: "Se produjo un error durante el envío.",
+			195: "Se produjo un error durante el procesamiento.",
+			196: "Le invitamos a [a §]intenter de nuevo[/a]."
+		},
+		fr: {
+			103: "Annuler",
+			104: "Valider",
+			105: "Fermer",
+			106: "Précédent",
+			107: "Suivant",
+			108: "Choisir un fichier",
+			109: "Choisir un ou plusieurs fichiers",
+			124: "Opération en cours...",
+			125: "Envoi en cours...",
+			126: "Traitement en cours...",
+			131: "vidéo",
+			133: "originale",
+			134: "sous-titres",
+			141: "début/fin",
+			142: "précédent/suivant",
+			143: "lecture/pause",
+			144: "reculer/avancer",
+			145: "baisser/augmenter le volume",
+			146: "couper le son",
+			147: "plein écran",
+			148: "quitter",
+			149: "Fin",
+			150: "Échap",
+			161: "Tous les fichiers sont acceptés.",
+			162: "Format de fichier accepté : §.",
+			163: "Formats de fichier acceptés : § et §.",
+			164: "Taille maximale : § Mo.",
+			165: "Taille maximale par fichier : § Mo.|Taille maximale total : § Mo.",
+			166: "§ Mo",
+			167: "Format non autorisé",
+			168: "Taille trop importante",
+			169: "Fichier vide",
+			181: "§% - § ko/s - § minutes restantes",
+			182: "§% - § ko/s - § minute restante",
+			183: "§% - § ko/s - § secondes restantes",
+			184: "§% - § ko/s",
+			185: "§% - à § ko/s en § minutes",
+			186: "§% - à § ko/s en § minute",
+			187: "§% - à § ko/s en § secondes",
+			188: "§% - à § ko/s",
+			191: "Interrompre",
+			192: "Êtes-vous sûr(e) ? [span]Oui[/span] - Non",
+			193: "Il semblerait qu'une erreur improbable vient de se produire... Veuillez réessayer.",
+			194: "Une erreur est survenue lors de l'envoi.",
+			195: "Une erreur est survenue lors du traitement.",
+			196: "Nous vous invitons à [a §]réessayer[/a]."
+		},
+		it: {
+			103: "Annulla",
+			104: "Conferma",
+			105: "Chiudi",
+			106: "Precedente",
+			107: "Successivo",
+			108: "Scegli un file",
+			109: "Scegli uno o più file",
+			124: "Operazione in corso...",
+			125: "Invio in corso...",
+			126: "Trattamento in corso...",
+			141: "inizio/fine",
+			142: "precedente/successivo",
+			143: "riproduci/pausa",
+			144: "indietro/avanti",
+			145: "abbassare/aumentare il volume",
+			146: "muto",
+			147: "schermo intero",
+			148: "esci",
+			149: "Fine",
+			150: "Esc",
+			161: "Tutti i file sono accettati.",
+			162: "Formato del file accettato: §.",
+			163: "Formati accettati: § et §.",
+			164: "Dimensione massima: § MB.",
+			167: "Formato non autorizzato",
+			168: "Dimensione troppo importante",
+			169: "File vuoto",
+			181: "§% - § kB/s - § minuti rimanenti",
+			182: "§% - § kB/s - § minuto rimanente",
+			183: "§% - § kB/s - § secondi rimanenti",
+			185: "§% - a § kB/s in § minuti",
+			186: "§% - a § kB/s in § minuto",
+			187: "§% - a § kB/s in § secondi",
+			188: "§% - a § kB/s",
+			191: "Interrompere",
+			192: "Sei sicuro? [span]Si[/span] - No",
+			193: "Sembra che un errore inaspettato si sia verificato... Riprova.",
+			194: "Un errore si è verificato durante l'invio.",
+			195: "Un errore si è verificato durante il trattamento.",
+			196: "Vi invitiamo a [a §]riprovare[/a]."
+		},
+		ja: {
+			103: "キャンセル",
+			104: "承認",
+			105: "閉じる",
+			106: "前へ",
+			107: "次へ",
+			142: "前へ/次へ",
+			166: "§ Mo",
+			184: "§% - § Ko/s",
+			192: "よろしいですか？[span]はい[/span] - いいえ"
+		},
+		nl: {
+			103: "Annuleren",
+			104: "Bevestigen",
+			105: "Sluiten",
+			106: "Vorige",
+			107: "Volgende",
+			142: "vorige/volgende"
+		},
+		pl: {
+			103: "Anuluj",
+			104: "Potwierdź",
+			105: "Zamknij",
+			106: "Poprzedni",
+			107: "Następne",
+			142: "poprzedni/następne"
+		},
+		pt: {
+			103: "Cancelar",
+			104: "Confirmar",
+			105: "Fechar",
+			106: "Anterior",
+			107: "Seguinte",
+			108: "Escolher um ficheiro",
+			109: "Escolher um ou vários ficheiros",
+			124: "Operação em curso...",
+			125: "Envio em curso...",
+			126: "Tratamento em curso...",
+			141: "início/fim",
+			142: "anterior/seguinte",
+			143: "reprodução/pausa",
+			144: "recuar/avançar",
+			145: "subir/baixar o volume",
+			146: "silenciar",
+			147: "ecrã completo",
+			148: "sair",
+			149: "Fim",
+			150: "Esc",
+			161: "Todos os ficheiros foram aceites.",
+			162: "Formato do ficheiro aceite: §.",
+			163: "Formatos de ficheiro aceites: § e §.",
+			164: "Tamanho máximo: § MB.",
+			181: "§% - § kB/s - § minutos restantes",
+			182: "§% - § kB/s - § minuto restantes",
+			183: "§% - § kB/s - § segundos restantes",
+			185: "§% - § kB/s em § minutos",
+			186: "§% - § kB/s em § minuto",
+			187: "§% - § kB/s em § segundos",
+			188: "§% - § kB/s",
+			192: "Tem a certeza? [span]Sim[/span] - Não",
+			193: "Parece ter acontecido um erro imprevisto. Por favor, tente novamente.",
+			194: "Ocorreu um erro ao enviar.",
+			195: "Ocorreu um erro ao processar.",
+			196: "Convidamo-lo a [a §]tentar novamente[/a]."
+		},
+		ptBR: {
+			107: "Próximo",
+			142: "anterior/próximo"
+		},
+		ru: {
+			102: "Ок",
+			103: "Отмена",
+			104: "Подтвердить",
+			105: "Закрыть",
+			106: "Предыдущий",
+			107: "Следующий",
+			108: "Выберите файл",
+			124: "Операция в процессе...",
+			141: "начало/конец",
+			142: "предыдущий/следующий",
+			143: "воспроизведение/пауза",
+			144: "назад/вперед",
+			145: "понизить/повысить громкость",
+			146: "отключить звук",
+			147: "на весь экран",
+			148: "выйти",
+			161: "Все файлы приняты.",
+			162: "Формат файла: §.",
+			163: "Форматы файлов: § и §.",
+			164: "Максимальный размер: § MB.",
+			181: "§% - § kB/s - осталось § минут",
+			182: "§% - § kB/s - осталось § минут",
+			183: "§% - § kB/s - осталось § секунд",
+			185: "§% - § kB/s за § минут",
+			186: "§% - § kB/s за § минут",
+			187: "§% - § kB/s за § секунд",
+			188: "§% - § kB/s",
+			192: "Вы уверены? [span]Да[/span] - нет",
+			193: "Кажется произошла не предусмотренная ошибка... Попробуйте еще раз.",
+			194: "Возникла ошибка при отправке файла.",
+			195: "Возникла ошибка при обработке файла."
+		},
+		tr: {
+			103: "İptal",
+			104: "Onayla",
+			105: "Kapat",
+			106: "Önceki",
+			107: "Sonraki",
+			142: "önceki/sonraki",
+			192: "Emin misiniz ? [span]Evet[/span] - Hayır"
+		},
+		zh: {
+			103: "取消",
+			104: "确认",
+			105: "关闭",
+			106: "前页",
+			107: "下一步",
+			142: "前页/下一步",
+			192: "您确定吗？[span]是[/span] - 否"
+		}
+		// auto end
 	};
 
-	// = en-GB (english/United-Kingdom) = 44/44
-	// » Brian Legrand
-	// » Fabrice Creuzot (luigifab) <code~luigifab~info>
-	// » Pascale Scellier <scellier.pascale~orange~fr>
-	this.data.en = {
-		buttonOk: "Ok",
-		buttonCancel: "Cancel",
-		buttonConfirm: "Confirm",
-		buttonClose: "Close",
-		buttonPrev: "Previous",
-		buttonNext: "Next",
-		buttonBrowse: "Choose a file",
-		operationTooLong: "This operation is too long? ",
-		warningLostChange: "Warning: all changes in progress will be lost.",
-		reloadLink: "Reload this page",
-		operationInProgress: "Operation in progress...",
-		uploadInProgress: "Upload in progress...",
-		uploadInEnding: "Processing file in progress...",
-		imageError: "Unfortunately, it is not possible to display this picture for now. Maybe the file is temporarily unavailable.",
-		videoError: "Unfortunately, it is not possible to play this video for now. Maybe the file is temporarily unavailable or your browser can't read the format of the video.[br][br]Try to [a href='§' download='']download[/a] the video.",
-		ctrlSlideshowFirstLast: "start/end",
-		ctrlSlideshowNextPrev: "previous/next",
-		ctrlVideoPause: "play/pause",
-		ctrlVideoTime: "backward/forward",
-		ctrlVideoSound: "decrease/increase the volume",
-		ctrlVideoMute: "mute",
-		ctrlDialogFullscreen: "full screen",
-		ctrlDialogQuit: "quit",
-		ctrlKeyEnd: "End",
-		ctrlKeyEsc: "Escape",
-		uploadAllType: "All files are accepted.[br]Maximum size: § MB.",
-		uploadOneType: "Accepted file format: §.[br]Maximum size: § MB.",
-		uploadMultiType: "Accepted file formats: § and §.[br]Maximum size: § MB.",
-		uploadDecimal: ".",
-		upload11: "§% - § kB/s - § minutes left",
-		upload12: "§% - § kB/s - § minute left",
-		upload13: "§% - § kB/s - § seconds left",
-		upload14: "§% - § kB/s",
-		upload21: "§% - at § kB/s in § minutes",
-		upload22: "§% - at § kB/s in § minute",
-		upload23: "§% - at § kB/s in § seconds",
-		upload24: "§% - at § kB/s",
-		uploadBadType: "It's impossible to send the file because the proposed file format isn't allowed. Proposed file format: §.",
-		uploadBadSize: "It's impossible to send the file because the file size is too large. Proposed file size: §\u00a0MB.",
-		uploadEmpty: "It's impossible to send the file because the file is empty.",
-		uploadError0: "It seems that an unlikely mistake just happened... Please try again.",
-		uploadError1: "An error occurred while sending the file.[br][em]➩ Error §.[/em]",
-		uploadError2: "An error occurred while processing the file.[br][em]➩ §[/em]",
-		uploadRestart: "We invite you to [a §]try again[/a]."
-	};
-
-	// = es-ES (español/España) = 44/44
-	// » Paco Aguayo <francisco.aguayocanela~gmail~com>
-	// » Hugo Baugé & Cédric Scaramuzza <info~label-park~com>
-	// » Pascale Scellier <scellier.pascale~orange~fr>
-	this.data.es = {
-		buttonOk: "Aceptar",
-		buttonCancel: "Cancelar",
-		buttonConfirm: "Confirmar",
-		buttonClose: "Cerrar",
-		buttonPrev: "Anterior",
-		buttonNext: "Siguiente",
-		buttonBrowse: "Eligir un archivo",
-		operationTooLong: "¿Esta operación toma demasiado tiempo? ",
-		warningLostChange: "Atención: todos los cambios en curso se perderán.",
-		reloadLink: "Recargar esta página",
-		operationInProgress: "Operación en curso...",
-		uploadInProgress: "Envío del archivo en progreso...",
-		uploadInEnding: "Tratamiento del archivo en curso...",
-		imageError: "Desgraciadamente, no se puede mostrar esta foto por el momento. Puede ser que el archivo sea temporalmente inaccesible.",
-		videoError: "Desgraciadamente, no se puede leer éste video por el momento. Puede ser que el archivo sea temporalmente inaccesible o que su navegador no pueda leer el formato del video.[br][br]Intente [a href='§' download='']cargar[/a] la video.",
-		ctrlSlideshowFirstLast: "inicio/fin",
-		ctrlSlideshowNextPrev: "retroceder/avanzar",
-		ctrlVideoPause: "reproducir/pausa",
-		ctrlVideoTime: "atrás/adelante",
-		ctrlVideoSound: "bajar/subir el volumen",
-		ctrlVideoMute: "silenciar",
-		ctrlDialogFullscreen: "pantalla completa",
-		ctrlDialogQuit: "salir",
-		ctrlKeyEnd: "Fin",
-		ctrlKeyEsc: "Esc",
-		uploadAllType: "Se aceptan todos los archivos.[br]Tamaño máximo: § MB.",
-		uploadOneType: "Formato de archivo aceptado: §.[br]Tamaño máximo: § MB.",
-		uploadMultiType: "Formatos de archivos aceptados: § y §.[br]Tamaño máximo: § MB.",
-		uploadDecimal: ".",
-		upload11: "§% - § kB/s - § minutos restantes",
-		upload12: "§% - § kB/s - § minuto restantes",
-		upload13: "§% - § kB/s - § segundos restantes",
-		upload14: "§% - § kB/s",
-		upload21: "§% - a § kB/s en § minutos",
-		upload22: "§% - a § kB/s en § minuto",
-		upload23: "§% - a § kB/s en § segundos",
-		upload24: "§% - a § kB/s",
-		uploadBadType: "Es imposible enviar el archivo porque el formato del archivo propuesto no es autorizado. Formato del archivo propuesto: §.",
-		uploadBadSize: "Es imposible enviar el archivo porque el tamaño del archivo propuesto es demasiado elevado. Tamaño del archivo propuesto: §\u00a0MB.",
-		uploadEmpty: "Es imposible enviar el archivo porque el archivo está vacío.",
-		uploadError0: "Parece que un error improbable acabo de ocurrir... Por favor, inténtelo de nuevo.",
-		uploadError1: "Se produjo un error durante el envío del archivo.[br][em]➩ Error §.[/em]",
-		uploadError2: "Se produjo un error durante el procesamiento del archivo.[br][em]➩ §[/em]",
-		uploadRestart: "Le invitamos a [a §]intenter de nuevo[/a]."
-	};
-
-	// = fr-FR (français/France) = 44/44
-	// » Fabrice Creuzot (luigifab) <code~luigifab~info>
-	// » Pascale Scellier <scellier.pascale~orange~fr>
-	this.data.fr = {
-		buttonOk: "Ok",
-		buttonCancel: "Annuler",
-		buttonConfirm: "Valider",
-		buttonClose: "Fermer",
-		buttonPrev: "Précédent",
-		buttonNext: "Suivant",
-		buttonBrowse: "Choisir un fichier",
-		operationTooLong: "Cette opération prend trop de temps ? ",
-		warningLostChange: "Attention : toutes les modifications en cours seront perdues.",
-		reloadLink: "Rechargez la page",
-		operationInProgress: "Opération en cours...",
-		uploadInProgress: "Envoi du fichier en cours...",
-		uploadInEnding: "Traitement du fichier en cours...",
-		imageError: "Malheureusement, il n'est pas possible d'afficher cette photo pour le moment. Il se peut que le fichier soit temporairement inaccessible.",
-		videoError: "Malheureusement, il n'est pas possible de lire cette vidéo pour le moment. Il se peut que le fichier soit temporairement inaccessible ou que votre navigateur ne puisse pas lire le format de la vidéo.[br][br]Essayez de [a href='§' download='']télécharger[/a] la vidéo.",
-		ctrlSlideshowFirstLast: "début/fin",
-		ctrlSlideshowNextPrev: "précédent/suivant",
-		ctrlVideoPause: "lecture/pause",
-		ctrlVideoTime: "reculer/avancer",
-		ctrlVideoSound: "baisser/augmenter le volume",
-		ctrlVideoMute: "couper le son",
-		ctrlDialogFullscreen: "plein écran",
-		ctrlDialogQuit: "quitter",
-		ctrlKeyEnd: "Fin",
-		ctrlKeyEsc: "Échap",
-		uploadAllType: "Tous les fichiers sont acceptés.[br]Taille maximale : § Mo.",
-		uploadOneType: "Format de fichier accepté : §.[br]Taille maximale : § Mo.",
-		uploadMultiType: "Formats de fichier acceptés : § et §.[br]Taille maximale : § Mo.",
-		uploadDecimal: ",",
-		upload11: "§% - § ko/s - § minutes restantes",
-		upload12: "§% - § ko/s - § minute restante",
-		upload13: "§% - § ko/s - § secondes restantes",
-		upload14: "§% - § ko/s",
-		upload21: "§% - à § ko/s en § minutes",
-		upload22: "§% - à § ko/s en § minute",
-		upload23: "§% - à § ko/s en § secondes",
-		upload24: "§% - à § ko/s",
-		uploadBadType: "Il est impossible d'envoyer le fichier car le format du fichier proposé n'est pas autorisé. Format du fichier proposé : §.",
-		uploadBadSize: "Il est impossible d'envoyer le fichier car la taille du fichier proposé est trop importante. Taille du fichier proposé : §\u00a0Mo.",
-		uploadEmpty: "Il est impossible d'envoyer le fichier car le fichier est vide.",
-		uploadError0: "Il semblerait qu'une erreur improbable vienne de se produire... Veuillez réessayer.",
-		uploadError1: "Une erreur est survenue lors de l'envoi du fichier.[br][em]➩ Erreur §.[/em]",
-		uploadError2: "Une erreur est survenue lors du traitement du fichier.[br][em]➩ §[/em]",
-		uploadRestart: "Nous vous invitons à [a §]réessayer[/a]."
-	};
-
-	// = it-IT (italiano/Italia) = 44/44
-	// » Maria Grasso <mgrasso~outlook~fr>
-	this.data.it = {
-		buttonOk: "Ok",
-		buttonCancel: "Annulla",
-		buttonConfirm: "Conferma",
-		buttonClose: "Chiudi",
-		buttonPrev: "Precedente",
-		buttonNext: "Successivo",
-		buttonBrowse: "Scegli un file",
-		operationTooLong: "Questa operazione prende troppo tempo? ",
-		warningLostChange: "Attenzione: tutte le modifiche in corso saranno perdute.",
-		reloadLink: "Ricaricare la pagina",
-		operationInProgress: "Operazione in corso...",
-		uploadInProgress: "Invio del file in corso...",
-		uploadInEnding: "Trattamento del file in corso...",
-		imageError: "Purtroppo, non é possibile visualizzare questa foto al momento. Il file potrebbe essere temporaneamente inaccessibile.",
-		videoError: "Purtroppo, non é possibile leggere questo video al momento. Il file portebbe essere temporaneamente inaccessibile o che il vostro browser non possa leggere il formato.[br][br]Provate a [a href='§' download='']scaricare[/a] il video.",
-		ctrlSlideshowFirstLast: "inizio/fine",
-		ctrlSlideshowNextPrev: "precedente/successivo",
-		ctrlVideoPause: "riproduci/pausa",
-		ctrlVideoTime: "indietro/avanti",
-		ctrlVideoSound: "abbassare/aumentare il volume",
-		ctrlVideoMute: "muto",
-		ctrlDialogFullscreen: "schermo intero",
-		ctrlDialogQuit: "esci",
-		ctrlKeyEnd: "Fine",
-		ctrlKeyEsc: "Esc",
-		uploadAllType: "Tutti i file sono accettati.[br]Dimensione massima: § MB.",
-		uploadOneType: "Formato del file accettato: §.[br]Dimensione massima: § MB.",
-		uploadMultiType: "Formati accettati: § et §.[br]Dimensione massima: § MB.",
-		uploadDecimal: ",",
-		upload11: "§% - § kB/s - § minuti rimanenti",
-		upload12: "§% - § kB/s - § minuto rimanente",
-		upload13: "§% - § kB/s - § secondi rimanenti",
-		upload14: "§% - § kB/s",
-		upload21: "§% - a § kB/s in § minuti",
-		upload22: "§% - a § kB/s in § minuto",
-		upload23: "§% - a § kB/s in § segundi",
-		upload24: "§% - a § kB/s",
-		uploadBadType: "Impossibile inviare il file, il formato proposto non é autorizzato. Formato proposto: §.",
-		uploadBadSize: "Impossibile inviare, il file é troppo grande. Dimensione proposta: §\u00a0MB.",
-		uploadEmpty: "Impossibile inviare, il file é vuoto.",
-		uploadError0: "Sembrerebbe che un errore inaspettato si sia verificato... Riprova.",
-		uploadError1: "Un errore si é verificato durante l'invio del file.[br][em]➩ Errore §.[/em]",
-		uploadError2: "Un errore si é verificato durante il trattamento del file.[br][em]➩ §[/em]",
-		uploadRestart: "Vi invitiamo a [a §]riprovare[/a]."
-	};
-
-	// = pt-PT (português/Portugal) = 44/44
-	// » Greg Lacan <greg.lacan~label-park~com>
-	// » Isabel Mendes <isabel.2012~orange~fr>
-	this.data.pt = {
-		buttonOk: "Ok",
-		buttonCancel: "Cancelar",
-		buttonConfirm: "Confirmar",
-		buttonClose: "Fechar",
-		buttonPrev: "Anterior",
-		buttonNext: "Seguinte",
-		buttonBrowse: "Escolher um ficheiro",
-		userLeavePage: "Está prestes a sair...",
-		operationTooLong: "Esta operação é muito demorada? ",
-		warningLostChange: "Atenção: todas as alterações em curso serão perdidas.",
-		reloadLink: "Recarregar esta página",
-		operationInProgress: "Operação em curso...",
-		uploadInProgress: "Envio do ficheiro em curso...",
-		uploadInEnding: "Tratamento do ficheiro em curso...",
-		imageError: "Infelizmente, não é possível visualizar esta imagem agora. Talvez o ficheiro esteja temporariamente indisponível.",
-		videoError: "Infelizmente, não é possível visualizar este vídeo agora. Talvez o ficheiro esteja temporariamente indisponível ou o seu navegador não consiga ler o formato do vídeo.[br][br]Tente [a href='§' download='']descarregar[/a] o vídeo.",
-		ctrlSlideshowFirstLast: "início/fim",
-		ctrlSlideshowNextPrev: "anterior/seguinte",
-		ctrlVideoPause: "reprodução/pausa",
-		ctrlVideoTime: "recuar/avançar",
-		ctrlVideoSound: "subir/baixar o volume",
-		ctrlVideoMute: "silenciar",
-		ctrlDialogFullscreen: "ecrã completo",
-		ctrlDialogQuit: "sair",
-		ctrlKeyEnd: "Fim",
-		ctrlKeyEsc: "Esc",
-		uploadAllType: "Todos os ficheiros foram aceites.[br]Tamanho máximo: § MB.",
-		uploadOneType: "Formato do ficheiro aceite: §.[br]Tamanho máximo: § MB.",
-		uploadMultiType: "Formatos de ficheiro aceites: § e §.[br]Tamanho máximo: § MB.",
-		uploadDecimal: ",",
-		upload11: "§% - § kB/s - § minutos restantes",
-		upload12: "§% - § kB/s - § minuto restantes",
-		upload13: "§% - § kB/s - § segundos restantes",
-		upload14: "§% - § kB/s",
-		upload21: "§% - § kB/s em § minutos",
-		upload22: "§% - § kB/s em § minuto",
-		upload23: "§% - § kB/s em § segundos",
-		upload24: "§% - § kB/s",
-		uploadBadType: "É impossível enviar o ficheiro porque o formato não é permitido. Formato do ficheiro proposto: §.",
-		uploadBadSize: "É impossível enviar o ficheiro porque o tamanho do ficheiro é demasiado grande. Tamanho do ficheiro proposto: §\u00a0MB.",
-		uploadEmpty: "É impossível enviar o ficheiro porque o ficheiro está vazio.",
-		uploadError0: "Parece ter acontecido um erro imprevisto. Por favor, tente novamente.",
-		uploadError1: "Ocorreu um erro ao enviar o ficheiro.[br][em]➩ Erro §.[/em]",
-		uploadError2: "Ocorreu um erro ao processar o ficheiro.[br][em]➩ §[/em]",
-		uploadRestart: "Convidamo-lo a [a §]tentar novamente[/a]."
-	};
-
-	// = ru-RU (russian/Russia) = 40/44
-	// » Eugene Parfenov (igro) <admin~mytona~com>
-	this.data.ru = {
-		buttonOk: "Ок",
-		buttonCancel: "Отмена",
-		buttonConfirm: "Подтвердить",
-		buttonClose: "Закрыть",
-		buttonPrev: "Предыдущий",
-		buttonNext: "Следующий",
-		buttonBrowse: "Выберите файл",
-		operationTooLong: "Операция длится слишком долго? ",
-		warningLostChange: "Внимание: все изменения будут потеряны.",
-		reloadLink: "Обновить страницу",
-		operationInProgress: "Операция в процессе...",
-		uploadInProgress: "Загрузка в процессе...",
-		ctrlSlideshowFirstLast: "начало/конец",
-		ctrlSlideshowNextPrev: "предыдущий/следующий",
-		ctrlVideoPause: "воспроизведение/пауза",
-		ctrlVideoTime: "назад/вперед",
-		ctrlVideoSound: "понизить/повысить громкость",
-		ctrlVideoMute: "отключить звук",
-		ctrlDialogFullscreen: "на весь экран",
-		ctrlDialogQuit: "выйти",
-		ctrlKeyEnd: "End",
-		ctrlKeyEsc: "Escape",
-		uploadAllType: "Все файлы приняты.[br]Максимальный размер: § MB.",
-		uploadOneType: "Формат файла: §.[br]Максимальный размер: § MB.",
-		uploadMultiType: "Форматы файлов: § и §.[br]Максимальный размер: § MB.",
-		uploadDecimal: ",",
-		upload11: "§% - § kB/s - осталось § минут",
-		upload12: "§% - § kB/s - осталось § минут",
-		upload13: "§% - § kB/s - осталось § секунд",
-		upload14: "§% - § kB/s",
-		upload21: "§% - § kB/s за § минут",
-		upload22: "§% - § kB/s за § минут",
-		upload23: "§% - § kB/s за § секунд",
-		upload24: "§% - § kB/s",
-		uploadBadType: "Нельзя отправить файл потому что формат файла запрещен. Рекомендуемый формат файла: §.",
-		uploadBadSize: "Нельзя отправить файл потому что размер файла слишком велик. Рекомендуемый размер файла: §\u00a0MB.",
-		uploadEmpty: "Нельзя отправить файл поскольку он пуст.",
-		uploadError0: "Кажется произошла не предусмотренная ошибка... Попробуйте еще раз.",
-		uploadError1: "Возникла ошибка при отправке файла.[br][em]➩ Ошибка §.[/em]",
-		uploadError2: "Возникла ошибка при обработке файла.[br][em]➩ §[/em]"
-	};
-
-
-	// #### Auto-détection de la langue ############################################ private ### //
-	// = révision : 18
-	// » Essaye de récupérer la langue utilisée par la page web
-	// » Prend soin de vérifier que la configuration de la langue est correcte
 	this.init = function () {
 
-		var autolang, lang = apijs.config.lang, html = document.querySelector('html');
+		var auto, lang = apijs.config.lang, html = document.querySelector('html');
 
-		// langue automatique (auto, auto-fr...)
 		if (lang.indexOf('auto') > -1) {
 
 			// recherche du nœud html
 			if (html.getAttribute('xml:lang'))
-				autolang = html.getAttribute('xml:lang').slice(0, 2);
+				auto = html.getAttribute('xml:lang').slice(0, 2);
 			else if (html.getAttribute('lang'))
-				autolang = html.getAttribute('lang').slice(0, 2);
+				auto = html.getAttribute('lang').slice(0, 2);
 
 			// définition de la langue
-			if ((typeof autolang === 'string') && this.data.hasOwnProperty(autolang))
-				apijs.config.lang = autolang;
-			else if (lang.indexOf('auto-') > -1)
-				apijs.config.lang = lang.slice(5);
+			if ((typeof auto == 'string') && this.data.hasOwnProperty(auto))
+				apijs.config.lang = auto;
 		}
 
-		// langue par défaut
 		if (!this.data.hasOwnProperty(apijs.config.lang))
 			apijs.config.lang = 'en';
 	};
 
 
-	// #### Traduction par mot clef ################################################# public ### //
-	// = révision : 30
-	// » Vérifie si le mot clef existe dans les traductions
-	// » Renvoie la chaîne de caractères correspondante à un mot clef
-	// » Renvoie un nœud texte en plus de la traduction si besoin
+	// TRADUIT (public return string|domelement|boolean)
+
 	this.translate = function (word) {
 
-		var lang = apijs.config.lang, i = 0, arg = 1, translation = '', data;
+		var lang = apijs.config.lang, arg = 1, translation = '';
 
 		// mot clef inexistant dans la langue configurée
 		// test avec la langue par défaut pour éventuellement continuer
-		if (typeof this.data[lang][word] !== 'string') {
-
-			if ((lang !== 'en') && (typeof this.data.en[word] === 'string'))
+		if (typeof this.data[lang][word] != 'string') {
+			if ((lang.length > 3) && (typeof this.data[lang.slice(0, 2)][word] == 'string'))
+				lang = lang.slice(0, 2);
+			else if ((lang !== 'en') && (typeof this.data.en[word] == 'string'))
 				lang = 'en';
 			else
 				return word;
@@ -424,10 +416,9 @@ apijs.core.i18n = function () {
 
 		// chaîne de caractères configurable
 		if (arguments.length > 1) {
-
-			for (data = this.data[lang][word].split('§'); i < data.length; i++)
-				translation += (arg < arguments.length) ? data[i] + arguments[arg++] : data[i];
-
+			this.data[lang][word].split('§').forEach(function (data) {
+				translation += (arg < this.length) ? data + this[arg++] : data;
+			}, arguments); // pour que ci-dessus this = arguments
 			return translation;
 		}
 
@@ -435,23 +426,27 @@ apijs.core.i18n = function () {
 		return this.data[lang][word];
 	};
 
-	this.nodeTranslate = function (word) {
-		return document.createTextNode(this.translate(word));
+	this.translateNode = function () {
+
+		// apply fait une copie des arguments
+		// c'est comme si on avait appelé this.translate directement
+		return document.createTextNode(this.translate.apply(this, arguments));
 	};
 
+	this.nodeTranslate = function () { // deprecated
+		console.error('apijs.i18n.nodeTranslate is deprecated, use apijs.i18n.translateNode');
+		return document.createTextNode(this.translate.apply(this, arguments));
+	};
 
-	// #### Changement de langue #################################################### public ### //
-	// = révision : 6
-	// » Vérifie si la langue demandée existe dans la liste des langues disponibles ou utilise la détection automatique
-	// » Renvoie true si la langue a été modifiée et false dans le cas contraire
 	this.changeLang = function (lang) {
 
-		if (typeof lang === 'string') {
+		if (typeof lang == 'string') {
 
 			if (this.data.hasOwnProperty(lang)) {
 				apijs.config.lang = lang;
 				return true;
 			}
+
 			if (lang.indexOf('auto') > -1) {
 				apijs.config.lang = lang;
 				this.init();
