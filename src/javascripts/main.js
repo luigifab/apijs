@@ -1,6 +1,6 @@
 /**
  * Created J/03/12/2009
- * Updated J/06/02/2020
+ * Updated V/13/03/2020
  *
  * Copyright 2008-2020 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
  * https://www.luigifab.fr/apijs
@@ -46,7 +46,7 @@ var apijs = new (function () {
 
 	"use strict";
 	this.core = {};
-	this.version = 600;
+	this.version = 601;
 
 	this.config = {
 		lang: 'auto',
@@ -79,7 +79,7 @@ var apijs = new (function () {
 			if (elem.getAttribute('href').indexOf('?e6c8f63375') < 0)
 				console.error('APIJS warning invalid cachekey for link:fontello.woff2?x, it must be ?e6c8f63375');
 		}
-		if (elem = document.querySelector('script[src*="apijs.min.js?"]')) {
+		if (elem = document.querySelector('script[src*="apijs.min.js?v="]')) {
 			if (elem.getAttribute('src').indexOf('?v=' + this.version) < 0)
 				console.error('APIJS warning invalid cachekey for script:apijs.min.js?x, it must be ?v=' + this.version);
 		}
