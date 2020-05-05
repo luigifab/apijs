@@ -1,6 +1,6 @@
 /**
  * Created S/05/06/2010
- * Updated S/29/02/2020
+ * Updated L/02/03/2020
  *
  * Copyright 2008-2020 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
  * https://www.luigifab.fr/apijs
@@ -430,11 +430,6 @@ apijs.core.i18n = function () {
 
 		// apply fait une copie des arguments
 		// c'est comme si on avait appelé this.translate directement
-		return document.createTextNode(this.translate.apply(this, arguments));
-	};
-
-	this.nodeTranslate = function () { // deprecated
-		console.error('apijs.i18n.nodeTranslate is deprecated, use apijs.i18n.translateNode');
 		return document.createTextNode(this.translate.apply(this, arguments));
 	};
 

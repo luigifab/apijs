@@ -1,6 +1,6 @@
 /**
  * Created J/13/05/2010
- * Updated J/13/02/2020
+ * Updated M/05/05/2020
  *
  * Copyright 2008-2020 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
  * https://www.luigifab.fr/apijs
@@ -20,6 +20,9 @@ apijs.core.slideshow = function () {
 
 	"use strict";
 	this.current = null;
+
+
+	// AFFICHAGE DE LA BOÎTE DE DIALOGUE (public return void|boolean)
 
 	this.init = function () {
 
@@ -41,9 +44,6 @@ apijs.core.slideshow = function () {
 
 		this.onPopState();
 	};
-
-
-	// AFFICHAGE DE LA BOÎTE DE DIALOGUE (public return boolean)
 
 	this.onPopState = function () {
 
@@ -187,11 +187,6 @@ apijs.core.slideshow = function () {
 		}
 
 		return show;
-	};
-
-	this.showMedia = function (ev, push) { // deprecated
-		console.error('apijs.slideshow.showMedia is deprecated, use apijs.slideshow.show');
-		return this.show(ev, push);
 	};
 
 

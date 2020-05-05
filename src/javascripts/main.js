@@ -1,6 +1,6 @@
 /**
  * Created J/03/12/2009
- * Updated V/13/03/2020
+ * Updated J/23/04/2020
  *
  * Copyright 2008-2020 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
  * https://www.luigifab.fr/apijs
@@ -46,11 +46,12 @@ var apijs = new (function () {
 
 	"use strict";
 	this.core = {};
-	this.version = 601;
+	this.version = 610;
 
 	this.config = {
 		lang: 'auto',
 		debug: false,
+		//select: { },
 		dialog: {
 			closeOnClick: false,
 			restrictNavigation: true,
@@ -86,29 +87,18 @@ var apijs = new (function () {
 
 		// instancie
 		this.i18n = new this.core.i18n();
+		//this.select = new this.core.select();
 		this.player = null;
 		this.dialog = new this.core.dialog();
 		this.upload = new this.core.upload();
 		this.slideshow = new this.core.slideshow();
 
 		// fonctions/événement
-		if (typeof setApijsRewrites == 'function') {
-			console.error('setApijsRewrites function is deprecated, use apijsbeforeload event');
-			setApijsRewrites();
-		}
-		if (typeof setApijsLang == 'function') {
-			console.error('setApijsLang function is deprecated, use apijsbeforeload event');
-			setApijsLang();
-		}
-		if (typeof setApijsConfig == 'function') {
-			console.error('setApijsConfig function is deprecated, use apijsbeforeload event');
-			setApijsConfig();
-		}
-
 		self.dispatchEvent(new CustomEvent('apijsbeforeload'));
 
 		// démarre
 		this.i18n.init();
+		//this.select.init();
 		this.slideshow.init();
 
 		self.addEventListener('popstate', apijs.slideshow.onPopState);
@@ -124,6 +114,23 @@ var apijs = new (function () {
 		self.dispatchEvent(new CustomEvent('apijsload'));
 	};
 
+	this.formatNumber = function (nb, dec) {
+
+		// par défaut 2 chiffres
+		var dgt = (typeof dec == 'number') ? dec : ((dec === false) ? 0 : 2), str;
+
+		// Firefox 29+ pas 27+, (iOS) Safari 10+ pas 9+
+		try {
+			str = new Intl.NumberFormat(this.config.lang, { minimumFractionDigits: dgt, maximumFractionDigits: dgt }).format(nb);
+		}
+		catch (e) {
+			str = nb.toFixed(dgt);
+		}
+
+		// conserve 00 si on veut vraiment 2 chiffres
+		return (typeof dec == 'number') ? str : str.replace(/[.,]00$/, '');
+	};
+
 	this.toArray = function (data) {
 		return Array.prototype.slice.call(data, 0);
 	};
@@ -131,6 +138,12 @@ var apijs = new (function () {
 	this.log = function (txt) {
 		if (this.config.debug)
 			console.info('APIJS ' + txt);
+	};
+
+	this.openTab = function (ev) {
+		ev.preventDefault();
+		if (this.href.length > 0)
+			self.open(this.href);
 	};
 
 	this.html = function (selector) {
@@ -142,44 +155,29 @@ var apijs = new (function () {
 			return null;
 	};
 
-	this.formatNumber = function (nb, d) {
-		// Firefox 29+ pas 27+, (iOS) Safari 10+ pas 9+
-		try {
-			d = (d === false) ? {} : { minimumFractionDigits: 2, maximumFractionDigits: 2 };
-			return new Intl.NumberFormat(this.config.lang, d).format(nb);
-		}
-		catch (e) { return nb.toFixed(2); }
-	};
-
-	this.openTab = function (ev) {
-		ev.preventDefault();
-		if (this.href.length > 0)
-			self.open(this.href);
-	};
-
 	this.serialize = function (form, filter) {
 
-		filter = (typeof filter == 'string') ? filter : '';
-		var q = [];
+		var data = [];
+		filter   = (typeof filter == 'string') ? filter : '';
 
 		// https://gomakethings.com/how-to-serialize-form-data-with-vanilla-js/
 		Array.prototype.forEach.call(form.elements, function (elem) {
 
 			if (!elem.name || elem.disabled || ['file', 'reset', 'submit', 'button'].has(elem.type) || (elem.name.indexOf(filter) !== 0)) {
-
+				// nothing to do
 			}
 			else if (elem.type === 'select-multiple') {
 				for (var n = 0; n < elem.options.length; n++) {
 					if (elem.options[n].selected)
-						q.push(encodeURIComponent(elem.name) + '=' + encodeURIComponent(elem.options[n].value));
+						data.push(encodeURIComponent(elem.name) + '=' + encodeURIComponent(elem.options[n].value));
 				}
 			}
 			else if (!['checkbox', 'radio'].has(elem.type) || elem.checked) {
-				q.push(encodeURIComponent(elem.name) + '=' + encodeURIComponent(elem.value));
+				data.push(encodeURIComponent(elem.name) + '=' + encodeURIComponent(elem.value));
 			}
 		});
 
-		return q.join('&');
+		return data.join('&');
 	};
 
 })();

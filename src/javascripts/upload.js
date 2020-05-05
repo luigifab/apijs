@@ -1,6 +1,6 @@
 /**
  * Created L/13/04/2009
- * Updated J/06/02/2020
+ * Updated M/05/05/2020
  *
  * Copyright 2008-2020 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
  * https://www.luigifab.fr/apijs
@@ -64,10 +64,10 @@ apijs.core.upload = function () {
 
 			var text, multiple = this.allmax > 0;
 
-			if (this.exts[0] === '*')
+			if (this.exts.join() === '*')
 				text = apijs.i18n.translate(161);
 			else if (this.exts.length === 1)
-				text = apijs.i18n.translate(162, this.exts[0]);
+				text = apijs.i18n.translate(162, this.exts.join());
 			else
 				text = apijs.i18n.translate(163, this.exts.slice(0, -1).join(', '), this.exts.slice(-1));
 
@@ -87,7 +87,7 @@ apijs.core.upload = function () {
 	};
 
 
-	// GESTION DES INTERACTIONS (private)
+	// GESTION DES INTERACTIONS (private return void)
 
 	this.actionChoose = function (elem) {
 
@@ -101,7 +101,7 @@ apijs.core.upload = function () {
 
 				text = file.name + ' <span class="sz">' + apijs.i18n.translate(166, apijs.formatNumber(file.size / 1048576)) + '</span>';
 
-				if ((this.exts[0] !== '*') && !this.exts.has(file.name.slice(file.name.lastIndexOf('.') + 1).toLowerCase()))
+				if ((this.exts.join() !== '*') && !this.exts.has(file.name.slice(file.name.lastIndexOf('.') + 1).toLowerCase()))
 					text += ' <span class="ee">' + apijs.i18n.translate(167) + '</span>';
 				else if (file.size > (this.onemax * 1048576))
 					text += ' <span class="ee">' + apijs.i18n.translate(168) + '</span>';
@@ -137,7 +137,7 @@ apijs.core.upload = function () {
 
 		if (this.files.length > 0) {
 
-			var name = this.input, form = new FormData(), xhr = new XMLHttpRequest();
+			var form = new FormData(), xhr = new XMLHttpRequest();
 			xhr.open('POST', this.action + ((this.action.indexOf('?') > 0) ? '&isAjax=true' : '?isAjax=true'), true);
 
 			// token
@@ -148,11 +148,8 @@ apijs.core.upload = function () {
 
 			// fichier(s)
 			this.files.forEach(function (file, idx, files) {
-				if ((files.length > 1) && (name.indexOf('[') < 0))
-					form.append(name + '_' + idx, file);
-				else
-					form.append(name, file);
-			});
+				form.append(((files.length > 1) && (this.input.indexOf('[') < 0)) ? this.input + '_' + idx : this.input, file);
+			}, this); // pour que ci-dessus this = this
 
 			// https://bugzilla.mozilla.org/show_bug.cgi?id=637002
 			// https://stackoverflow.com/a/15491086
@@ -163,12 +160,12 @@ apijs.core.upload = function () {
 			//     'error' When the request has failed
 			//     'abort' When the request has been aborted (by invoking the abort method)
 			//   'timeout' When the author specified timeout has passed before the request could complete
-			xhr.onreadystatechange = function () {
+			xhr.onreadystatechange = function (text) {
 
 				if (xhr.readyState === 4) {
+					text = xhr.responseText.trim();
 					if ([0, 200].has(xhr.status)) {
 						self.dispatchEvent(new CustomEvent('apijsajaxresponse', { detail: { from: 'apijs.upload.send', xhr: xhr } }));
-						var text = xhr.responseText.trim();
 						apijs.log('upload:onreadystatechange status:200 message:' + text);
 						if (text.indexOf('success-') === 0) {
 							apijs.upload.updateTitle();
@@ -179,7 +176,7 @@ apijs.core.upload = function () {
 						}
 					}
 					else {
-						apijs.log('upload:onreadystatechange status:' + xhr.status + ' message: ' + xhr.responseText);
+						apijs.log('upload:onreadystatechange status:' + xhr.status + ' message: ' + text);
 						apijs.upload.onError(194, xhr.status);
 					}
 				}

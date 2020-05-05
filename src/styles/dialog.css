@@ -1,6 +1,6 @@
 /**
  * Created V/08/05/2009
- * Updated D/01/03/2020
+ * Updated J/05/03/2020
  *
  * Copyright 2008-2020 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
  * https://www.luigifab.fr/apijs
@@ -42,7 +42,7 @@
 
 #apijsBox.photo.error, #apijsBox.video.error { background-image:url("../images/apijs/tv.gif"); background-repeat:repeat; }
 #apijsBox.options, #apijsBox.upload, #apijsBox.progress { min-height:15em; }
-#apijsBox.iframe { padding:2.5em 0.8em 1em; }
+#apijsBox.iframe, #apijsBox.ajax { padding:2.5em 0.8em 1em; }
 
 /* &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& texte &&& */
 #apijsBox div.bbcode { user-select:text; -ms-user-select:text; -moz-user-select:text; -webkit-user-select:text; }

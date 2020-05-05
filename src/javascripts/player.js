@@ -1,6 +1,6 @@
 /**
  * Created D/11/01/2015
- * Updated S/29/02/2020
+ * Updated M/05/05/2020
  *
  * Copyright 2008-2020 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
  * https://www.luigifab.fr/apijs
@@ -21,6 +21,9 @@ apijs.core.player = function () {
 	"use strict";
 	this.root  = null;
 	this.video = null;
+
+
+	// GÉNÉRATION DES ÉLÉMENTS (private return void|domelement|void)
 
 	this.init = function (root, video, url) { // todo
 
@@ -55,15 +58,12 @@ apijs.core.player = function () {
 						apijs.dialog.onMediaLoad({ type: 'error' });
 				}
 			};
-			xhr.send(null);
+			xhr.send();
 		}
 		else {
 			this.createTags([url]);
 		}
 	};
-
-
-	// GÉNÉRATION DES ÉLÉMENTS (private return domelement|void)
 
 	this.html = function (selector) {
 		return this.root.querySelector(selector);

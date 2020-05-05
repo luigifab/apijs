@@ -1,6 +1,6 @@
 /**
  * Created D/12/04/2009
- * Updated D/01/03/2020
+ * Updated M/05/05/2020
  *
  * Copyright 2008-2020 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
  * https://www.luigifab.fr/apijs
@@ -25,7 +25,6 @@ apijs.core.dialog = function () {
 	this.callback = null;
 	this.args     = null;
 
-	// copie la doc mais ne filtre pas slideshow et loading car utilisées pour les dialogues photo/vidéo/iframe/ajax
 	this.ft = /information|confirmation|options|upload|progress|waiting|photo|video|iframe|ajax|start|ready|end|reduce|mobile|tiny|fullscreen/g;
 	this.ti = 'a,area,button,input,textarea,select,object,iframe';
 	this.ns = 'http://www.w3.org/2000/svg';
@@ -117,10 +116,7 @@ apijs.core.dialog = function () {
 		return false;
 	};
 
-	this.dialogWaiting = function (title, text, icon, oldicon) { // arg:deprecated
-
-		if (typeof icon == 'number') console.error('apijs.dialog.dialogWaiting time argument is deprecated');
-		icon = (typeof icon == 'number') ? oldicon : icon; // avant v6.0 icon était time
+	this.dialogWaiting = function (title, text, icon) {
 
 		if ((typeof title == 'string') && (typeof text == 'string')) {
 			return this.initDialog('waiting', icon)
@@ -194,11 +190,22 @@ apijs.core.dialog = function () {
 		if ((typeof url == 'string') && (typeof close == 'boolean') && (typeof callback == 'function')) {
 			this.callback = callback;
 			this.args = args;
-			return this.initDialog('ajax', (typeof icon == 'string') ? icon + ' loading' : 'loading', !close)
+			var xhr, result = this.initDialog('ajax', (typeof icon == 'string') ? icon + ' loading' : 'loading', !close)
 				.htmlParent()
 				.htmlBtnClose(close)
 				.htmlSvgLoader(false)
 				.showDialog();
+			// ajax
+			xhr = new XMLHttpRequest();
+			xhr.open('GET', url, true);
+			xhr.onreadystatechange = function () {
+				if ((xhr.readyState === 4) && (typeof apijs.dialog.callback === 'function')) {
+					apijs.dialog.callback(xhr, apijs.dialog.args);
+					apijs.dialog.remove('loading');
+				}
+			};
+			xhr.send();
+			return result;
 		}
 
 		console.error('apijs.dialog.dialogAjax invalid arguments', apijs.toArray(arguments));
@@ -206,37 +213,7 @@ apijs.core.dialog = function () {
 	};
 
 
-	// GESTION DES CLASSES CSS (public return this|boolean sauf update private)
-
-	this.styles = { // deprecated
-
-		init: function () {
-			console.error('apijs.dialog.styles.init is deprecated');
-		},
-		update: function () {
-			console.error('apijs.dialog.styles.update is deprecated, use apijs.dialog.update');
-			return apijs.dialog.update.apply(apijs.dialog, arguments);
-		},
-		has: function () {
-			console.error('apijs.dialog.styles.has is deprecated, use apijs.dialog.has');
-			return apijs.dialog.has.apply(apijs.dialog, arguments);
-		},
-		add: function () {
-			console.error('apijs.dialog.styles.add is deprecated, use apijs.dialog.add');
-			return apijs.dialog.add.apply(apijs.dialog, arguments);
-		},
-		remove: function () {
-			console.error('apijs.dialog.styles.remove is deprecated, use apijs.dialog.remove');
-			return apijs.dialog.remove.apply(apijs.dialog, arguments);
-		},
-		toggle: function () {
-			console.error('apijs.dialog.styles.toggle is deprecated, use apijs.dialog.toggle');
-			return apijs.dialog.toggle.apply(apijs.dialog, arguments);
-		},
-		toString: function () {
-			console.error('apijs.dialog.styles.toString is deprecated');
-		}
-	};
+	// GESTION DES CLASSES CSS (public sauf update private, return this sauf has return true)
 
 	this.update = function () {
 
@@ -293,7 +270,7 @@ apijs.core.dialog = function () {
 	};
 
 
-	// GESTION DES INTERACTIONS (private sauf actionClose public)
+	// GESTION DES INTERACTIONS (private sauf actionClose)
 
 	this.actionClose = function (ev) {
 
@@ -332,61 +309,63 @@ apijs.core.dialog = function () {
 		apijs.dialog[add ? 'add' : 'remove']('tiny');
 	};
 
-	this.onScrollBrowser = function (ev) { // todo
+	this.onScrollBrowser = function (ev) {
 
-		var elem = ev.target;
+		var elem = ev.target, brk = false;
 
-		if (['INPUT', 'TEXTAREA', 'OPTION', 'SELECT'].has(elem.nodeName)) {
-
-			if (elem.nodeName === 'OPTION')
-				elem = elem.parentNode;
-
-			// positif = vers le bas, négatif = vers le haut
-			if ((elem.nodeName === 'INPUT') ||
-			    ((elem.scrollTop >= elem.scrollTopMax) && (ev.detail > 0)) || ((elem.scrollTop <= 0) && (ev.detail < 0))) {
-
-				// empèche le défilement
-				ev.preventDefault();
-				if (typeof ev.stopPropagation == 'function')
-					ev.stopPropagation();
+		// dialogues du diaporama (suivant/précédent)
+		if (apijs.dialog.has('slideshow') && !apijs.dialog.has('playing') && !['OPTION', 'SELECT'].has(elem.nodeName) && ['DOMMouseScroll','mousewheel','panleft','panright'].has(ev.type)) {
+			elem = new Date().getTime() / 1000;
+			if ((apijs.dialog.scroll < 1) || (elem > (1 + apijs.dialog.scroll))) {
+				apijs.dialog.scroll = elem;
+				// ev.detail     > 0 si vers le bas avec Firefox
+				// ev.wheelDelta < 0 si vers le bas avec Chromium/Opera/Edge...
+				brk = (ev.detail > 0) || (ev.wheelDelta < 0); // true si vers le bas
+				apijs.slideshow[((ev.type === 'panleft') || brk) ? 'actionNext' : 'actionPrev']();
 			}
 		}
+		// autorise éventuellement le défilement
+		// recherche l'éventuel élément scrollable
 		else {
-			// dialogues du diaporama
-			// passe au média suivant ou précédent
-			if (apijs.dialog.has('slideshow') && !apijs.dialog.has('playing') &&
-			    ['DOMMouseScroll', 'mousewheel', 'panleft', 'panright'].has(ev.type)) {
-
-				var time = new Date().getTime() / 1000;
-				if ((apijs.dialog.scroll < 1) || (time > (1 + apijs.dialog.scroll))) {
-					apijs.dialog.scroll = time;
-					apijs.slideshow[((ev.type === 'panleft') || (ev.detail > 0) || (ev.wheelDelta < 0)) ? 'actionNext' : 'actionPrev']();
+			if (elem.nodeName === 'OPTION') {
+				elem = elem.parentNode;
+			}
+			else if (!['TEXTAREA', 'SELECT'].has(elem.nodeName)) {
+				while ((brk !== true) && (elem.nodeName !== 'HTML')) {
+					if (elem.classList.contains('scrollable'))
+						brk = true;
+					else
+						elem = elem.parentNode;
 				}
 			}
 
-			// empèche le défilement
-			ev.preventDefault();
-			if (typeof ev.stopPropagation == 'function')
-				ev.stopPropagation();
+			// elem = select | textarea | scrollable
+			if (elem.nodeName !== 'HTML') {
+				// ev.detail     > 0 si vers le bas avec Firefox
+				// ev.wheelDelta < 0 si vers le bas avec Chromium/Opera/Edge...
+				brk = (ev.detail > 0) || (ev.wheelDelta < 0); // true si vers le bas
+				if ((brk && (elem.scrollTop < (elem.scrollHeight - elem.offsetHeight))) || (!brk && (elem.scrollTop > 0)))
+					return;
+			}
 		}
+
+		apijs.dialog.stopScroll(ev);
 	};
 
-	this.onScrollIframe = function (ev) { // todo
+	this.onScrollIframe = function (ev) {
 
-		var elem = ev.target;
+		var elem = ev.target, brk;
 		while (elem.parentNode)
 			elem = elem.parentNode;
 
-		// elem = document
-		// positif = vers le bas || négatif = vers le haut
-		if ((((elem.defaultView.innerHeight + elem.defaultView.pageYOffset) > elem.body.offsetHeight) && (ev.detail > 0)) ||
-		    ((elem.defaultView.pageYOffset <= 0) && (ev.detail < 0))) {
+		// ev.detail     > 0 si vers le bas avec Firefox
+		// ev.wheelDelta < 0 si vers le bas avec Chromium/Opera/Edge...
+		brk = (ev.detail > 0) || (ev.wheelDelta < 0); // true si vers le bas
 
-			// empèche le défilement
-			ev.preventDefault();
-			if (typeof ev.stopPropagation == 'function')
-				ev.stopPropagation();
-		}
+		// empèche le défilement (elem = document)
+		if ((brk && ((elem.defaultView.innerHeight + elem.defaultView.pageYOffset) > elem.body.offsetHeight)) ||
+		    (!brk && (elem.defaultView.pageYOffset <= 0)))
+			apijs.dialog.stopScroll(ev);
 	};
 
 	this.onKey = function (ev) { // todo
@@ -520,14 +499,17 @@ apijs.core.dialog = function () {
 		// touches : espace | page haut | page bas | fin | début | haut | bas
 		if ([32, 33, 34, 35, 36, 38, 40].has(ev.keyCode)) {
 
-			if (!ev.target || !['INPUT', 'TEXTAREA', 'OPTION', 'SELECT'].has(ev.target.nodeName)) {
-
-				// empèche le défilement
-				ev.preventDefault();
-				if (typeof ev.stopPropagation == 'function')
-					ev.stopPropagation();
-			}
+			// empèche le défilement
+			if (!ev.target || !['INPUT', 'TEXTAREA', 'OPTION', 'SELECT'].has(ev.target.nodeName))
+				that.stopScroll(ev);
 		}
+	};
+
+	this.stopScroll = function (ev) {
+
+		ev.preventDefault();
+		if (typeof ev.stopPropagation == 'function')
+			ev.stopPropagation();
 	};
 
 	this.actionConfirm = function () { // todo
@@ -612,7 +594,7 @@ apijs.core.dialog = function () {
 	};
 
 
-	// GESTION DES CONTENEURS (private return this|true)
+	// GESTION DES CONTENEURS (private return this|boolean)
 
 	this.initDialog = function (type, icon, isLocked) { // todo
 
