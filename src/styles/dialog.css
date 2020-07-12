@@ -1,6 +1,6 @@
 /**
  * Created V/08/05/2009
- * Updated J/05/03/2020
+ * Updated S/04/07/2020
  *
  * Copyright 2008-2020 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
  * https://www.luigifab.fr/apijs
@@ -71,7 +71,7 @@
 
 /* &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& image d'attente &&& **
  * (loading) waiting photo video iframe ajax */
-#apijsBox svg.loader { position:absolute; display:none; margin:auto; width:128px; height:128px; }
+#apijsBox svg.loader { position:absolute; display:none; margin:auto; width:128px; height:128px; pointer-events:none; }
 #apijsBox svg.loader path { fill:gray; }
 
 #apijsBox.loading svg.loader, #apijsBox.waiting svg.loader {
@@ -163,47 +163,48 @@
 }
 
 /* &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& player &&& */
+#apijsBox dl.media dt video.player { height:calc(100% - 1.8rem); }
+
 /*rtl:begin:ignore*/
 #apijsBox span.player {
 	position:relative; display:flex; align-items:center; z-index:99600;
-	margin:calc(-1.5rem - 10vh) 0 0; padding:10vh 0 0; height:1.5rem; line-height:1.5rem;
-	font-size:0.85em; color:#999; direction:ltr;
+	margin-top:-10vh; padding-top:10vh; height:1.8rem; line-height:1.8rem;
+	font-size:0.85em; color:white; direction:ltr;
 }
 
-#apijsBox span.player span { padding:0 0.4em; background-color:#070707; }
+#apijsBox span.player span { padding:0 0.4em; height:1.8rem; background-color:#070707; }
 #apijsBox span.player span.btn { padding:0; min-width:2.6em; cursor:pointer; }
 #apijsBox span.player span.svg { display:flex; align-items:center; height:100%; }
 #apijsBox span.player span.bar { flex:1; }
 #apijsBox span.player span.vol { width:7em; }
 #apijsBox span.player label { position:relative; padding:0 0.4em; background-color:#070707; }
 #apijsBox span.player label option { padding:0.2em 0.4em; }
-#apijsBox span.player label option.active { font-weight:700; }
-#apijsBox span.player label em { font-style:normal; }
+#apijsBox span.player label option:checked { font-weight:700; }
+#apijsBox span.player label option:disabled { font-style:italic; color:#AAA; }
+#apijsBox span.player label em { padding-left:0.25em; font-style:normal; }
 
 #apijsBox span.player label select {
-	display:none; position:absolute; right:0; bottom:1.5rem; min-width:20em;
+	display:none; position:absolute; right:0; bottom:1.8rem; min-width:20em;
 	color:black; outline:0; border:0; background-color:white; appearance:none; -moz-appearance:none; -webkit-appearance:none;
 }
 
 #apijsBox span.player label:hover, #apijsBox span.player span.btn:hover { color:black; background-color:white; }
 #apijsBox span.player label:hover select { display:block; }
 
-#apijsBox span.player svg  { position:relative; flex:1; height:34%; overflow:hidden; border-radius:0.4em; background-color:#222; cursor:pointer; }
-#apijsBox span.player rect { position:absolute; top:0; bottom:0; left:0; display:block; z-index:99460; background-color:#999; }
-#apijsBox span.player rect.buffer { z-index:99440; background-color:#555; }
-#apijsBox span.player svg.vol rect { width:100%; }
+#apijsBox span.player svg  { position:relative; flex:1; height:30%; overflow:hidden; border-radius:0.4em; background-color:#222; cursor:pointer; }
+#apijsBox span.player rect { position:absolute; top:0; bottom:0; left:0; display:block; z-index:99460; background-color:#00B6F0; }
+#apijsBox span.player rect.buffer { z-index:99440; background-color:#515151; }
+#apijsBox span.player svg.vol rect { width:100%; background-color:white; }
 /*rtl:end:ignore*/
 /*rtl:raw:#apijsBox span.player label { direction:rtl; }*/
 
 /* &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& media queries (via js) &&& */
 #apijsDialog.reduce * { transition:none !important; }
 
-#apijsBox.fullscreen span.player { position:absolute; right:0; bottom:0; left:0; margin:0; }
 #apijsBox.fullscreen .nofullscreen { display:none !important; }
-
+#apijsBox.fullscreen.playing video { cursor:none; }
 #apijsBox.mobile:not(.photo):not(.video) { position:absolute; top:1.5em; left:0.5em; right:0.5em; width:auto; min-height:inherit; }
 #apijsBox.mobile .nomobile { display:none !important; }
-
 #apijsBox.mobile.playing .noplaying, #apijsBox.fullscreen.playing .noplaying { transition:opacity 0.5s; opacity:0; }
 #apijsBox.mobile.playing .noplaying:hover, #apijsBox.fullscreen.playing .noplaying:hover { opacity:1 !important; }
 
@@ -217,7 +218,7 @@
 	font-family:apijsFontello; font-weight:400; font-style:normal;
 }
 
-#apijsBox h1:before, #apijsBox div.btns button span:before, #apijsBox kbd:before {
+#apijsBox h1:before, #apijsBox div.btns button span:before, #apijsBox kbd:before, #apijsBox span.player span.fnt {
 	font-family:apijsFontello; font-style:normal; font-weight:400; font-variant:normal; text-transform:none; text-decoration:inherit;
 	-moz-osx-font-smoothing:grayscale; -webkit-font-smoothing:antialiased;
 }

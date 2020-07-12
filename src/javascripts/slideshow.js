@@ -1,6 +1,6 @@
 /**
  * Created J/13/05/2010
- * Updated M/05/05/2020
+ * Updated D/24/05/2020
  *
  * Copyright 2008-2020 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
  * https://www.luigifab.fr/apijs
@@ -50,7 +50,7 @@ apijs.core.slideshow = function () {
 		// \\ au lieu de \ sinon Bad or unnecessary escaping
 		if (new RegExp('#(' + apijs.config.slideshow.ids + '[\-\\.]\\d+[\-\\.]\\d+)').test(self.location.href)) {
 			var id = RegExp.$1.replace(/-/g, '.');
-			if (apijs.html(id))
+			if (apijs.html(id) && !apijs.dialog.has('slideshow')) // Chrome 31 et Opera 19 passent 2 fois sans le !has
 				apijs.slideshow.show(id, false);
 		}
 		else if (apijs.slideshow.current) {

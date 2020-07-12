@@ -1,6 +1,6 @@
 /**
  * Created J/03/12/2009
- * Updated J/23/04/2020
+ * Updated S/04/07/2020
  *
  * Copyright 2008-2020 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
  * https://www.luigifab.fr/apijs
@@ -46,7 +46,7 @@ var apijs = new (function () {
 
 	"use strict";
 	this.core = {};
-	this.version = 610;
+	this.version = 620;
 
 	this.config = {
 		lang: 'auto',
@@ -77,8 +77,8 @@ var apijs = new (function () {
 			throw new Error('APIJS canceled, #oldBrowser detected!');
 
 		if (elem = document.querySelector('link[href*="apijs/fontello.woff2"]')) {
-			if (elem.getAttribute('href').indexOf('?e6c8f63375') < 0)
-				console.error('APIJS warning invalid cachekey for link:fontello.woff2?x, it must be ?e6c8f63375');
+			if (elem.getAttribute('href').indexOf('?a3ab5acff3') < 0)
+				console.error('APIJS warning invalid cachekey for link:fontello.woff2?x, it must be ?a3ab5acff3');
 		}
 		if (elem = document.querySelector('script[src*="apijs.min.js?v="]')) {
 			if (elem.getAttribute('src').indexOf('?v=' + this.version) < 0)

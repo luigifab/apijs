@@ -1,6 +1,6 @@
 /**
  * Created D/12/04/2009
- * Updated M/05/05/2020
+ * Updated D/12/07/2020
  *
  * Copyright 2008-2020 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
  * https://www.luigifab.fr/apijs
@@ -24,6 +24,7 @@ apijs.core.dialog = function () {
 	this.scroll   = 0; // time
 	this.callback = null;
 	this.args     = null;
+	this.xhr      = null;
 
 	this.ft = /information|confirmation|options|upload|progress|waiting|photo|video|iframe|ajax|start|ready|end|reduce|mobile|tiny|fullscreen/g;
 	this.ti = 'a,area,button,input,textarea,select,object,iframe';
@@ -44,11 +45,11 @@ apijs.core.dialog = function () {
 	this.dialogInformation = function (title, text, icon) {
 
 		if ((typeof title == 'string') && (typeof text == 'string')) {
-			return this.initDialog('information', icon)
+			return this.init('information', icon)
 				.htmlParent()
 				.htmlContent(title, text)
 				.htmlBtnOk()
-				.showDialog('button.confirm');
+				.show('button.confirm');
 		}
 
 		console.error('apijs.dialog.dialogInformation invalid arguments', apijs.toArray(arguments));
@@ -60,11 +61,11 @@ apijs.core.dialog = function () {
 		if ((typeof title == 'string') && (typeof text == 'string') && (typeof callback == 'function')) {
 			this.callback = callback;
 			this.args = args;
-			return this.initDialog('confirmation', icon)
+			return this.init('confirmation', icon)
 				.htmlParent()
 				.htmlContent(title, text)
 				.htmlBtnConfirm('button', 'apijs.dialog.actionConfirm();')
-				.showDialog('button.confirm');
+				.show('button.confirm');
 		}
 
 		console.error('apijs.dialog.dialogConfirmation invalid arguments', apijs.toArray(arguments));
@@ -76,11 +77,11 @@ apijs.core.dialog = function () {
 		if ((typeof title == 'string') && (typeof text == 'string') && (typeof action == 'string') && (typeof callback == 'function')) {
 			this.callback = callback;
 			this.args = args;
-			return this.initDialog('options', icon)
+			return this.init('options', icon)
 				.htmlParent(action, 'apijs.dialog.actionConfirm();')
 				.htmlContent(title, text)
 				.htmlBtnConfirm('submit')
-				.showDialog(true);
+				.show(true);
 		}
 
 		console.error('apijs.dialog.dialogFormOptions invalid arguments', apijs.toArray(arguments));
@@ -90,12 +91,12 @@ apijs.core.dialog = function () {
 	this.dialogFormUpload = function (title, text, action, input, multiple, icon) {
 
 		if ((typeof title == 'string') && (typeof text == 'string') && (typeof action == 'string') && (typeof input == 'string')) {
-			return this.initDialog('upload', icon)
+			return this.init('upload', icon)
 				.htmlParent(action, 'apijs.upload.actionConfirm();')
 				.htmlContent(title, text)
 				.htmlUpload(input, (typeof multiple == 'boolean') ? multiple : false)
 				.htmlBtnConfirm('submit')
-				.showDialog('button.browse');
+				.show('button.browse');
 		}
 
 		console.error('apijs.dialog.dialogFormUpload invalid arguments', apijs.toArray(arguments));
@@ -105,11 +106,11 @@ apijs.core.dialog = function () {
 	this.dialogProgress = function (title, text, icon) {
 
 		if ((typeof title == 'string') && (typeof text == 'string')) {
-			return this.initDialog('progress', icon)
+			return this.init('progress', icon)
 				.htmlParent()
 				.htmlContent(title, text)
 				.htmlSvgProgress()
-				.showDialog();
+				.show();
 		}
 
 		console.error('apijs.dialog.dialogProgress invalid arguments', apijs.toArray(arguments));
@@ -119,11 +120,11 @@ apijs.core.dialog = function () {
 	this.dialogWaiting = function (title, text, icon) {
 
 		if ((typeof title == 'string') && (typeof text == 'string')) {
-			return this.initDialog('waiting', icon)
+			return this.init('waiting', icon)
 				.htmlParent()
 				.htmlContent(title, text)
 				.htmlSvgLoader(false)
-				.showDialog();
+				.show();
 		}
 
 		console.error('apijs.dialog.dialogWaiting invalid arguments', apijs.toArray(arguments));
@@ -136,14 +137,14 @@ apijs.core.dialog = function () {
 		icon = slideshow ? 'notransition slideshow loading ' + icon : 'notransition loading';
 
 		if ((typeof url == 'string') && (typeof name == 'string') && (typeof date == 'string') && (typeof legend == 'string')) {
-			return this.initDialog('photo', icon)
+			return this.init('photo', icon)
 				.htmlParent()
 				.htmlMedia(url, name, date, legend)
 				.htmlHelp(slideshow, false)
 				.htmlBtnClose()
 				.htmlBtnNavigation()
 				.htmlSvgLoader()
-				.showDialog();
+				.show();
 		}
 
 		console.error('apijs.dialog.dialogPhoto invalid arguments', apijs.toArray(arguments));
@@ -156,14 +157,14 @@ apijs.core.dialog = function () {
 		icon = slideshow ? 'notransition slideshow loading ' + icon : 'notransition loading';
 
 		if ((typeof url == 'string') && (typeof name == 'string') && (typeof date == 'string') && (typeof legend == 'string')) {
-			return this.initDialog('video', icon)
+			return this.init('video', icon)
 				.htmlParent()
 				.htmlMedia(url, name, date, legend)
 				.htmlHelp(slideshow, url.indexOf('iframe') < 0) // true si pas iframe
 				.htmlBtnClose()
 				.htmlBtnNavigation()
 				.htmlSvgLoader()
-				.showDialog();
+				.show();
 		}
 
 		console.error('apijs.dialog.dialogVideo invalid arguments', apijs.toArray(arguments));
@@ -173,12 +174,12 @@ apijs.core.dialog = function () {
 	this.dialogIframe = function (url, close, icon) {
 
 		if ((typeof url == 'string') && (typeof close == 'boolean')) {
-			return this.initDialog('iframe', (typeof icon == 'string') ? icon + ' loading' : 'loading', !close)
+			return this.init('iframe', (typeof icon == 'string') ? icon + ' loading' : 'loading', !close)
 				.htmlParent()
 				.htmlIframe(url)
 				.htmlBtnClose(close)
 				.htmlSvgLoader(false)
-				.showDialog();
+				.show();
 		}
 
 		console.error('apijs.dialog.dialogIframe invalid arguments', apijs.toArray(arguments));
@@ -190,21 +191,21 @@ apijs.core.dialog = function () {
 		if ((typeof url == 'string') && (typeof close == 'boolean') && (typeof callback == 'function')) {
 			this.callback = callback;
 			this.args = args;
-			var xhr, result = this.initDialog('ajax', (typeof icon == 'string') ? icon + ' loading' : 'loading', !close)
+			var result = this.init('ajax', (typeof icon == 'string') ? icon + ' loading' : 'loading', !close)
 				.htmlParent()
 				.htmlBtnClose(close)
 				.htmlSvgLoader(false)
-				.showDialog();
+				.show();
 			// ajax
-			xhr = new XMLHttpRequest();
-			xhr.open('GET', url, true);
-			xhr.onreadystatechange = function () {
-				if ((xhr.readyState === 4) && (typeof apijs.dialog.callback === 'function')) {
-					apijs.dialog.callback(xhr, apijs.dialog.args);
-					apijs.dialog.remove('loading');
+			this.xhr = new XMLHttpRequest();
+			this.xhr.open('GET', url, true);
+			this.xhr.onreadystatechange = function () {
+				if ((this.xhr.readyState === 4) && (typeof this.callback == 'function')) {
+					this.callback(this.xhr, this.args);
+					this.remove('loading');
 				}
-			};
-			xhr.send();
+			}.bind(apijs.dialog);
+			this.xhr.send();
 			return result;
 		}
 
@@ -282,10 +283,10 @@ apijs.core.dialog = function () {
 
 		if (typeof ev == 'object') {
 			if ((ev.target.getAttribute('id') === 'apijsDialog') && !apijs.dialog.has('photo', 'video', 'progress', 'waiting', 'lock'))
-				apijs.dialog.deleteDialog(true);
+				apijs.dialog.clear(true);
 		}
 		else if (this.t1) {
-			this.deleteDialog(true);
+			this.clear(true);
 		}
 	};
 
@@ -302,10 +303,10 @@ apijs.core.dialog = function () {
 
 	this.onResizeBrowser = function () {
 
-		var add = document.body.clientWidth <= (apijs.dialog.has('photo', 'video') ? 900 : 460);
+		var add = document.querySelector('body').clientWidth <= (apijs.dialog.has('photo', 'video') ? 900 : 460);
 		apijs.dialog[add ? 'add' : 'remove']('mobile');
 
-		add = document.body.clientWidth <= 300;
+		add = document.querySelector('body').clientWidth <= 300;
 		apijs.dialog[add ? 'add' : 'remove']('tiny');
 	};
 
@@ -553,7 +554,7 @@ apijs.core.dialog = function () {
 
 	this.onMediaLoad = function (ev) { // todo
 
-		var that = apijs.dialog, media = that.media, src;
+		var that = apijs.dialog, media = that.media, src, elem, elems;
 		if (ev && ev.target) {
 			src = ev.target.currentSrc || ev.target.src;
 			apijs.log('dialog:onMediaLoad:' + ev.type + ' ' + (src ? src.slice(src.lastIndexOf('/') + 1) : ''));
@@ -568,20 +569,18 @@ apijs.core.dialog = function () {
 		else if (media && (ev.type === 'error')) {
 			that.toggle('loading', 'error');
 			media.removeAttribute('style');
-		}
-	};
-
-	this.onHidden = function (ev) {
-
-		var media = apijs.dialog.media, res = document.hidden || document.mozHidden || document.webkitHidden;
-		if (ev) apijs.log('dialog:onHidden:' + (res ? 'in' : 'out'));
-
-		if (res) {
-			media.wasPaused = media.paused;
-			media.pause();
-		}
-		else if (media.wasPaused === false) {
-			media.play();
+			// player vidéo (désactive l'option et active la suivante)
+			elem = apijs.html('.tracks.video select');
+			if (elem && ev && ev.target) {
+				elems = elem.querySelectorAll('option');
+				if ((elems.length > 0) && (elem.value.length > 0)) {
+					elems[elem.value].setAttribute('disabled', 'disabled');
+					elem.selectedIndex += 1;
+					// charge la vidéo suivante (si erreur au clic sur le select)
+					if ((ev.target.nodeName === 'VIDEO') && (elem.value !== ''))
+						apijs.player.actionVideo(elem);
+				}
+			}
 		}
 	};
 
@@ -596,7 +595,7 @@ apijs.core.dialog = function () {
 
 	// GESTION DES CONTENEURS (private return this|boolean)
 
-	this.initDialog = function (type, icon, isLocked) { // todo
+	this.init = function (type, icon, isLocked) { // todo
 
 		if (typeof icon == 'string') {
 			icon = icon.replace(this.ft, '').trim();
@@ -608,7 +607,7 @@ apijs.core.dialog = function () {
 
 		// préparation
 		if (this.t0)
-			this.deleteDialog(false);
+			this.clear(false);
 
 		// css
 		this.klass.push('start');
@@ -636,7 +635,7 @@ apijs.core.dialog = function () {
 		return this;
 	};
 
-	this.showDialog = function (focus) { // todo
+	this.show = function (focus) { // todo
 
 		// design
 		this.onResizeBrowser();
@@ -655,10 +654,10 @@ apijs.core.dialog = function () {
 		}
 		else if (this.has('notransition')) {
 			this.toggle('start', 'ready');
-			document.body.appendChild(this.t0);
+			document.querySelector('body').appendChild(this.t0);
 		}
 		else {
-			document.body.appendChild(this.t0);
+			document.querySelector('body').appendChild(this.t0);
 			self.setTimeout(function () { apijs.dialog.toggle('start', 'ready'); }, 12);
 		}
 
@@ -677,17 +676,6 @@ apijs.core.dialog = function () {
 				document.addEventListener('mozfullscreenchange', apijs.dialog.onFullscreen);
 		}
 
-		// mise en pause de la vidéo
-		if (this.has('video')) {
-
-			if (typeof document.hidden == 'boolean')
-				document.addEventListener('visibilitychange', apijs.dialog.onHidden);
-			else if (typeof document.mozHidden == 'boolean')
-				document.addEventListener('mozvisibilitychange', apijs.dialog.onHidden);
-			else if (typeof document.webkitHidden == 'boolean')
-				document.addEventListener('webkitvisibilitychange', apijs.dialog.onHidden);
-		}
-
 		// auto-focus
 		if (focus === true)
 			self.setTimeout(function () { apijs.html('input:not([readonly]),textarea:not([readonly]),select:not([disabled])').focus(); }, 12);
@@ -697,7 +685,12 @@ apijs.core.dialog = function () {
 		return true;
 	};
 
-	this.deleteDialog = function (isAll) { // todo
+	this.clear = function (isAll) { // todo
+
+		if (isAll && this.xhr) {
+			this.callback = null; // très important
+			this.xhr.abort();
+		}
 
 		// surveillance des touches et du navigateur (depuis initDialog)
 		document.removeEventListener('keydown', apijs.dialog.onKey);
@@ -726,19 +719,10 @@ apijs.core.dialog = function () {
 				document.removeEventListener('mozfullscreenchange', apijs.dialog.onFullscreen);
 		}
 
-		// mise en pause de la vidéo (depuis showDialog)
+		// pour ne pas déclencher les fonctions
 		if (this.has('video')) {
-
-			// pour ne pas déclencher la fonction
 			this.media.ondurationchange = null;
 			this.media.onerror = null;
-
-			if (typeof document.hidden == 'boolean')
-				document.removeEventListener('visibilitychange', apijs.dialog.onHidden);
-			else if (typeof document.mozHidden == 'boolean')
-				document.removeEventListener('mozvisibilitychange', apijs.dialog.onHidden);
-			else if (typeof document.webkitHidden == 'boolean')
-				document.removeEventListener('webkitvisibilitychange', apijs.dialog.onHidden);
 		}
 
 		// mémorise la hauteur du dialogue
@@ -748,7 +732,7 @@ apijs.core.dialog = function () {
 		// supprime le dialogue
 		if (isAll) {
 			this.toggle('ready', 'end');
-			document.body.removeChild(this.t1);
+			document.querySelector('body').removeChild(this.t1);
 		}
 		else {
 			this.t1.removeChild(this.t2);
@@ -761,6 +745,7 @@ apijs.core.dialog = function () {
 			this.scroll   = 0; // time
 			this.callback = null;
 			this.args     = null;
+			this.xhr      = null
 		}
 		this.media = null;
 		this.t0 = null; // fragment
@@ -777,7 +762,7 @@ apijs.core.dialog = function () {
 
 	// GÉNÉRATION DES ÉLÉMENTS (private return this)
 
-	this.htmlParent = function (action, onsubmit) {
+	this.htmlParent = function (action, onSubmit) {
 
 		this.t1 = document.createElement('div');
 		this.t1.setAttribute('id', 'apijsDialog');
@@ -787,7 +772,7 @@ apijs.core.dialog = function () {
 			this.t2.setAttribute('action', action);
 			this.t2.setAttribute('method', 'post');
 			this.t2.setAttribute('enctype', 'multipart/form-data');
-			this.t2.setAttribute('onsubmit', 'return ' + onsubmit);
+			this.t2.setAttribute('onsubmit', 'return ' + onSubmit);
 		}
 		else {
 			this.t2 = document.createElement('div');
@@ -841,7 +826,7 @@ apijs.core.dialog = function () {
 		return this;
 	};
 
-	this.htmlBtnConfirm = function (type, onclick) {
+	this.htmlBtnConfirm = function (type, onClick) {
 
 		this.a = document.createElement('div');
 		this.a.setAttribute('class', 'btns');
@@ -849,7 +834,7 @@ apijs.core.dialog = function () {
 			this.b = document.createElement('button');
 			this.b.setAttribute('type', type);
 			this.b.setAttribute('class', 'confirm');
-			if (type !== 'submit') this.b.setAttribute('onclick', onclick);
+			if (type !== 'submit') this.b.setAttribute('onclick', onClick);
 
 				this.c = document.createElement('span');
 				this.c.appendChild(apijs.i18n.translateNode(104));
@@ -1022,15 +1007,15 @@ apijs.core.dialog = function () {
 		return this;
 	};
 
-	this.htmlSvgPlayer = function (parent) { // todo
+	this.htmlSvgPlayer = function (root) {
 
 		this.a = document.createElement('span');
 		this.a.setAttribute('class', 'player noplaying');
 
 			this.b = document.createElement('span');
-			this.b.setAttribute('class', 'btn play');
-			this.b.setAttribute('onclick', 'apijs.dialog.onKey(80);'); // play/pause
-			this.b.appendChild(document.createTextNode('▶'));
+			this.b.setAttribute('class', 'btn play fnt');
+			this.b.setAttribute('onclick', 'apijs.dialog.onKey(80);'); // lecture/pause
+			this.b.appendChild(document.createTextNode('\uE810'));
 
 		this.a.appendChild(this.b);
 
@@ -1071,6 +1056,42 @@ apijs.core.dialog = function () {
 		this.a.appendChild(this.b);
 
 			this.b = document.createElement('label');
+			this.b.setAttribute('class', 'tracks audiotrack');
+			this.b.setAttribute('style', 'display:none;');
+			this.b.appendChild(apijs.i18n.translateNode(133));
+
+				this.c = document.createElement('em');
+				this.c.setAttribute('class', 'nomobile');
+
+			this.b.appendChild(this.c);
+
+				this.c = document.createElement('select');
+				this.c.setAttribute('lang', 'mul');
+				this.c.setAttribute('onchange', 'apijs.player.actionAudiotrack(this);');
+
+			this.b.appendChild(this.c);
+
+		this.a.appendChild(this.b);
+
+			this.b = document.createElement('label');
+			this.b.setAttribute('class', 'tracks videotrack');
+			this.b.setAttribute('style', 'display:none;');
+			this.b.appendChild(apijs.i18n.translateNode(132));
+
+				this.c = document.createElement('em');
+				this.c.setAttribute('class', 'nomobile');
+
+			this.b.appendChild(this.c);
+
+				this.c = document.createElement('select');
+				this.c.setAttribute('lang', 'mul');
+				this.c.setAttribute('onchange', 'apijs.player.actionVideotrack(this);');
+
+			this.b.appendChild(this.c);
+
+		this.a.appendChild(this.b);
+
+			this.b = document.createElement('label');
 			this.b.setAttribute('class', 'tracks video');
 			this.b.setAttribute('style', 'display:none;');
 			this.b.appendChild(apijs.i18n.translateNode(131));
@@ -1083,30 +1104,6 @@ apijs.core.dialog = function () {
 				this.c = document.createElement('select');
 				this.c.setAttribute('lang', 'mul');
 				this.c.setAttribute('onchange', 'apijs.player.actionVideo(this);');
-
-			this.b.appendChild(this.c);
-
-		this.a.appendChild(this.b);
-
-			this.b = document.createElement('label');
-			this.b.setAttribute('class', 'tracks audio');
-			this.b.setAttribute('style', 'display:none;');
-			this.b.appendChild(apijs.i18n.translateNode(132));
-
-				this.c = document.createElement('em');
-				this.c.setAttribute('class', 'nomobile');
-
-			this.b.appendChild(this.c);
-
-				this.c = document.createElement('select');
-				this.c.setAttribute('lang', 'mul');
-				this.c.setAttribute('onchange', 'apijs.player.actionAudio(this);');
-
-					this.d = document.createElement('option');
-					this.d.setAttribute('class', 'active');
-					this.d.appendChild(apijs.i18n.translateNode(133));
-
-				this.c.appendChild(this.d);
 
 			this.b.appendChild(this.c);
 
@@ -1127,8 +1124,7 @@ apijs.core.dialog = function () {
 				this.c.setAttribute('onchange', 'apijs.player.actionText(this);');
 
 					this.d = document.createElement('option');
-					this.d.setAttribute('class', 'active');
-					this.d.appendChild(apijs.i18n.translateNode(135));
+					this.d.appendChild(apijs.i18n.translateNode(135)); // off
 
 				this.c.appendChild(this.d);
 
@@ -1137,17 +1133,17 @@ apijs.core.dialog = function () {
 		this.a.appendChild(this.b);
 
 			this.b = document.createElement('span');
-			this.b.setAttribute('class', 'btn full nomobile');
+			this.b.setAttribute('class', 'btn full fnt nomobile');
 			this.b.setAttribute('onclick', 'apijs.dialog.onKey(122);'); // plein écran
-			this.b.appendChild(document.createTextNode('[+]'));
+			this.b.appendChild(document.createTextNode('\uE80F'));
 
 		this.a.appendChild(this.b);
-		parent.appendChild(this.a);
+		root.appendChild(this.a);
 
 		return this;
 	};
 
-	this.htmlMedia = function (url, name, date, legend) {
+	this.htmlMedia = function (url, name, date, legend) { // todo
 
 		this.a = document.createElement('dl');
 		this.a.setAttribute('class', 'media');
@@ -1168,7 +1164,7 @@ apijs.core.dialog = function () {
 				this.media = document.createElement('video');
 				this.media.setAttribute('controls', 'controls');
 				this.media.setAttribute('preload', 'metadata');
-				this.media.setAttribute('onclick', 'apijs.dialog.onKey(80);'); // play/pause
+				this.media.setAttribute('onclick', 'apijs.dialog.onKey(80);'); // lecture/pause
 			}
 
 			this.media.setAttribute('id', 'apijsMedia');
@@ -1208,7 +1204,6 @@ apijs.core.dialog = function () {
 		this.a.appendChild(this.b);
 		this.t2.appendChild(this.a);
 
-		// spécial
 		// player créé v5.2 - supprimé v5.3 - refait v6.0
 		if (this.has('photo')) {
 			this.media.imageLoader = new Image();
@@ -1220,9 +1215,12 @@ apijs.core.dialog = function () {
 			this.media.onload = apijs.dialog.onMediaLoad;
 		}
 		else if (apijs.config.dialog.player === true) {
+			this.media.setAttribute('class', 'player');
 			this.htmlSvgPlayer(this.media.parentNode);
 			apijs.player = new apijs.core.player();
 			apijs.player.init(this.media.parentNode, this.media, url);
+			this.media.ondurationchange = apijs.dialog.onMediaLoad;
+			this.media.onerror = apijs.dialog.onMediaLoad;
 		}
 		else if (typeof apijs.config.dialog.player == 'function') {
 			apijs.config.dialog.player(this.media, url);

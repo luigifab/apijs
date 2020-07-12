@@ -1,6 +1,6 @@
 /**
  * Created S/05/06/2010
- * Updated L/02/03/2020
+ * Updated D/24/05/2020
  *
  * Copyright 2008-2020 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
  * https://www.luigifab.fr/apijs
@@ -83,8 +83,8 @@ apijs.core.i18n = function () {
 			125: "Upload in progress...",
 			126: "Processing file in progress...",
 			131: "video",
-			132: "audio",
-			133: "original",
+			132: "video track",
+			133: "audio track",
 			134: "subtitles",
 			135: "off",
 			141: "start/end",
@@ -174,7 +174,8 @@ apijs.core.i18n = function () {
 			125: "Envoi en cours...",
 			126: "Traitement en cours...",
 			131: "vidéo",
-			133: "originale",
+			132: "piste vidéo",
+			133: "piste audio",
 			134: "sous-titres",
 			141: "début/fin",
 			142: "précédent/suivant",
@@ -317,7 +318,7 @@ apijs.core.i18n = function () {
 			195: "Ocorreu um erro ao processar.",
 			196: "Convidamo-lo a [a §]tentar novamente[/a]."
 		},
-		ptBR: {
+		ptbr: {
 			107: "Próximo",
 			142: "anterior/próximo"
 		},
