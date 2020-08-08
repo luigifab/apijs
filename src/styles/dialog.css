@@ -1,6 +1,6 @@
 /**
  * Created V/08/05/2009
- * Updated S/04/07/2020
+ * Updated D/09/08/2020
  *
  * Copyright 2008-2020 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
  * https://www.luigifab.fr/apijs
@@ -57,7 +57,7 @@
 
 /* &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& barre de progression &&& */
 #apijsBox.progress svg {
-	position:relative; display:block; margin:18px auto; width:80%; height:20px;
+	position:relative; display:block; margin:18px auto; width:80%; height:20px; overflow:hidden;
 	outline:1px solid #333; background-color:#AAA;
 }
 

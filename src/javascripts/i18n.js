@@ -1,6 +1,6 @@
 /**
  * Created S/05/06/2010
- * Updated D/24/05/2020
+ * Updated D/26/07/2020
  *
  * Copyright 2008-2020 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
  * https://www.luigifab.fr/apijs
@@ -133,6 +133,9 @@ apijs.core.i18n = function () {
 			124: "Operación en curso...",
 			125: "Envío en progreso...",
 			126: "Tratamiento en curso...",
+			132: "pista video",
+			133: "pista audio",
+			134: "subtítulos",
 			141: "inicio/fin",
 			142: "anterior/siguiente",
 			143: "reproducir/pausa",
@@ -147,8 +150,10 @@ apijs.core.i18n = function () {
 			162: "Formato de archivo aceptado: §.",
 			163: "Formatos de archivos aceptados: § y §.",
 			164: "Tamaño máximo: § MB.",
+			165: "Tamaño máximo por fichero: § Mo.|Tamaño máximo total: § Mo.",
 			167: "Formato no autorizado",
 			168: "Tamaño demasiado importante",
+			169: "Fichero vacío",
 			181: "§% - § kB/s - § minutos restantes",
 			182: "§% - § kB/s - § minuto restantes",
 			183: "§% - § kB/s - § segundos restantes",
@@ -156,11 +161,12 @@ apijs.core.i18n = function () {
 			186: "§% - a § kB/s en § minuto",
 			187: "§% - a § kB/s en § segundos",
 			188: "§% - a § kB/s",
-			192: "¿Está seguro? [span]Sí[/span] - No",
+			191: "Interrumpir",
+			192: "¿Está seguro(a)? [span]Sí[/span] - No",
 			193: "Parece que un error improbable acabo de ocurrir... Por favor, inténtelo de nuevo.",
 			194: "Se produjo un error durante el envío.",
 			195: "Se produjo un error durante el procesamiento.",
-			196: "Le invitamos a [a §]intenter de nuevo[/a]."
+			196: "Le invitamos a [a §]intentar de nuevo[/a]."
 		},
 		fr: {
 			103: "Annuler",
@@ -288,9 +294,10 @@ apijs.core.i18n = function () {
 			107: "Seguinte",
 			108: "Escolher um ficheiro",
 			109: "Escolher um ou vários ficheiros",
-			124: "Operação em curso...",
-			125: "Envio em curso...",
-			126: "Tratamento em curso...",
+			124: "Operação em processo...",
+			125: "Envio em processo...",
+			126: "Tratamento em processo...",
+			131: "vídeo",
 			141: "início/fim",
 			142: "anterior/seguinte",
 			143: "reprodução/pausa",
@@ -320,6 +327,9 @@ apijs.core.i18n = function () {
 		},
 		ptbr: {
 			107: "Próximo",
+			124: "Operação em andamento...",
+			125: "Envio em andamento...",
+			126: "Tratamento em andamento...",
 			142: "anterior/próximo"
 		},
 		ru: {
@@ -354,6 +364,13 @@ apijs.core.i18n = function () {
 			193: "Кажется произошла не предусмотренная ошибка... Попробуйте еще раз.",
 			194: "Возникла ошибка при отправке файла.",
 			195: "Возникла ошибка при обработке файла."
+		},
+		sk: {
+			103: "Zrušiť",
+			105: "Zavrieť",
+			106: "Predchádzajúci",
+			107: "Ďalší",
+			142: "predchádzajúci/ďalší"
 		},
 		tr: {
 			103: "İptal",
