@@ -46,7 +46,7 @@ var apijs = new (function () {
 
 	"use strict";
 	this.core = {};
-	this.version = 630;
+	this.version = 640;
 
 	this.config = {
 		lang: 'auto',
