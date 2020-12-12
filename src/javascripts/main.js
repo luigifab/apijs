@@ -1,6 +1,6 @@
 /**
  * Created J/03/12/2009
- * Updated D/09/08/2020
+ * Updated S/05/12/2020
  *
  * Copyright 2008-2020 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
  * https://www.luigifab.fr/apijs
@@ -46,7 +46,7 @@ var apijs = new (function () {
 
 	"use strict";
 	this.core = {};
-	this.version = 640;
+	this.version = 650;
 
 	this.config = {
 		lang: 'auto',
@@ -163,10 +163,10 @@ var apijs = new (function () {
 		// https://gomakethings.com/how-to-serialize-form-data-with-vanilla-js/
 		Array.prototype.forEach.call(form.elements, function (elem) {
 
-			if (!elem.name || elem.disabled || ['file', 'reset', 'submit', 'button'].has(elem.type) || (elem.name.indexOf(filter) !== 0)) {
-				// nothing to do
-			}
-			else if (elem.type === 'select-multiple') {
+			if (!elem.name || elem.disabled || ['file', 'reset', 'submit', 'button'].has(elem.type) || (elem.name.indexOf(filter) !== 0))
+				return;
+
+			if (elem.type === 'select-multiple') {
 				for (var n = 0; n < elem.options.length; n++) {
 					if (elem.options[n].selected)
 						data.push(encodeURIComponent(elem.name) + '=' + encodeURIComponent(elem.options[n].value));

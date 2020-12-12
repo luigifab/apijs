@@ -1,6 +1,6 @@
 /**
  * Created L/13/04/2009
- * Updated M/05/05/2020
+ * Updated J/05/11/2020
  *
  * Copyright 2008-2020 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
  * https://www.luigifab.fr/apijs
@@ -137,13 +137,22 @@ apijs.core.upload = function () {
 
 		if (this.files.length > 0) {
 
-			var form = new FormData(), xhr = new XMLHttpRequest();
+			var form = new FormData(), xhr = new XMLHttpRequest(), tmp;
 			xhr.open('POST', this.action + ((this.action.indexOf('?') > 0) ? '&isAjax=true' : '?isAjax=true'), true);
 
 			// token
 			if (typeof apijs.config.upload.tokenValue == 'string') {
 				xhr.setRequestHeader(apijs.config.upload.tokenName, apijs.config.upload.tokenValue);
 				form.append(apijs.config.upload.tokenName, apijs.config.upload.tokenValue);
+			}
+
+			// champs supplémentaires
+			tmp = apijs.serialize(apijs.dialog.t2);
+			if (tmp.length > 3) {
+				tmp.split('&').forEach(function (data) {
+					data = data.split('=');
+					form.append(data[0], data[1]);
+				});
 			}
 
 			// fichier(s)

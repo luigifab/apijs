@@ -1,6 +1,6 @@
 /**
  * Created D/12/04/2009
- * Updated D/12/07/2020
+ * Updated J/19/11/2020
  *
  * Copyright 2008-2020 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
  * https://www.luigifab.fr/apijs
@@ -745,7 +745,7 @@ apijs.core.dialog = function () {
 			this.scroll   = 0; // time
 			this.callback = null;
 			this.args     = null;
-			this.xhr      = null
+			this.xhr      = null;
 		}
 		this.media = null;
 		this.t0 = null; // fragment

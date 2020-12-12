@@ -1,6 +1,6 @@
 /**
  * Created D/11/01/2015
- * Updated D/12/07/2020
+ * Updated S/05/12/2020
  *
  * Copyright 2008-2020 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
  * https://www.luigifab.fr/apijs
@@ -303,7 +303,7 @@ apijs.core.player = function () {
 	this.onWaiting = function (ev) {
 		apijs.log('player:onWaiting:' + ev.type + '  stalled:' + this.stalled + '/subload:' + this.subload);
 		apijs.dialog[['loadstart', 'waiting', 'seeking', 'stalled'].has(ev.type) ? 'add' : 'remove']('loading');
-	},
+	};
 
 	this.actionVolume = function (ev) {
 
