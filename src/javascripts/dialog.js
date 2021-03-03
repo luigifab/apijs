@@ -1,8 +1,8 @@
 /**
  * Created D/12/04/2009
- * Updated J/19/11/2020
+ * Updated W/03/03/2021
  *
- * Copyright 2008-2020 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
+ * Copyright 2008-2021 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
  * https://www.luigifab.fr/apijs
  *
  * This program is free software, you can redistribute it or modify
@@ -52,7 +52,7 @@ apijs.core.dialog = function () {
 				.show('button.confirm');
 		}
 
-		console.error('apijs.dialog.dialogInformation invalid arguments', apijs.toArray(arguments));
+		console.error('apijs.dialog.dialogInformation invalid arguments', arguments);
 		return false;
 	};
 
@@ -68,7 +68,7 @@ apijs.core.dialog = function () {
 				.show('button.confirm');
 		}
 
-		console.error('apijs.dialog.dialogConfirmation invalid arguments', apijs.toArray(arguments));
+		console.error('apijs.dialog.dialogConfirmation invalid arguments', arguments);
 		return false;
 	};
 
@@ -84,7 +84,7 @@ apijs.core.dialog = function () {
 				.show(true);
 		}
 
-		console.error('apijs.dialog.dialogFormOptions invalid arguments', apijs.toArray(arguments));
+		console.error('apijs.dialog.dialogFormOptions invalid arguments', arguments);
 		return false;
 	};
 
@@ -99,7 +99,7 @@ apijs.core.dialog = function () {
 				.show('button.browse');
 		}
 
-		console.error('apijs.dialog.dialogFormUpload invalid arguments', apijs.toArray(arguments));
+		console.error('apijs.dialog.dialogFormUpload invalid arguments', arguments);
 		return false;
 	};
 
@@ -113,7 +113,7 @@ apijs.core.dialog = function () {
 				.show();
 		}
 
-		console.error('apijs.dialog.dialogProgress invalid arguments', apijs.toArray(arguments));
+		console.error('apijs.dialog.dialogProgress invalid arguments', arguments);
 		return false;
 	};
 
@@ -127,7 +127,7 @@ apijs.core.dialog = function () {
 				.show();
 		}
 
-		console.error('apijs.dialog.dialogWaiting invalid arguments', apijs.toArray(arguments));
+		console.error('apijs.dialog.dialogWaiting invalid arguments', arguments);
 		return false;
 	};
 
@@ -147,7 +147,7 @@ apijs.core.dialog = function () {
 				.show();
 		}
 
-		console.error('apijs.dialog.dialogPhoto invalid arguments', apijs.toArray(arguments));
+		console.error('apijs.dialog.dialogPhoto invalid arguments', arguments);
 		return false;
 	};
 
@@ -167,7 +167,7 @@ apijs.core.dialog = function () {
 				.show();
 		}
 
-		console.error('apijs.dialog.dialogVideo invalid arguments', apijs.toArray(arguments));
+		console.error('apijs.dialog.dialogVideo invalid arguments', arguments);
 		return false;
 	};
 
@@ -182,16 +182,17 @@ apijs.core.dialog = function () {
 				.show();
 		}
 
-		console.error('apijs.dialog.dialogIframe invalid arguments', apijs.toArray(arguments));
+		console.error('apijs.dialog.dialogIframe invalid arguments', arguments);
 		return false;
 	};
 
 	this.dialogAjax = function (url, close, callback, args, icon) {
 
 		if ((typeof url == 'string') && (typeof close == 'boolean') && (typeof callback == 'function')) {
+			// dialogue
 			this.callback = callback;
 			this.args = args;
-			var result = this.init('ajax', (typeof icon == 'string') ? icon + ' loading' : 'loading', !close)
+			this.init('ajax', (typeof icon == 'string') ? icon + ' loading' : 'loading', !close)
 				.htmlParent()
 				.htmlBtnClose(close)
 				.htmlSvgLoader(false)
@@ -204,12 +205,12 @@ apijs.core.dialog = function () {
 					this.callback(this.xhr, this.args);
 					this.remove('loading');
 				}
-			}.bind(apijs.dialog);
+			}.bind(this); // pour que ci-dessus this = this
 			this.xhr.send();
-			return result;
+			return this;
 		}
 
-		console.error('apijs.dialog.dialogAjax invalid arguments', apijs.toArray(arguments));
+		console.error('apijs.dialog.dialogAjax invalid arguments', arguments);
 		return false;
 	};
 
@@ -220,10 +221,10 @@ apijs.core.dialog = function () {
 
 		// il n'est pas question de mettre à jour les attributs class sans l'une des 3 classes de base
 		if (this.has('start', 'ready', 'end')) {
-			if (apijs.dialog.t1)
-				apijs.dialog.t1.setAttribute('class', this.klass.join(' '));
-			if (apijs.dialog.t2)
-				apijs.dialog.t2.setAttribute('class', this.klass.join(' '));
+			if (this.t1)
+				this.t1.setAttribute('class', this.klass.join(' '));
+			if (this.t2)
+				this.t2.setAttribute('class', this.klass.join(' '));
 		}
 
 		return this;
@@ -276,8 +277,8 @@ apijs.core.dialog = function () {
 	this.actionClose = function (ev) {
 
 		// \\ au lieu de \ sinon Bad or unnecessary escaping
-		if (new RegExp('#(' + apijs.config.slideshow.ids + '[\-\\.]\\d+[\-\\.]\\d+)').test(self.location.href)) {
-			if (apijs.config.slideshow.anchor && (typeof history.pushState == 'function'))
+		if (apijs.config.slideshow.anchor && (typeof history.pushState == 'function')) {
+			if (new RegExp('#(' + apijs.config.slideshow.ids + '[\-\\.]\\d+[\-\\.]\\d+)').test(self.location.href))
 				history.pushState({}, '', self.location.href.slice(0, self.location.href.indexOf('#')));
 		}
 
@@ -312,13 +313,15 @@ apijs.core.dialog = function () {
 
 	this.onScrollBrowser = function (ev) {
 
-		var elem = ev.target, brk = false;
+		var that = apijs.dialog, elem = ev.target, brk = false;
 
 		// dialogues du diaporama (suivant/précédent)
-		if (apijs.dialog.has('slideshow') && !apijs.dialog.has('playing') && !['OPTION', 'SELECT'].has(elem.nodeName) && ['DOMMouseScroll','mousewheel','panleft','panright'].has(ev.type)) {
+		if (that.has('slideshow') && !that.has('playing') &&
+		    !['OPTION', 'SELECT'].has(elem.nodeName) && ['DOMMouseScroll','mousewheel','panleft','panright'].has(ev.type)) {
+
 			elem = new Date().getTime() / 1000;
-			if ((apijs.dialog.scroll < 1) || (elem > (1 + apijs.dialog.scroll))) {
-				apijs.dialog.scroll = elem;
+			if ((that.scroll < 1) || (elem > (1 + that.scroll))) {
+				that.scroll = elem;
 				// ev.detail     > 0 si vers le bas avec Firefox
 				// ev.wheelDelta < 0 si vers le bas avec Chromium/Opera/Edge...
 				brk = (ev.detail > 0) || (ev.wheelDelta < 0); // true si vers le bas
@@ -350,7 +353,9 @@ apijs.core.dialog = function () {
 			}
 		}
 
-		apijs.dialog.stopScroll(ev);
+		// empèche le défilement
+		ev.preventDefault();
+		ev.stopPropagation();
 	};
 
 	this.onScrollIframe = function (ev) {
@@ -363,49 +368,35 @@ apijs.core.dialog = function () {
 		// ev.wheelDelta < 0 si vers le bas avec Chromium/Opera/Edge...
 		brk = (ev.detail > 0) || (ev.wheelDelta < 0); // true si vers le bas
 
-		// empèche le défilement (elem = document)
-		if ((brk && ((elem.defaultView.innerHeight + elem.defaultView.pageYOffset) > elem.body.offsetHeight)) ||
-		    (!brk && (elem.defaultView.pageYOffset <= 0)))
-			apijs.dialog.stopScroll(ev);
+		// empèche le défilement (elem = iframe document)
+		if (
+			(brk && ((elem.defaultView.innerHeight + elem.defaultView.pageYOffset) >= (elem.body.offsetHeight - 1))) ||
+			(!brk && (elem.defaultView.pageYOffset <= 0))
+		) {
+			ev.preventDefault();
+			ev.stopPropagation();
+		}
 	};
 
-	this.onKey = function (ev) { // todo
+	this.onKey = function (ev) {
 
-		var that = apijs.dialog, media = that.media, elem = that.t1;
-		if (!isNaN(ev)) // si true alors ev est un nombre
-			ev = { keyCode: ev, ctrlKey: false, altKey: false, preventDefault: function () { } };
+		var that = apijs.dialog, elem = that.media;
 
-		// » dialogues d'attente et de progresssion ou tout autre dialogue verrouillé
-		// empèche la fermeture
-		// touches : ctrl + q | ctrl + w | ctrl + r | ctrl + f4 | ctrl + f5 // alt + f4 // échap | f5
+		// dialogues d'attente et de progresssion ou tout autre dialogue verrouillé
+		// ctrl + q | ctrl + w | ctrl + r | ctrl + f4 | ctrl + f5 // alt + f4 // échap | f5
 		if (that.has('progress', 'waiting', 'lock')) {
 
-			if ((ev.ctrlKey && [81, 87, 82, 115, 116].has(ev.keyCode)) ||
-			    (ev.altKey && (ev.keyCode === 115)) ||
-			    [27, 116].has(ev.keyCode))
+			if ((ev.ctrlKey && [81, 87, 82, 115, 116].has(ev.keyCode)) || (ev.altKey && (ev.keyCode === 115)) || [27, 116].has(ev.keyCode))
 				ev.preventDefault();
 		}
-		// » dialogues photo et vidéo
-		// passe en plein écran
-		// touche : f11
+		// dialogues photo et vidéo
+		// f11 (ne fonctionne plus sur Opera 74 Windows)
 		else if (that.has('photo', 'video') && (ev.keyCode === 122)) {
 			ev.preventDefault();
-			if (document.webkitFullscreenElement)
-				document.webkitCancelFullScreen();
-			else if (document.mozFullScreenElement)
-				document.mozCancelFullScreen();
-			else if (document.fullscreenElement)
-				document.cancelFullScreen();
-			else if (elem.webkitRequestFullscreen)
-				elem.webkitRequestFullscreen();
-			else if (elem.requestFullscreen)
-				elem.requestFullscreen();
-			else if (elem.mozRequestFullScreen)
-				elem.mozRequestFullScreen();
+			apijs.requestFullscreen(that.t1);
 		}
-		// » dialogues photo et vidéo du diaporama
-		// ferme le dialogue, ou affiche le premier ou dernier média, ou affiche le média précédent ou suivant
-		// touches : échap // fin // début // gauche // droite
+		// dialogues photo et vidéo du diaporama
+		// échap // fin // début // gauche // droite
 		else if (that.has('slideshow')) {
 
 			if (ev.keyCode === 27) {
@@ -429,124 +420,104 @@ apijs.core.dialog = function () {
 				apijs.slideshow.actionNext();
 			}
 		}
-		// » tout le monde sauf les dialogues précédents
-		// ferme le dialogue
-		// touche : échap
+		// pour tous les autres
+		// échap
 		else if (ev.keyCode === 27) {
 			ev.preventDefault();
 			that.actionClose();
 		}
 
-		// » dialogue vidéo
-		// actions sur la vidéo (networkState 3 = NETWORK_NO_SOURCE)
-		// touches : espace | p // haut | page haut // bas | page bas // + // - // m
-		if (that.has('video')) {
+		// dialogue vidéo
+		// espace | p // haut | page haut // bas | page bas // + // - // m
+		if (that.has('video') && !that.has('videoiframe')) {
 
+			// espace | p
 			if ((ev.keyCode === 32) || (ev.keyCode === 80)) {
 				ev.preventDefault();
-				if (media.networkState !== 3) {
-					if (media.ended || media.paused)
-						media.play();
+				if ([1,2].has(elem.networkState)) {
+					if (elem.ended || elem.paused)
+						elem.play();
 					else
-						media.pause();
+						elem.pause();
 				}
 			}
+			// haut | page haut
 			else if ((ev.keyCode === 38) || (ev.keyCode === 33)) {
 				ev.preventDefault();
-				if ((media.networkState !== 3) && (media.duration !== Infinity)) {
-					if (media.currentTime < (media.duration - 10))
-						media.currentTime += 10;
+				if (([1,2].has(elem.networkState)) && (elem.duration !== Infinity) && !isNaN(elem.duration)) {
+					if (elem.currentTime < (elem.duration - 10))
+						elem.currentTime += 10;
 				}
 			}
+			// bas | page bas
 			else if ((ev.keyCode === 40) || (ev.keyCode === 34)) {
 				ev.preventDefault();
-				if ((media.networkState !== 3) && (media.duration !== Infinity)) {
-					if (media.currentTime > 10)
-						media.currentTime -= 10;
+				if (([1,2].has(elem.networkState)) && (elem.duration !== Infinity) && !isNaN(elem.duration)) {
+					if (elem.currentTime > 10)
+						elem.currentTime -= 10;
 					else
-						media.currentTime = 0;
+						elem.currentTime = 0;
 				}
 			}
+			// +
 			else if (ev.keyCode === 107) {
 				ev.preventDefault();
-				if (media.networkState !== 3) {
-					if (media.muted)
-						media.muted = false;
-					if (media.volume < 0.8)
-						media.volume += 0.2;
+				if ([1,2].has(elem.networkState)) {
+					if (elem.muted)
+						elem.muted = false;
+					if (elem.volume < 0.8)
+						elem.volume += 0.2;
 					else
-						media.volume = 1;
+						elem.volume = 1;
 				}
 			}
+			// -
 			else if (ev.keyCode === 109) {
 				ev.preventDefault();
-				if (media.networkState !== 3) {
-					if (media.muted)
-						media.muted = false;
-					if (media.volume > 0.21)
-						media.volume -= 0.2;
+				if ([1,2].has(elem.networkState)) {
+					if (elem.muted)
+						elem.muted = false;
+					if (elem.volume > 0.21)
+						elem.volume -= 0.2;
 					else
-						media.volume = 0;
+						elem.volume = 0;
 				}
 			}
+			// m
 			else if (ev.keyCode === 77) {
 				ev.preventDefault();
-				if (media.networkState !== 3)
-					media.muted = !media.muted; // true si muted=false, false si muted=true
+				if ([1,2].has(elem.networkState)) {
+					elem.muted = !elem.muted; // inverse
+				}
 			}
 		}
 
-		// » défilement de la page pour tous (renvoi sur actionScrollBrowser)
-		// touches : espace | page haut | page bas | fin | début | haut | bas
+		// défilement de la page pour tous (renvoi sur actionScrollBrowser)
+		// espace | page haut | page bas | fin | début | haut | bas
 		if ([32, 33, 34, 35, 36, 38, 40].has(ev.keyCode)) {
 
 			// empèche le défilement
-			if (!ev.target || !['INPUT', 'TEXTAREA', 'OPTION', 'SELECT'].has(ev.target.nodeName))
-				that.stopScroll(ev);
+			if (!ev.target || !['INPUT', 'TEXTAREA', 'OPTION', 'SELECT'].has(ev.target.nodeName)) {
+				ev.preventDefault();
+				ev.stopPropagation();
+			}
 		}
 	};
 
-	this.stopScroll = function (ev) {
+	this.onFullscreen = function (ev) {
 
-		ev.preventDefault();
-		if (typeof ev.stopPropagation == 'function')
-			ev.stopPropagation();
+		var res = document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement;
+		if (ev) apijs.log('dialog:onFullscreen:' + (res ? 'in' : 'out'));
+
+		apijs.dialog[res ? 'add' : 'remove']('fullscreen');
 	};
 
-	this.actionConfirm = function () { // todo
-
-		// vérifie le dialogue d'options
-		// arrêt du traitement si c'est pas bon
-		if (this.has('options')) {
-			if (this.callback(false, this.args) !== true)
-				return false;
-		}
-
-		// verrouille le dialogue et affiche le loader
-		this.add('lock', 'loading');
-		this.htmlSvgLoader(false);
-
-		// masque les boutons et le texte du dialogue
-		apijs.html('div.btns').style.visibility = 'hidden';
-		apijs.html('div.bbcode').style.visibility = 'hidden';
-
-		// appelle la fonction de rappel
-		// ne déverrouille pas le dialogue
-		self.setTimeout(function () {
-			if ((this.t2) && (this.t2.nodeName === 'FORM'))
-				this.callback(this.t2.getAttribute('action'), this.args);
-			else if (this.t2)
-				this.callback(this.args);
-		}.bind(this), 12);
-
-		return false; // très important
-	};
-
-	this.onIframeLoad = function (elem) {
+	this.onIframeLoad = function (elem) { // todo
 
 		elem.removeAttribute('class');
 		apijs.dialog.remove('loading');
 
+		elem.contentWindow.document.addEventListener('keydown', window.parent.apijs.dialog.onKey);
 		elem.contentWindow.addEventListener('DOMMouseScroll', window.parent.apijs.dialog.onScrollIframe, { passive: false });
 		elem.contentWindow.addEventListener('mousewheel', window.parent.apijs.dialog.onScrollIframe, { passive: false });
 		elem.contentWindow.addEventListener('touchmove', window.parent.apijs.dialog.onScrollIframe, { passive: false });
@@ -578,18 +549,39 @@ apijs.core.dialog = function () {
 					elem.selectedIndex += 1;
 					// charge la vidéo suivante (si erreur au clic sur le select)
 					if ((ev.target.nodeName === 'VIDEO') && (elem.value !== ''))
-						apijs.player.actionVideo(elem);
+						media.videoPlayer.actionVideo(elem);
 				}
 			}
 		}
 	};
 
-	this.onFullscreen = function (ev) {
+	this.actionConfirm = function () { // todo
 
-		var res = document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement;
-		if (ev) apijs.log('dialog:onFullscreen:' + (res ? 'in' : 'out'));
+		// vérifie le dialogue d'options
+		// arrêt du traitement si c'est pas bon
+		if (this.has('options')) {
+			if (this.callback(false, this.args) !== true)
+				return false;
+		}
 
-		apijs.dialog[res ? 'add' : 'remove']('fullscreen');
+		// verrouille le dialogue et affiche le loader
+		this.add('lock', 'loading');
+		this.htmlSvgLoader(false);
+
+		// masque les boutons et le texte du dialogue
+		apijs.html('div.btns').style.visibility = 'hidden';
+		apijs.html('div.bbcode').style.visibility = 'hidden';
+
+		// appelle la fonction de rappel
+		// ne déverrouille pas le dialogue
+		self.setTimeout(function () {
+			if ((this.t2) && (this.t2.nodeName === 'FORM'))
+				this.callback(this.t2.getAttribute('action'), this.args);
+			else if (this.t2)
+				this.callback(this.args);
+		}.bind(this), 12); // pour que ci-dessus this = this
+
+		return false; // très important
 	};
 
 
@@ -597,11 +589,12 @@ apijs.core.dialog = function () {
 
 	this.init = function (type, icon, isLocked) { // todo
 
+		isLocked = (isLocked === true);
 		if (typeof icon == 'string') {
 			icon = icon.replace(this.ft, '').trim();
-			icon = (icon.length > 0) ? ((isLocked === true) ? icon + ' lock' : icon) : ((isLocked === true) ? 'lock' : null);
+			icon = (icon.length > 0) ? (isLocked ? icon + ' lock' : icon) : (isLocked ? 'lock' : null);
 		}
-		else if (isLocked === true) {
+		else if (isLocked) {
 			icon = 'lock';
 		}
 
@@ -612,8 +605,10 @@ apijs.core.dialog = function () {
 		// css
 		this.klass.push('start');
 		this.klass.push(type);
+
 		if (self.matchMedia('prefers-reduced-motion:reduce').matches)
 			this.klass.push('reduce');
+
 		if (typeof icon == 'string')
 			this.klass = this.klass.concat(icon.split(' '));
 
@@ -621,12 +616,12 @@ apijs.core.dialog = function () {
 		this.t0 = document.createDocumentFragment();
 
 		// surveillance des touches et du navigateur
-		document.addEventListener('keydown', apijs.dialog.onKey);
-		self.addEventListener('beforeunload', apijs.dialog.onCloseBrowser);
-		self.addEventListener('DOMMouseScroll', apijs.dialog.onScrollBrowser, { passive: false });
-		self.addEventListener('mousewheel', apijs.dialog.onScrollBrowser, { passive: false });
-		self.addEventListener('touchmove', apijs.dialog.onScrollBrowser, { passive: false });
-		self.addEventListener('resize', apijs.dialog.onResizeBrowser);
+		document.addEventListener('keydown', this.onKey);
+		self.addEventListener('beforeunload', this.onCloseBrowser);
+		self.addEventListener('DOMMouseScroll', this.onScrollBrowser, { passive: false });
+		self.addEventListener('mousewheel', this.onScrollBrowser, { passive: false });
+		self.addEventListener('touchmove', this.onScrollBrowser, { passive: false });
+		self.addEventListener('resize', this.onResizeBrowser);
 
 		// restriction de la navigation
 		if (apijs.config.dialog.restrictNavigation)
@@ -644,11 +639,11 @@ apijs.core.dialog = function () {
 		if ((this.height > 0) && !this.has('photo', 'video'))
 			this.t2.style.minHeight = this.height + 'px';
 
-		// ça y est, c'est l'heure
-		// affichage du dialogue (sans/sans/avec transitions CSS)
-		if (apijs.html('#Dialog')) {
+		// affichage du dialogue sans/sans/avec transitions CSS
+		var old = apijs.html('#Dialog');
+		if (old) {
 			this.toggle('start', 'ready');
-			this.t1 = apijs.html('#Dialog');
+			this.t1 = old;
 			this.t1.appendChild(this.t0.firstChild.firstChild);
 			this.t1.setAttribute('class', this.t2.getAttribute('class'));
 		}
@@ -663,17 +658,17 @@ apijs.core.dialog = function () {
 
 		// fermeture des popups au clic
 		if (apijs.config.dialog.closeOnClick && !this.has('progress', 'waiting', 'lock'))
-			document.addEventListener('click', apijs.dialog.actionClose);
+			document.addEventListener('click', this.actionClose);
 
 		// passage en plein écran
 		if (this.has('photo', 'video')) {
 
 			if (document.webkitFullscreenEnabled)
-				document.addEventListener('webkitfullscreenchange', apijs.dialog.onFullscreen);
+				document.addEventListener('webkitfullscreenchange', this.onFullscreen);
 			else if (document.fullscreenEnabled)
-				document.addEventListener('fullscreenchange', apijs.dialog.onFullscreen);
+				document.addEventListener('fullscreenchange', this.onFullscreen);
 			else if (document.mozFullScreenEnabled)
-				document.addEventListener('mozfullscreenchange', apijs.dialog.onFullscreen);
+				document.addEventListener('mozfullscreenchange', this.onFullscreen);
 		}
 
 		// auto-focus
@@ -693,12 +688,12 @@ apijs.core.dialog = function () {
 		}
 
 		// surveillance des touches et du navigateur (depuis initDialog)
-		document.removeEventListener('keydown', apijs.dialog.onKey);
-		self.removeEventListener('beforeunload', apijs.dialog.onCloseBrowser);
-		self.removeEventListener('DOMMouseScroll', apijs.dialog.onScrollBrowser, { passive: false });
-		self.removeEventListener('mousewheel', apijs.dialog.onScrollBrowser, { passive: false });
-		self.removeEventListener('touchmove', apijs.dialog.onScrollBrowser, { passive: false });
-		self.removeEventListener('resize', apijs.dialog.onResizeBrowser);
+		document.removeEventListener('keydown', this.onKey);
+		self.removeEventListener('beforeunload', this.onCloseBrowser);
+		self.removeEventListener('DOMMouseScroll', this.onScrollBrowser, { passive: false });
+		self.removeEventListener('mousewheel', this.onScrollBrowser, { passive: false });
+		self.removeEventListener('touchmove', this.onScrollBrowser, { passive: false });
+		self.removeEventListener('resize', this.onResizeBrowser);
 
 		// restriction de la navigation (depuis initDialog)
 		if (apijs.config.dialog.restrictNavigation)
@@ -706,28 +701,38 @@ apijs.core.dialog = function () {
 
 		// fermeture des popups au clic (depuis showDialog)
 		if (apijs.config.dialog.closeOnClick)
-			document.removeEventListener('click', apijs.dialog.actionClose);
+			document.removeEventListener('click', this.actionClose);
 
-		// passage en plein écran (depuis showDialog)
+		// spécial
 		if (this.has('photo', 'video')) {
 
+			// pour ne pas déclencher les fonctions
+			// supprime tous les ontruc et les src
+			if (this.has('video') && !this.has('videoiframe')) {
+				this.t2.querySelectorAll('video, source, track').forEach(function (elem) {
+					for (var name in elem) {
+						if (name.indexOf('on') === 0)
+							elem[name] = null;
+					}
+					elem.removeAttribute('src');
+				});
+			}
+
+			this.media.videoPlayer = null;
+			this.media.imageLoader = null;
+
+			// passage en plein écran (depuis showDialog)
 			if (document.webkitFullscreenEnabled)
-				document.removeEventListener('webkitfullscreenchange', apijs.dialog.onFullscreen);
+				document.removeEventListener('webkitfullscreenchange', this.onFullscreen);
 			else if (document.fullscreenEnabled)
-				document.removeEventListener('fullscreenchange', apijs.dialog.onFullscreen);
+				document.removeEventListener('fullscreenchange', this.onFullscreen);
 			else if (document.mozFullScreenEnabled)
-				document.removeEventListener('mozfullscreenchange', apijs.dialog.onFullscreen);
+				document.removeEventListener('mozfullscreenchange', this.onFullscreen);
 		}
-
-		// pour ne pas déclencher les fonctions
-		if (this.has('video')) {
-			this.media.ondurationchange = null;
-			this.media.onerror = null;
-		}
-
 		// mémorise la hauteur du dialogue
-		if (!this.has('photo', 'video'))
+		else {
 			this.height = parseFloat(self.getComputedStyle(this.t2).height);
+		}
 
 		// supprime le dialogue
 		if (isAll) {
@@ -762,7 +767,7 @@ apijs.core.dialog = function () {
 
 	// GÉNÉRATION DES ÉLÉMENTS (private return this)
 
-	this.htmlParent = function (action, onSubmit) {
+	this.htmlParent = function (action, submit) {
 
 		this.t1 = document.createElement('div');
 		this.t1.setAttribute('id', 'apijsDialog');
@@ -772,7 +777,7 @@ apijs.core.dialog = function () {
 			this.t2.setAttribute('action', action);
 			this.t2.setAttribute('method', 'post');
 			this.t2.setAttribute('enctype', 'multipart/form-data');
-			this.t2.setAttribute('onsubmit', 'return ' + onSubmit);
+			this.t2.setAttribute('onsubmit', 'return ' + submit);
 		}
 		else {
 			this.t2 = document.createElement('div');
@@ -826,7 +831,7 @@ apijs.core.dialog = function () {
 		return this;
 	};
 
-	this.htmlBtnConfirm = function (type, onClick) {
+	this.htmlBtnConfirm = function (type, click) {
 
 		this.a = document.createElement('div');
 		this.a.setAttribute('class', 'btns');
@@ -834,7 +839,7 @@ apijs.core.dialog = function () {
 			this.b = document.createElement('button');
 			this.b.setAttribute('type', type);
 			this.b.setAttribute('class', 'confirm');
-			if (type !== 'submit') this.b.setAttribute('onclick', onClick);
+			if (type !== 'submit') this.b.setAttribute('onclick', click);
 
 				this.c = document.createElement('span');
 				this.c.appendChild(apijs.i18n.translateNode(104));
@@ -896,26 +901,26 @@ apijs.core.dialog = function () {
 		return this;
 	};
 
-	this.htmlBtnClose = function (canClose) {
+	this.htmlBtnClose = function (close) {
 
-		if (canClose === false)
-			return this;
+		if (close !== false) {
 
-		this.a = document.createElement('div');
-		this.a.setAttribute('class', 'close noplaying');
+			this.a = document.createElement('div');
+			this.a.setAttribute('class', 'close noplaying');
 
-			this.b = document.createElement('button');
-			this.b.setAttribute('type', 'button');
-			this.b.setAttribute('class', 'close');
-			this.b.setAttribute('onclick', 'apijs.dialog.actionClose();');
+				this.b = document.createElement('button');
+				this.b.setAttribute('type', 'button');
+				this.b.setAttribute('class', 'close');
+				this.b.setAttribute('onclick', 'apijs.dialog.actionClose();');
 
-				this.c = document.createElement('span');
-				this.c.appendChild(apijs.i18n.translateNode(105));
+					this.c = document.createElement('span');
+					this.c.appendChild(apijs.i18n.translateNode(105));
 
-			this.b.appendChild(this.c);
+				this.b.appendChild(this.c);
 
-		this.a.appendChild(this.b);
-		this.t2.appendChild(this.a);
+			this.a.appendChild(this.b);
+			this.t2.appendChild(this.a);
+		}
 
 		return this;
 	};
@@ -1007,143 +1012,7 @@ apijs.core.dialog = function () {
 		return this;
 	};
 
-	this.htmlSvgPlayer = function (root) {
-
-		this.a = document.createElement('span');
-		this.a.setAttribute('class', 'player noplaying');
-
-			this.b = document.createElement('span');
-			this.b.setAttribute('class', 'btn play fnt');
-			this.b.setAttribute('onclick', 'apijs.dialog.onKey(80);'); // lecture/pause
-			this.b.appendChild(document.createTextNode('\uE810'));
-
-		this.a.appendChild(this.b);
-
-			this.b = document.createElement('span');
-			this.b.setAttribute('class', 'svg bar');
-
-				this.c = document.createElement('svg');
-				this.c.setAttribute('class', 'bar');
-				this.c.setAttribute('onclick', 'apijs.player.actionPosition(event);');
-
-					this.d = document.createElement('rect');
-
-				this.c.appendChild(this.d);
-
-			this.b.appendChild(this.c);
-
-		this.a.appendChild(this.b);
-
-			this.b = document.createElement('span');
-			this.b.setAttribute('class', 'time');
-			this.b.appendChild(document.createTextNode('00:00 / 00:00'));
-
-		this.a.appendChild(this.b);
-
-			this.b = document.createElement('span');
-			this.b.setAttribute('class', 'svg vol nomobile');
-
-				this.c = document.createElement('svg');
-				this.c.setAttribute('class', 'vol');
-				this.c.setAttribute('onclick', 'apijs.player.actionVolume(event);');
-
-					this.d = document.createElement('rect');
-
-				this.c.appendChild(this.d);
-
-			this.b.appendChild(this.c);
-
-		this.a.appendChild(this.b);
-
-			this.b = document.createElement('label');
-			this.b.setAttribute('class', 'tracks audiotrack');
-			this.b.setAttribute('style', 'display:none;');
-			this.b.appendChild(apijs.i18n.translateNode(133));
-
-				this.c = document.createElement('em');
-				this.c.setAttribute('class', 'nomobile');
-
-			this.b.appendChild(this.c);
-
-				this.c = document.createElement('select');
-				this.c.setAttribute('lang', 'mul');
-				this.c.setAttribute('onchange', 'apijs.player.actionAudiotrack(this);');
-
-			this.b.appendChild(this.c);
-
-		this.a.appendChild(this.b);
-
-			this.b = document.createElement('label');
-			this.b.setAttribute('class', 'tracks videotrack');
-			this.b.setAttribute('style', 'display:none;');
-			this.b.appendChild(apijs.i18n.translateNode(132));
-
-				this.c = document.createElement('em');
-				this.c.setAttribute('class', 'nomobile');
-
-			this.b.appendChild(this.c);
-
-				this.c = document.createElement('select');
-				this.c.setAttribute('lang', 'mul');
-				this.c.setAttribute('onchange', 'apijs.player.actionVideotrack(this);');
-
-			this.b.appendChild(this.c);
-
-		this.a.appendChild(this.b);
-
-			this.b = document.createElement('label');
-			this.b.setAttribute('class', 'tracks video');
-			this.b.setAttribute('style', 'display:none;');
-			this.b.appendChild(apijs.i18n.translateNode(131));
-
-				this.c = document.createElement('em');
-				this.c.setAttribute('class', 'nomobile');
-
-			this.b.appendChild(this.c);
-
-				this.c = document.createElement('select');
-				this.c.setAttribute('lang', 'mul');
-				this.c.setAttribute('onchange', 'apijs.player.actionVideo(this);');
-
-			this.b.appendChild(this.c);
-
-		this.a.appendChild(this.b);
-
-			this.b = document.createElement('label');
-			this.b.setAttribute('class', 'tracks text');
-			this.b.setAttribute('style', 'display:none;');
-			this.b.appendChild(apijs.i18n.translateNode(134));
-
-				this.c = document.createElement('em');
-				this.c.setAttribute('class', 'nomobile');
-
-			this.b.appendChild(this.c);
-
-				this.c = document.createElement('select');
-				this.c.setAttribute('lang', 'mul');
-				this.c.setAttribute('onchange', 'apijs.player.actionText(this);');
-
-					this.d = document.createElement('option');
-					this.d.appendChild(apijs.i18n.translateNode(135)); // off
-
-				this.c.appendChild(this.d);
-
-			this.b.appendChild(this.c);
-
-		this.a.appendChild(this.b);
-
-			this.b = document.createElement('span');
-			this.b.setAttribute('class', 'btn full fnt nomobile');
-			this.b.setAttribute('onclick', 'apijs.dialog.onKey(122);'); // plein écran
-			this.b.appendChild(document.createTextNode('\uE80F'));
-
-		this.a.appendChild(this.b);
-		root.appendChild(this.a);
-
-		return this;
-	};
-
-	this.htmlMedia = function (url, name, date, legend) { // todo
+	this.htmlMedia = function (url, name, date, legend) {
 
 		this.a = document.createElement('dl');
 		this.a.setAttribute('class', 'media');
@@ -1164,7 +1033,6 @@ apijs.core.dialog = function () {
 				this.media = document.createElement('video');
 				this.media.setAttribute('controls', 'controls');
 				this.media.setAttribute('preload', 'metadata');
-				this.media.setAttribute('onclick', 'apijs.dialog.onKey(80);'); // lecture/pause
 			}
 
 			this.media.setAttribute('id', 'apijsMedia');
@@ -1204,34 +1072,32 @@ apijs.core.dialog = function () {
 		this.a.appendChild(this.b);
 		this.t2.appendChild(this.a);
 
-		// player créé v5.2 - supprimé v5.3 - refait v6.0
+		// au choix : photo / vidéo avec iframe / vidéo avec lecteur / vidéo simple
+		// lecteur créé v5.2 / supprimé v5.3 / refait v6.0 / extrait v6.6
 		if (this.has('photo')) {
 			this.media.imageLoader = new Image();
 			this.media.imageLoader.src = url;
-			this.media.imageLoader.onload  = apijs.dialog.onMediaLoad;
-			this.media.imageLoader.onerror = apijs.dialog.onMediaLoad;
+			this.media.imageLoader.onload  = this.onMediaLoad;
+			this.media.imageLoader.onerror = this.onMediaLoad;
 		}
 		else if (url.indexOf('iframe') > 0) {
-			this.media.onload = apijs.dialog.onMediaLoad;
+			this.media.onload = function (ev) {
+				this.onIframeLoad(this.media);
+				this.onMediaLoad(ev);
+			}.bind(this); // pour que ci-dessus this = this
+			this.add('videoiframe');
 		}
-		else if (apijs.config.dialog.player === true) {
-			this.media.setAttribute('class', 'player');
-			this.htmlSvgPlayer(this.media.parentNode);
-			apijs.player = new apijs.core.player();
-			apijs.player.init(this.media.parentNode, this.media, url);
-			this.media.ondurationchange = apijs.dialog.onMediaLoad;
-			this.media.onerror = apijs.dialog.onMediaLoad;
-		}
-		else if (typeof apijs.config.dialog.player == 'function') {
-			apijs.config.dialog.player(this.media, url);
+		else if (apijs.startPlayer(this.media, url)) {
+			this.add('videoplayer');
 		}
 		else {
 			this.c = document.createElement('source');
 			this.c.setAttribute('src', url);
-			this.c.onerror = apijs.dialog.onMediaLoad;
+			this.c.onerror = this.onMediaLoad;
 			this.media.appendChild(this.c);
-			this.media.ondurationchange = apijs.dialog.onMediaLoad;
-			this.media.onerror = apijs.dialog.onMediaLoad;
+			this.media.ondurationchange = this.onMediaLoad;
+			this.media.onerror = this.onMediaLoad;
+			this.add('videosource');
 		}
 
 		return this;

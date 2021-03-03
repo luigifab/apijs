@@ -1,0 +1,58 @@
+/**
+ * Created V/01/01/2021
+ * Updated W/03/03/2021
+ *
+ * Copyright 2008-2021 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
+ * https://www.luigifab.fr/apijs
+ *
+ * This program is free software, you can redistribute it or modify
+ * it under the terms of the GNU General Public License (GPL) as published
+ * by the free software foundation, either version 2 of the license, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but without any warranty, without even the implied warranty of
+ * merchantability or fitness for a particular purpose. See the
+ * GNU General Public License (GPL) for more details.
+ */
+
+/* &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& player &&& */
+video.apijsplayer {
+	display:block; margin:auto; width:100%; height:calc(100% - 1.8rem) !important;
+	background-color:black; cursor:pointer;
+}
+
+/*rtl:begin:ignore*/
+div.apijsplayer * { margin:0; padding:0; }
+
+div.apijsplayer {
+	position:relative; display:flex; align-items:center; z-index:99600;
+	margin-top:-10vh; padding-top:10vh; height:1.8rem; line-height:1.8rem;
+	font-size:0.85em; color:white; text-align:center; direction:ltr;
+}
+
+div.apijsplayer span { padding:0 0.4em; height:1.8rem; background-color:#070707; }
+div.apijsplayer span.btn { padding:0; min-width:2.6em; cursor:pointer; }
+div.apijsplayer span.svg { display:flex; align-items:center; height:100%; }
+div.apijsplayer span.bar { flex:1; }
+div.apijsplayer span.vol { width:7em; }
+div.apijsplayer label { position:relative; height:1.8rem; padding:0 0.4em; background-color:#070707; }
+div.apijsplayer label option { padding:0.2em 0.4em; }
+div.apijsplayer label option:checked { font-weight:700; }
+div.apijsplayer label option:disabled { font-style:italic; color:#AAA; }
+div.apijsplayer label em { padding-left:0.25em; font-style:normal; }
+
+div.apijsplayer label select {
+	display:none; position:absolute; right:0; bottom:1.8rem; min-width:20em; overflow-y:scroll;
+	color:black; outline:0; border:0; background:white; appearance:none; -moz-appearance:none; -webkit-appearance:none;
+}
+
+div.apijsplayer label:hover, div.apijsplayer span.btn:hover { color:black; background-color:white; }
+div.apijsplayer label:hover select { display:block; }
+
+div.apijsplayer svg  { position:relative; flex:1; height:30%; overflow:hidden; border-radius:0.4em; background-color:#222; cursor:pointer; }
+div.apijsplayer rect { position:absolute; top:0; bottom:0; left:0; display:block; z-index:99460; background-color:#00B6F0; }
+div.apijsplayer rect.buffer { z-index:99440; background-color:#515151; }
+div.apijsplayer svg.vol rect { width:100%; background-color:white; }
+/*rtl:end:ignore*/
+/*rtl:raw:div.apijsplayer label { direction:rtl; }*/

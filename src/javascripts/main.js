@@ -1,8 +1,8 @@
 /**
  * Created J/03/12/2009
- * Updated S/05/12/2020
+ * Updated V/08/01/2021
  *
- * Copyright 2008-2020 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
+ * Copyright 2008-2021 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
  * https://www.luigifab.fr/apijs
  *
  * This program is free software, you can redistribute it or modify
@@ -46,7 +46,7 @@ var apijs = new (function () {
 
 	"use strict";
 	this.core = {};
-	this.version = 650;
+	this.version = 660;
 
 	this.config = {
 		lang: 'auto',
@@ -88,21 +88,21 @@ var apijs = new (function () {
 		// instancie
 		this.i18n = new this.core.i18n();
 		//this.select = new this.core.select();
-		this.player = null;
 		this.dialog = new this.core.dialog();
 		this.upload = new this.core.upload();
 		this.slideshow = new this.core.slideshow();
-
-		// fonctions/événement
 		self.dispatchEvent(new CustomEvent('apijsbeforeload'));
 
 		// démarre
 		this.i18n.init();
-		//this.select.init();
 		this.slideshow.init();
+		//this.select.init();
+		document.querySelectorAll('video.apijsplayer[data-src]').forEach(function (elem) {
+			apijs.startPlayer(elem, elem.getAttribute('data-src'));
+		});
 
-		self.addEventListener('popstate', apijs.slideshow.onPopState);
-		self.addEventListener('hashchange', apijs.slideshow.onPopState);
+		self.addEventListener('popstate', this.slideshow.onPopState);
+		self.addEventListener('hashchange', this.slideshow.onPopState);
 
 		if (this.config.debug) {
 			console.info('APIJS available languages: ' + Object.keys(this.i18n.data).join(' '));
@@ -131,13 +131,23 @@ var apijs = new (function () {
 		return (typeof dec == 'number') ? str : str.replace(/[.,]00$/, '');
 	};
 
-	this.toArray = function (data) {
-		return Array.prototype.slice.call(data, 0);
+	this.startPlayer = function (elem, url) {
+
+		if (this.config.dialog.player === true) {
+			elem.videoPlayer = new this.core.player(elem, url);
+			return true;
+		}
+
+		if (typeof this.config.dialog.player == 'function') {
+			this.config.dialog.player(elem, url);
+			return true;
+		}
+
+		return false;
 	};
 
-	this.log = function (txt) {
-		if (this.config.debug)
-			console.info('APIJS ' + txt);
+	this.toArray = function (data) {
+		return Array.prototype.slice.call(data, 0);
 	};
 
 	this.openTab = function (ev) {
@@ -146,13 +156,33 @@ var apijs = new (function () {
 			self.open(this.href);
 	};
 
-	this.html = function (selector) {
-		if ((selector.indexOf('#') === 0) || (selector.indexOf(this.config.slideshow.ids) === 0))
+	this.log = function (txt) {
+		if (this.config.debug)
+			console.info('APIJS ' + txt);
+	};
+
+	this.html = function (selector, id) {
+		if ((id === true) || (selector.indexOf('#') === 0))
 			return document.getElementById(selector.replace('#', 'apijs'));
 		else if (this.dialog.t1)
 			return this.dialog.t1.querySelector(selector);
 		else
 			return null;
+	};
+
+	this.requestFullscreen = function (elem) {
+		if (document.webkitFullscreenElement)
+			document.webkitCancelFullScreen();
+		else if (document.mozFullScreenElement)
+			document.mozCancelFullScreen();
+		else if (document.fullscreenElement)
+			document.cancelFullScreen();
+		else if (elem.webkitRequestFullscreen)
+			elem.webkitRequestFullscreen();
+		else if (elem.requestFullscreen)
+			elem.requestFullscreen();
+		else if (elem.mozRequestFullScreen)
+			elem.mozRequestFullScreen();
 	};
 
 	this.serialize = function (form, filter) {

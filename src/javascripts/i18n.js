@@ -1,8 +1,8 @@
 /**
  * Created S/05/06/2010
- * Updated D/26/07/2020
+ * Updated V/01/01/2021
  *
- * Copyright 2008-2020 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
+ * Copyright 2008-2021 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
  * https://www.luigifab.fr/apijs
  *
  * This program is free software, you can redistribute it or modify
@@ -27,24 +27,33 @@ apijs.core.i18n = function () {
 			104: "Potvrzení",
 			105: "Zavřít",
 			106: "Předchozí",
-			107: "Další",
-			142: "předchozí/další"
+			107: "Následující",
+			132: "video stopa",
+			133: "zvuková stopa",
+			134: "titulky",
+			142: "předchozí/následující",
+			144: "zpět/vpřed",
+			146: "ztlumit",
+			149: "Konec",
+			150: "Esc"
 		},
 		de: {
 			103: "Abbrechen",
 			104: "Bestätigen",
 			105: "Schließen",
-			106: "Zurück",
-			107: "Weiter",
+			106: "Vorheriges",
+			107: "Nächstes",
 			108: "Datei wählen",
 			109: "Dateien wählen",
 			124: "Verarbeitung läuft...",
-			141: "anfang/ende",
-			142: "zurück/weiter",
+			132: "videospur",
+			133: "audiospur",
+			134: "untertitel",
+			142: "vorheriges/nächstes",
 			143: "wiedergabe/pause",
 			144: "rückwärts/vorwärts",
 			145: "leiser/lauter",
-			146: "stumm",
+			146: "ton aus",
 			147: "vollbild",
 			148: "beenden",
 			149: "Ende",
@@ -87,7 +96,7 @@ apijs.core.i18n = function () {
 			133: "audio track",
 			134: "subtitles",
 			135: "off",
-			141: "start/end",
+			141: "first/last",
 			142: "previous/next",
 			143: "play/pause",
 			144: "backward/forward",
@@ -133,14 +142,14 @@ apijs.core.i18n = function () {
 			124: "Operación en curso...",
 			125: "Envío en progreso...",
 			126: "Tratamiento en curso...",
-			132: "pista video",
-			133: "pista audio",
+			131: "vídeo",
+			132: "pista de vídeo",
+			133: "pista de audio",
 			134: "subtítulos",
-			141: "inicio/fin",
 			142: "anterior/siguiente",
 			143: "reproducir/pausa",
 			144: "retroceder/avanzar",
-			145: "bajar/subir el volumen",
+			145: "bajar/subir volumen",
 			146: "silenciar",
 			147: "pantalla completa",
 			148: "salir",
@@ -183,11 +192,11 @@ apijs.core.i18n = function () {
 			132: "piste vidéo",
 			133: "piste audio",
 			134: "sous-titres",
-			141: "début/fin",
+			141: "premier/dernier",
 			142: "précédent/suivant",
 			143: "lecture/pause",
 			144: "reculer/avancer",
-			145: "baisser/augmenter le volume",
+			145: "réduire/augmenter le volume",
 			146: "couper le son",
 			147: "plein écran",
 			148: "quitter",
@@ -228,12 +237,14 @@ apijs.core.i18n = function () {
 			124: "Operazione in corso...",
 			125: "Invio in corso...",
 			126: "Trattamento in corso...",
-			141: "inizio/fine",
+			132: "traccia video",
+			133: "traccia audio",
+			134: "sottotitoli",
 			142: "precedente/successivo",
 			143: "riproduci/pausa",
 			144: "indietro/avanti",
-			145: "abbassare/aumentare il volume",
-			146: "muto",
+			145: "riduci/aumenta volume",
+			146: "silenzio",
 			147: "schermo intero",
 			148: "esci",
 			149: "Fine",
@@ -265,7 +276,16 @@ apijs.core.i18n = function () {
 			105: "閉じる",
 			106: "前へ",
 			107: "次へ",
+			131: "ビデオ",
+			132: "ビデオトラック",
+			133: "オーディオトラック",
+			134: "字幕",
 			142: "前へ/次へ",
+			144: "戻る/進む",
+			146: "ミュート",
+			147: "全画面表示",
+			149: "終了",
+			150: "Esc",
 			166: "§ Mo",
 			184: "§% - § Ko/s",
 			192: "よろしいですか？[span]はい[/span] - いいえ"
@@ -276,15 +296,32 @@ apijs.core.i18n = function () {
 			105: "Sluiten",
 			106: "Vorige",
 			107: "Volgende",
-			142: "vorige/volgende"
+			132: "videospoor",
+			133: "audiospoor",
+			134: "ondertitels",
+			142: "vorige/volgende",
+			144: "achteruit/vooruit",
+			145: "volume omlaag/omhoog",
+			146: "dempen",
+			147: "schermvullend",
+			150: "Esc"
 		},
 		pl: {
 			103: "Anuluj",
 			104: "Potwierdź",
 			105: "Zamknij",
 			106: "Poprzedni",
-			107: "Następne",
-			142: "poprzedni/następne"
+			107: "Następny",
+			131: "obraz",
+			132: "ścieżka obrazu",
+			133: "ścieżka dźwiękowa",
+			134: "napisy",
+			142: "poprzedni/następny",
+			144: "wstecz/przodu",
+			145: "ciszej/głośniej",
+			146: "wycisz",
+			147: "pełny ekran",
+			150: "Esc"
 		},
 		pt: {
 			103: "Cancelar",
@@ -298,12 +335,14 @@ apijs.core.i18n = function () {
 			125: "Envio em processo...",
 			126: "Tratamento em processo...",
 			131: "vídeo",
-			141: "início/fim",
+			132: "faixa de vídeo",
+			133: "faixa de áudio",
+			134: "legendas",
 			142: "anterior/seguinte",
 			143: "reprodução/pausa",
 			144: "recuar/avançar",
-			145: "subir/baixar o volume",
-			146: "silenciar",
+			145: "diminuir/aumentar volume",
+			146: "sem som",
 			147: "ecrã completo",
 			148: "sair",
 			149: "Fim",
@@ -330,7 +369,13 @@ apijs.core.i18n = function () {
 			124: "Operação em andamento...",
 			125: "Envio em andamento...",
 			126: "Tratamento em andamento...",
-			142: "anterior/próximo"
+			132: "trilha de vídeo",
+			133: "trilha de áudio",
+			142: "anterior/próximo",
+			144: "retroceder/avançar",
+			146: "sem áudio",
+			147: "tela inteira",
+			149: "Final"
 		},
 		ru: {
 			102: "Ок",
@@ -341,14 +386,18 @@ apijs.core.i18n = function () {
 			107: "Следующий",
 			108: "Выберите файл",
 			124: "Операция в процессе...",
-			141: "начало/конец",
+			131: "видео",
+			132: "видеодорожка",
+			133: "аудиодорожка",
+			134: "субтитры",
 			142: "предыдущий/следующий",
 			143: "воспроизведение/пауза",
 			144: "назад/вперед",
 			145: "понизить/повысить громкость",
-			146: "отключить звук",
-			147: "на весь экран",
+			146: "выключить звук",
+			147: "полноэкранный режим",
 			148: "выйти",
+			150: "Esc",
 			161: "Все файлы приняты.",
 			162: "Формат файла: §.",
 			163: "Форматы файлов: § и §.",
@@ -367,10 +416,17 @@ apijs.core.i18n = function () {
 		},
 		sk: {
 			103: "Zrušiť",
+			104: "Potvrdiť",
 			105: "Zavrieť",
-			106: "Predchádzajúci",
-			107: "Ďalší",
-			142: "predchádzajúci/ďalší"
+			106: "Dozadu",
+			107: "Ďalej",
+			133: "zvuková stopa",
+			134: "titulky",
+			142: "dozadu/ďalej",
+			144: "dozadu/dopredu",
+			145: "znizit/zvysit hlasitost",
+			146: "stlmiť",
+			150: "Esc"
 		},
 		tr: {
 			103: "İptal",
@@ -378,16 +434,52 @@ apijs.core.i18n = function () {
 			105: "Kapat",
 			106: "Önceki",
 			107: "Sonraki",
+			131: "görüntü",
+			132: "görüntü kaydı",
+			133: "ses kaydı",
+			134: "altyazılar",
 			142: "önceki/sonraki",
+			144: "geri/i̇leri",
+			145: "ses kısar/açar",
+			146: "sesi kapatma",
+			147: "tam ekran",
+			149: "Son",
+			150: "Esc",
 			192: "Emin misiniz ? [span]Evet[/span] - Hayır"
+		},
+		uk: {
+			103: "Відмінити",
+			104: "Підтвердити",
+			105: "Закрити",
+			106: "Попередній",
+			107: "Наступний",
+			131: "відео",
+			132: "відеодоріжка",
+			133: "звукова доріжка",
+			134: "субтитри",
+			142: "попередній/наступний",
+			144: "назад/вперед",
+			145: "зменшити/збільшити гучність",
+			146: "вимкнути звук",
+			149: "Кінець",
+			150: "Esc"
 		},
 		zh: {
 			103: "取消",
 			104: "确认",
 			105: "关闭",
-			106: "前页",
-			107: "下一步",
-			142: "前页/下一步",
+			106: "上一个",
+			107: "下一个",
+			131: "视频",
+			132: "视频轨道",
+			133: "音频轨道",
+			134: "字幕",
+			142: "上一个/下一个",
+			144: "快退/快进",
+			145: "音量减/增",
+			146: "静音",
+			147: "全屏",
+			150: "Esc",
 			192: "您确定吗？[span]是[/span] - 否"
 		}
 		// auto end
@@ -395,22 +487,21 @@ apijs.core.i18n = function () {
 
 	this.init = function () {
 
-		var auto, lang = apijs.config.lang, html = document.querySelector('html');
+		var value = apijs.config.lang, html = document.querySelector('html');
 
-		if (lang.indexOf('auto') > -1) {
-
-			// recherche du nœud html
-			if (html.getAttribute('xml:lang'))
-				auto = html.getAttribute('xml:lang').slice(0, 2);
-			else if (html.getAttribute('lang'))
-				auto = html.getAttribute('lang').slice(0, 2);
-
-			// définition de la langue
-			if ((typeof auto == 'string') && this.data.hasOwnProperty(auto))
-				apijs.config.lang = auto;
+		if (value.indexOf('auto') > -1) {
+			value = html.getAttribute('xml:lang') || html.getAttribute('lang'); // pt-BR fr-FR
+			if (typeof value == 'string') {
+				value = value.replace(/[-_]/g, '').toLowerCase();
+				value = value.slice(0, 4);      // ptbr frfr
+				if (!this.data.hasOwnProperty(value))
+					value = value.slice(0, 2); // pt   fr
+				if (this.data.hasOwnProperty(value))
+					apijs.config.lang = value;
+			}
 		}
 
-		if (!this.data.hasOwnProperty(apijs.config.lang))
+		if (!this.data.hasOwnProperty(value))
 			apijs.config.lang = 'en';
 	};
 
@@ -419,7 +510,7 @@ apijs.core.i18n = function () {
 
 	this.translate = function (word) {
 
-		var lang = apijs.config.lang, arg = 1, translation = '';
+		var lang = apijs.config.lang, idx = 1, translation = '';
 
 		// mot clef inexistant dans la langue configurée
 		// test avec la langue par défaut pour éventuellement continuer
@@ -435,7 +526,7 @@ apijs.core.i18n = function () {
 		// chaîne de caractères configurable
 		if (arguments.length > 1) {
 			this.data[lang][word].split('§').forEach(function (data) {
-				translation += (arg < this.length) ? data + this[arg++] : data;
+				translation += (idx < this.length) ? data + this[idx++] : data;
 			}, arguments); // pour que ci-dessus this = arguments
 			return translation;
 		}
@@ -455,14 +546,16 @@ apijs.core.i18n = function () {
 
 		if (typeof lang == 'string') {
 
-			if (this.data.hasOwnProperty(lang)) {
-				apijs.config.lang = lang;
+			if (lang.indexOf('auto') > -1) {
+				apijs.config.lang = 'auto';
+				this.init();
 				return true;
 			}
 
-			if (lang.indexOf('auto') > -1) {
+			lang = lang.replace(/[-_]/g, '');
+
+			if (this.data.hasOwnProperty(lang)) {
 				apijs.config.lang = lang;
-				this.init();
 				return true;
 			}
 		}

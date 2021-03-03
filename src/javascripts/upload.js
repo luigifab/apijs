@@ -1,8 +1,8 @@
 /**
  * Created L/13/04/2009
- * Updated J/05/11/2020
+ * Updated D/03/01/2021
  *
- * Copyright 2008-2020 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
+ * Copyright 2008-2021 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
  * https://www.luigifab.fr/apijs
  *
  * This program is free software, you can redistribute it or modify
@@ -39,7 +39,7 @@ apijs.core.upload = function () {
 	this.sendFile = function (title, action, input, onemax, exts, callback, args, icon) {
 
 		var res = this.sendFiles(title, action, input, onemax, 0, exts, callback, args, icon);
-		if (!res) console.error('apijs.upload.sendFile invalid arguments', apijs.toArray(arguments));
+		if (!res) console.error('apijs.upload.sendFile invalid arguments', arguments);
 
 		return res;
 	};
@@ -81,7 +81,7 @@ apijs.core.upload = function () {
 		}
 
 		if ((typeof this.allmax != 'number') || (this.allmax > 0))
-			console.error('apijs.upload.sendFiles invalid arguments', apijs.toArray(arguments));
+			console.error('apijs.upload.sendFiles invalid arguments', arguments);
 
 		return false;
 	};
@@ -162,39 +162,38 @@ apijs.core.upload = function () {
 
 			// https://bugzilla.mozilla.org/show_bug.cgi?id=637002
 			// https://stackoverflow.com/a/15491086
-			// 'loadstart' When the request starts
-			//  'progress' While sending and loading data
-			//      'load' When the request has successfully completed even if the server hasn't responded that it finished
-			//   'loadend' When the request has completed even if the server hasn't responded that it finished processing the request
-			//     'error' When the request has failed
-			//     'abort' When the request has been aborted (by invoking the abort method)
-			//   'timeout' When the author specified timeout has passed before the request could complete
+			// loadstart - When the request starts
+			//  progress - While sending and loading data
+			//      load - When the request has successfully completed even if the server hasn't responded that it finished
+			//   loadend - When the request has completed even if the server hasn't responded that it finished processing the request
+			//     error - When the request has failed
+			//     abort - When the request has been aborted (by invoking the abort method)
+			//   timeout - When the author specified timeout has passed before the request could complete
 			xhr.onreadystatechange = function (text) {
-
 				if (xhr.readyState === 4) {
 					text = xhr.responseText.trim();
 					if ([0, 200].has(xhr.status)) {
 						self.dispatchEvent(new CustomEvent('apijsajaxresponse', { detail: { from: 'apijs.upload.send', xhr: xhr } }));
 						apijs.log('upload:onreadystatechange status:200 message:' + text);
 						if (text.indexOf('success-') === 0) {
-							apijs.upload.updateTitle();
-							apijs.upload.callback(text.slice(8), apijs.upload.args);
+							this.updateTitle();
+							this.callback(text.slice(8), this.args);
 						}
 						else {
-							apijs.upload.onError(195, text);
+							this.onError(195, text);
 						}
 					}
 					else {
 						apijs.log('upload:onreadystatechange status:' + xhr.status + ' message: ' + text);
-						apijs.upload.onError(194, xhr.status);
+						this.onError(194, xhr.status);
 					}
 				}
-			};
+			}.bind(this); // pour que ci-dessus this = this
 
-			xhr.upload.onloadstart = apijs.upload.onStart.bind(this);
-			xhr.upload.onprogress  = apijs.upload.onProgress.bind(this);
-			xhr.upload.onload      = apijs.upload.onProgress.bind(this);
-			xhr.upload.onerror     = apijs.upload.onError.bind(this);
+			xhr.upload.onloadstart = this.onStart.bind(this);
+			xhr.upload.onprogress  = this.onProgress.bind(this);
+			xhr.upload.onload      = this.onProgress.bind(this);
+			xhr.upload.onerror     = this.onError.bind(this);
 			xhr.send(form);
 		}
 		else {

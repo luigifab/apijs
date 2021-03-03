@@ -1,8 +1,8 @@
 /**
  * Created J/13/05/2010
- * Updated D/24/05/2020
+ * Updated V/01/01/2021
  *
- * Copyright 2008-2020 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
+ * Copyright 2008-2021 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
  * https://www.luigifab.fr/apijs
  *
  * This program is free software, you can redistribute it or modify
@@ -28,18 +28,18 @@ apijs.core.slideshow = function () {
 
 		var i, j, elem, ids = apijs.config.slideshow.ids, hoverload = false;
 
-		for (i = 0; elem = apijs.html(ids + '.' + i); i++) {
+		for (i = 0; elem = apijs.html(ids + '.' + i, true); i++) {
 
 			hoverload = elem.classList.contains('hoverload');
 
-			for (j = 0; elem = apijs.html(ids + '.' + i + '.' + j); j++) {
-				elem.addEventListener('click', apijs.slideshow.show);
+			for (j = 0; elem = apijs.html(ids + '.' + i + '.' + j, true); j++) {
+				elem.addEventListener('click', this.show);
 				if (hoverload)
-					elem.addEventListener('mouseover', apijs.slideshow.show);
+					elem.addEventListener('mouseover', this.show);
 			}
 
-			if (elem = apijs.html(ids + '.' + i + '.99999'))
-				elem.addEventListener('click', apijs.slideshow.show);
+			if (elem = apijs.html(ids + '.' + i + '.99999', true))
+				elem.addEventListener('click', this.show);
 		}
 
 		this.onPopState();
@@ -50,7 +50,7 @@ apijs.core.slideshow = function () {
 		// \\ au lieu de \ sinon Bad or unnecessary escaping
 		if (new RegExp('#(' + apijs.config.slideshow.ids + '[\-\\.]\\d+[\-\\.]\\d+)').test(self.location.href)) {
 			var id = RegExp.$1.replace(/-/g, '.');
-			if (apijs.html(id) && !apijs.dialog.has('slideshow')) // Chrome 31 et Opera 19 passent 2 fois sans le !has
+			if (apijs.html(id, true) && !apijs.dialog.has('slideshow')) // Chrome 31 et Opera 19 passent 2 fois sans le !has
 				apijs.slideshow.show(id, false);
 		}
 		else if (apijs.slideshow.current) {
@@ -67,7 +67,7 @@ apijs.core.slideshow = function () {
 		// la source est soit une miniature (ev=click/mouseover/stringId) soit l'image principale (ev=click)
 		if (typeof ev == 'string') {
 			show     = true;
-			source   = apijs.html(ev);
+			source   = apijs.html(ev, true);
 			media.id = ev;
 		}
 		else {
@@ -86,7 +86,7 @@ apijs.core.slideshow = function () {
 		// recherche des informations du média (2/4, prefix|number|gallery)
 		media.prefix  = apijs.config.slideshow.ids + '.' + media.id.split('.')[1];
 		media.number  = parseInt(media.id.split('.')[2], 10);
-		media.gallery = apijs.html(media.prefix + '.99999');
+		media.gallery = apijs.html(media.prefix + '.99999', true);
 
 		// SI SOURCE N'EST PAS L'IMAGE PRINCIPALE DU MODE GALLERY
 		// marque la source avec la class current
@@ -94,8 +94,8 @@ apijs.core.slideshow = function () {
 		// v5.1 soit sur le lien (avant sur l'image elle même), soit sur le dl
 		if (media.number !== 99999) {
 
-			var links = apijs.html(media.prefix).querySelectorAll('a[id][type]'),
-			    conts = apijs.html(media.prefix).querySelectorAll('dl');
+			var links = apijs.html(media.prefix, true).querySelectorAll('a[id][type]'),
+			    conts = apijs.html(media.prefix, true).querySelectorAll('dl');
 
 			if (media.gallery || (links.length !== conts.length)) {
 				links.forEach(function (elem) { elem.classList.remove('current'); });
@@ -118,7 +118,7 @@ apijs.core.slideshow = function () {
 			if (media.number === 99999) {
 				show   = true;
 				source = (media.gallery.hasAttribute('class')) ? media.gallery.getAttribute('class') : media.prefix + '.0';
-				source = apijs.html(source);
+				source = apijs.html(source, true);
 				media.number = parseInt(source.getAttribute('id').split('.')[2], 10);
 				media.id     = media.id.replace(99999, media.number);
 			}
@@ -150,7 +150,7 @@ apijs.core.slideshow = function () {
 		media.url    = source.getAttribute('href');
 		media.type   = source.getAttribute('type').substr(0, 5).replace('image', 'dialogPhoto').replace('video', 'dialogVideo');
 		media.type   = (media.type.indexOf('dialog') === 0) ? media.type : 'dialogPhoto';
-		media.styles = apijs.html(media.prefix).getAttribute('class').replace(/gallery|album/g, '').trim();
+		media.styles = apijs.html(media.prefix, true).getAttribute('class').replace(/gallery|album/g, '').trim();
 
 		// demande l'affichage du dialogue
 		// lors d'un clic sur l'image principale du mode gallery
@@ -160,7 +160,7 @@ apijs.core.slideshow = function () {
 
 			apijs.dialog[media.type](media.url, media.config[0], media.config[1], media.config[2], media.styles);
 
-			total = apijs.html(media.prefix).querySelectorAll('a[id][type]').length - (media.gallery ? 2 : 1);
+			total = apijs.html(media.prefix, true).querySelectorAll('a[id][type]').length - (media.gallery ? 2 : 1);
 			apijs.slideshow.current = {
 				number: media.number,
 				first:  media.prefix + '.0',

@@ -1,8 +1,8 @@
 /**
  * Created V/08/05/2009
- * Updated D/09/08/2020
+ * Updated W/03/03/2021
  *
- * Copyright 2008-2020 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
+ * Copyright 2008-2021 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
  * https://www.luigifab.fr/apijs
  *
  * This program is free software, you can redistribute it or modify
@@ -17,7 +17,7 @@
  */
 
 /* &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& conteneurs &&& */
-#apijsDialog * { margin:0; padding:0; }
+div[id="apijsDialog"] * { margin:0; padding:0; }
 #apijsDialog button, #apijsDialog label { cursor:pointer; }
 
 #apijsDialog {
@@ -40,6 +40,7 @@
 	border-radius:0; background-color:rgba(0, 0, 0, 0.8); box-shadow:none;
 }
 
+#apijsBox.video { background-color:black; }
 #apijsBox.photo.error, #apijsBox.video.error { background-image:url("../images/apijs/tv.gif"); background-repeat:repeat; }
 #apijsBox.options, #apijsBox.upload, #apijsBox.progress { min-height:15em; }
 #apijsBox.iframe, #apijsBox.ajax { padding:2.5em 0.8em 1em; }
@@ -117,7 +118,7 @@
 #apijsBox dl.media dt { display:flex; flex-direction:column; flex:1; overflow:hidden; }
 #apijsBox dl.media dt img, #apijsBox dl.media dt video, #apijsBox dl.media dt iframe { flex:1 1 auto; height:100%; visibility:hidden; }
 #apijsBox dl.media dt img { image-rendering:optimizeQuality; image-rendering:-moz-crisp-edges; object-fit:scale-down; }
-#apijsBox dl.media dt video { outline:0; background-color:black; cursor:pointer; }
+#apijsBox dl.media dt video { outline:0; cursor:pointer; }
 
 #apijsBox dl.media dd { line-height:1.5rem; font-size:0.85em; background-color:#666; }
 #apijsBox dl.media dd span { margin:0 0.6em; font-size:0.9em; font-style:italic; }
@@ -162,42 +163,6 @@
 	font-size:inherit; font-weight:700; text-transform:uppercase; border:0; background-color:#888;
 }
 
-/* &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& player &&& */
-#apijsBox dl.media dt video.player { height:calc(100% - 1.8rem); }
-
-/*rtl:begin:ignore*/
-#apijsBox span.player {
-	position:relative; display:flex; align-items:center; z-index:99600;
-	margin-top:-10vh; padding-top:10vh; height:1.8rem; line-height:1.8rem;
-	font-size:0.85em; color:white; direction:ltr;
-}
-
-#apijsBox span.player span { padding:0 0.4em; height:1.8rem; background-color:#070707; }
-#apijsBox span.player span.btn { padding:0; min-width:2.6em; cursor:pointer; }
-#apijsBox span.player span.svg { display:flex; align-items:center; height:100%; }
-#apijsBox span.player span.bar { flex:1; }
-#apijsBox span.player span.vol { width:7em; }
-#apijsBox span.player label { position:relative; padding:0 0.4em; background-color:#070707; }
-#apijsBox span.player label option { padding:0.2em 0.4em; }
-#apijsBox span.player label option:checked { font-weight:700; }
-#apijsBox span.player label option:disabled { font-style:italic; color:#AAA; }
-#apijsBox span.player label em { padding-left:0.25em; font-style:normal; }
-
-#apijsBox span.player label select {
-	display:none; position:absolute; right:0; bottom:1.8rem; min-width:20em;
-	color:black; outline:0; border:0; background-color:white; appearance:none; -moz-appearance:none; -webkit-appearance:none;
-}
-
-#apijsBox span.player label:hover, #apijsBox span.player span.btn:hover { color:black; background-color:white; }
-#apijsBox span.player label:hover select { display:block; }
-
-#apijsBox span.player svg  { position:relative; flex:1; height:30%; overflow:hidden; border-radius:0.4em; background-color:#222; cursor:pointer; }
-#apijsBox span.player rect { position:absolute; top:0; bottom:0; left:0; display:block; z-index:99460; background-color:#00B6F0; }
-#apijsBox span.player rect.buffer { z-index:99440; background-color:#515151; }
-#apijsBox span.player svg.vol rect { width:100%; background-color:white; }
-/*rtl:end:ignore*/
-/*rtl:raw:#apijsBox span.player label { direction:rtl; }*/
-
 /* &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& media queries (via js) &&& */
 #apijsDialog.reduce * { transition:none !important; }
 
@@ -208,8 +173,8 @@
 #apijsBox.mobile.playing .noplaying, #apijsBox.fullscreen.playing .noplaying { transition:opacity 0.5s; opacity:0; }
 #apijsBox.mobile.playing .noplaying:hover, #apijsBox.fullscreen.playing .noplaying:hover { opacity:1 !important; }
 
-#apijsBox.tiny span.player label { position:initial; }
-#apijsBox.tiny span.player label select { left:0; right:0; width:100%; }
+#apijsBox.tiny div.apijsplayer label { position:initial; }
+#apijsBox.tiny div.apijsplayer label select { left:0; right:0; width:100%; }
 #apijsBox.tiny div.navigation button { padding:0 1em; }
 
 /* &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& images &&& */
@@ -218,7 +183,7 @@
 	font-family:apijsFontello; font-weight:400; font-style:normal;
 }
 
-#apijsBox h1:before, #apijsBox div.btns button span:before, #apijsBox kbd:before, #apijsBox span.player span.fnt {
+#apijsBox h1:before, #apijsBox div.btns button span:before, #apijsBox kbd:before, div.apijsplayer span.fnt {
 	font-family:apijsFontello; font-style:normal; font-weight:400; font-variant:normal; text-transform:none; text-decoration:inherit;
 	-moz-osx-font-smoothing:grayscale; -webkit-font-smoothing:antialiased;
 }
