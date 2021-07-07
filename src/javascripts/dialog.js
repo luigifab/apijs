@@ -1,6 +1,6 @@
 /**
  * Created D/12/04/2009
- * Updated W/03/03/2021
+ * Updated L/24/05/2021
  *
  * Copyright 2008-2021 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
  * https://www.luigifab.fr/apijs
@@ -92,7 +92,7 @@ apijs.core.dialog = function () {
 
 		if ((typeof title == 'string') && (typeof text == 'string') && (typeof action == 'string') && (typeof input == 'string')) {
 			return this.init('upload', icon)
-				.htmlParent(action, 'apijs.upload.actionConfirm();')
+				.htmlParent(action, 'apijs.upload.actionConfirm();', 'apijs.upload.actionDrag(event);')
 				.htmlContent(title, text)
 				.htmlUpload(input, (typeof multiple == 'boolean') ? multiple : false)
 				.htmlBtnConfirm('submit')
@@ -304,10 +304,12 @@ apijs.core.dialog = function () {
 
 	this.onResizeBrowser = function () {
 
-		var add = document.querySelector('body').clientWidth <= (apijs.dialog.has('photo', 'video') ? 900 : 460);
+		var add, body = document.querySelector('body');
+
+		add = body.clientWidth <= (apijs.dialog.has('photo', 'video') ? 900 : 460);
 		apijs.dialog[add ? 'add' : 'remove']('mobile');
 
-		add = document.querySelector('body').clientWidth <= 300;
+		add = body.clientWidth <= 300;
 		apijs.dialog[add ? 'add' : 'remove']('tiny');
 	};
 
@@ -497,7 +499,7 @@ apijs.core.dialog = function () {
 		if ([32, 33, 34, 35, 36, 38, 40].has(ev.keyCode)) {
 
 			// empèche le défilement
-			if (!ev.target || !['INPUT', 'TEXTAREA', 'OPTION', 'SELECT'].has(ev.target.nodeName)) {
+			if (!ev.target || (!['INPUT','TEXTAREA','OPTION','SELECT'].has(ev.target.nodeName) && !ev.target.classList.contains('scrollable'))) {
 				ev.preventDefault();
 				ev.stopPropagation();
 			}
@@ -737,10 +739,11 @@ apijs.core.dialog = function () {
 		// supprime le dialogue
 		if (isAll) {
 			this.toggle('ready', 'end');
-			document.querySelector('body').removeChild(this.t1);
+			this.t1.remove();
 		}
 		else {
-			this.t1.removeChild(this.t2);
+			while (this.t1.firstChild)
+				this.t1.firstChild.remove();
 		}
 
 		// réinitialise toutes les variables (sauf ft/ti/ns)
@@ -767,10 +770,23 @@ apijs.core.dialog = function () {
 
 	// GÉNÉRATION DES ÉLÉMENTS (private return this)
 
-	this.htmlParent = function (action, submit) {
+	this.htmlParent = function (action, submit, drag) {
 
 		this.t1 = document.createElement('div');
 		this.t1.setAttribute('id', 'apijsDialog');
+
+		if (typeof drag == 'string') {
+
+			this.t1.setAttribute('ondragenter', drag);
+			this.t1.setAttribute('ondragleave', drag);
+			this.t1.setAttribute('ondragover', drag);
+			this.t1.setAttribute('ondrop', drag);
+
+			this.a = document.createElement('p');
+			this.a.setAttribute('class', 'drag');
+			this.a.appendChild(apijs.i18n.translateNode(127));
+			this.t1.appendChild(this.a);
+		}
 
 		if (typeof action == 'string') {
 			this.t2 = document.createElement('form');
@@ -952,7 +968,7 @@ apijs.core.dialog = function () {
 		this.a.appendChild(this.b);
 
 			this.b = document.createElement('div');
-			this.b.setAttribute('class', 'filenames');
+			this.b.setAttribute('class', 'filenames scrollable');
 
 		this.a.appendChild(this.b);
 		this.t2.appendChild(this.a);
@@ -1088,7 +1104,7 @@ apijs.core.dialog = function () {
 			this.add('videoiframe');
 		}
 		else if (apijs.startPlayer(this.media, url)) {
-			this.add('videoplayer');
+			this.add('apijsvideoplayer');
 		}
 		else {
 			this.c = document.createElement('source');

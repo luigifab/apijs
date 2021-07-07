@@ -1,6 +1,6 @@
 /**
  * Created V/01/01/2021
- * Updated W/03/03/2021
+ * Updated V/18/06/2021
  *
  * Copyright 2008-2021 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
  * https://www.luigifab.fr/apijs
@@ -17,10 +17,20 @@
  */
 
 /* &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& player &&& */
-video.apijsplayer {
-	display:block; margin:auto; width:100%; height:calc(100% - 1.8rem) !important;
-	background-color:black; cursor:pointer;
-}
+div.apijsvideoplayer { background-color:black; }
+div.apijsvideoplayer.fullscreen { margin:0 !important; padding:0 !important; height:100vh !important; }
+
+div.apijsvideoplayer.fullscreen .nofullscreen { display:none !important; }
+div.apijsvideoplayer.fullscreen.playing video { cursor:none; }
+
+div.apijsvideoplayer.mobile .nomobile { display:none !important; }
+div.apijsvideoplayer.mobile.playing .noplaying, div.apijsvideoplayer.fullscreen.playing .noplaying { transition:opacity 0.5s; opacity:0; }
+div.apijsvideoplayer.mobile.playing .noplaying:hover, div.apijsvideoplayer.fullscreen.playing .noplaying:hover { opacity:1 !important; }
+
+div.apijsvideoplayer.tiny label { position:initial; }
+div.apijsvideoplayer.tiny label select { left:0; right:0; width:100%; }
+
+video.apijsplayer { display:block; margin:auto; width:100%; height:calc(100% - 1.8rem) !important; cursor:pointer; }
 
 /*rtl:begin:ignore*/
 div.apijsplayer * { margin:0; padding:0; }

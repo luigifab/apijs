@@ -1,6 +1,6 @@
 /**
  * Created L/13/04/2009
- * Updated D/03/01/2021
+ * Updated V/18/06/2021
  *
  * Copyright 2008-2021 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
  * https://www.luigifab.fr/apijs
@@ -89,47 +89,76 @@ apijs.core.upload = function () {
 
 	// GESTION DES INTERACTIONS (private return void)
 
+	this.actionDrag = function (ev) {
+
+		if (ev.type == 'dragenter') {
+			apijs.dialog.add('drag');
+		}
+		else if (ev.type == 'dragleave') {
+			apijs.dialog.remove('drag');
+		}
+		else if (ev.dataTransfer && ev.dataTransfer.files && (ev.dataTransfer.files.length > 0)) {
+			this.actionChoose(ev.dataTransfer);
+			apijs.dialog.remove('drag');
+		}
+
+		ev.stopPropagation();
+		ev.preventDefault();
+	};
+
 	this.actionChoose = function (elem) {
 
-		var html = [], size = 0, text;
+		var html = [], size = 0, error = false, btn = apijs.html('button.confirm'), text;
 		this.files = [];
 
 		if (this.exts) {
 
 			// 1048576 octet = 1 Mo
-			Array.prototype.forEach.call(elem.files, function (file) {
+			Array.prototype.forEach.call((this.allmax > 0) ? elem.files : Array.prototype.slice.call(elem.files, 0, 1), function (file, idx) {
 
-				text = file.name + ' <span class="sz">' + apijs.i18n.translate(166, apijs.formatNumber(file.size / 1048576)) + '</span>';
+				text = file.size / 1048576;
+				text = apijs.formatNumber((text < 0.01) ? 0.01 : text);
+				text = ((this.allmax > 0) ? '<td class="nb">' + (idx + 1) + '</td>' : '') +
+					'<td class="name">' + file.name + '</td><td class="size">' + apijs.i18n.translate(166, text) + '</td>';
 
-				if ((this.exts.join() !== '*') && !this.exts.has(file.name.slice(file.name.lastIndexOf('.') + 1).toLowerCase()))
-					text += ' <span class="ee">' + apijs.i18n.translate(167) + '</span>';
-				else if (file.size > (this.onemax * 1048576))
-					text += ' <span class="ee">' + apijs.i18n.translate(168) + '</span>';
-				else if (file.size <= 0)
-					text += ' <span class="ee">' + apijs.i18n.translate(169) + '</span>';
-				else
+				if ((this.exts.join() !== '*') && !this.exts.has(file.name.slice(file.name.lastIndexOf('.') + 1).toLowerCase())) {
+					text += '<td class="err">' + apijs.i18n.translate(167) + '</td>';
+					error = true;
+				}
+				else if (file.size > (this.onemax * 1048576)) {
+					text += '<td class="err">' + apijs.i18n.translate(168) + '</td>';
+					error = true;
+				}
+				else if (file.size <= 0) {
+					text += '<td class="err">' + apijs.i18n.translate(169) + '</td>';
+					error = true;
+				}
+				else {
+					text += '<td></td>';
 					this.files.push(file);
+				}
 
-				html.push('<div>' + text + '</div>');
+				html.push('<tr>' + text + '</tr>');
 				size += file.size / 1048576;
 
 			}, this); // pour que ci-dessus this = this
 
 			// multiple
 			if ((this.allmax > 0) && (size >= this.allmax)) {
-				html.push('<div class="tt"> = <span class="sz">' + apijs.i18n.translate(166, apijs.formatNumber(size)) + '</span> <span class="ee">' + apijs.i18n.translate(168) + '</span></div>');
+				html.push('<tr class="tt"><td></td><td></td><td class="size">' + apijs.i18n.translate(166, apijs.formatNumber(size)) + '</td><td class="err">' + apijs.i18n.translate(168) + '</td></tr>');
+				error = true;
 			}
 
 			// ok ou ko
-			if (this.files.length === elem.files.length) {
-				apijs.html('button.confirm').removeAttribute('disabled');
-				apijs.html('button.confirm').focus();
+			if (error) {
+				btn.setAttribute('disabled', 'disabled');
 			}
 			else {
-				apijs.html('button.confirm').setAttribute('disabled', 'disabled');
+				btn.removeAttribute('disabled');
+				btn.focus();
 			}
 
-			apijs.html('div.filenames').innerHTML = html.join(' ');
+			apijs.html('div.filenames').innerHTML = '<table>' + html.join('') + '</table>';
 		}
 	};
 
@@ -300,7 +329,11 @@ apijs.core.upload = function () {
 			data = '100%';
 			rect.setAttribute('class', 'end');
 			rect.style.width = '';
-			apijs.html('p').textContent = apijs.i18n.translate(126);
+			var elem = apijs.html('p');
+			elem.setAttribute('data-old', elem.textContent);
+			elem.setAttribute('data-new', apijs.i18n.translate(126));
+			elem.setAttribute('class', 'anim');
+			elem.textContent = '';
 		}
 		else {
 			rect.style.width = data = percent + '%';

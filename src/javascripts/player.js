@@ -1,6 +1,6 @@
 /**
  * Created D/11/01/2015
- * Updated W/03/03/2021
+ * Updated L/24/05/2021
  *
  * Copyright 2008-2021 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
  * https://www.luigifab.fr/apijs
@@ -19,7 +19,7 @@
 apijs.core.player = function (video, url) {
 
 	"use strict";
-	this.video = video;
+	this.video   = video;
 	this.stalled = false;
 	this.subload = false;
 
@@ -230,7 +230,7 @@ apijs.core.player = function (video, url) {
 
 		if ((idx > 0) && (video.duration !== Infinity) && !isNaN(video.duration)) {
 
-			elem.querySelectorAll('.buffer').forEach(function (node) { node.parentNode.removeChild(node); });
+			elem.querySelectorAll('.buffer').forEach(function (node) { node.remove(); });
 			while (idx-- > 0) {
 
 				buffer = document.createElement('rect');
@@ -254,11 +254,19 @@ apijs.core.player = function (video, url) {
 
 			if (this.video.paused) {
 				this.html('span.play').textContent = '\uE810';
-				apijs.dialog.remove('playing');
+				// via un dialogue ou en direct
+				if (apijs.dialog.t1)
+					apijs.dialog.remove('playing');
+				else
+					this.video.parentNode.classList.remove('playing');
 			}
 			else {
 				this.html('span.play').textContent = '\uE811';
-				apijs.dialog.add('playing');
+				// via un dialogue ou en direct
+				if (apijs.dialog.t1)
+					apijs.dialog.add('playing');
+				else
+					this.video.parentNode.classList.add('playing');
 			}
 		}
 	};
@@ -384,7 +392,7 @@ apijs.core.player = function (video, url) {
 	this.actionVideo = function (ev) {
 
 		this.html('svg.bar rect').style.width = '0';
-		this.html('svg.bar').querySelectorAll('.buffer').forEach(function (node) { node.parentNode.removeChild(node); });
+		this.html('svg.bar').querySelectorAll('.buffer').forEach(function (node) { node.remove(); });
 		this.html('span.play').textContent = '\uE810';
 
 		this.updateSelect('videotrack', 0);
@@ -394,6 +402,13 @@ apijs.core.player = function (video, url) {
 		if (typeof ev == 'object')
 			ev.target.blur();
 	};
+
+	this.actionFullscreen = function () {
+
+		// en direct
+		var res = document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement;
+		this.video.parentNode.classList[res ? 'add' : 'remove']('fullscreen');
+	},
 
 
 	// GÉNÉRATION DES ÉLÉMENTS (private return domelement)
@@ -527,7 +542,20 @@ apijs.core.player = function (video, url) {
 			b.setAttribute('class', 'btn full fnt nomobile');
 			b.appendChild(document.createTextNode('\uE80F'));
 			b.onclick = function () {
-				apijs.requestFullscreen(apijs.dialog.t1 ? apijs.dialog.t1 : this.video.parentNode);
+				// via un dialogue ou en direct
+				if (apijs.dialog.t1) {
+					apijs.requestFullscreen(apijs.dialog.t1);
+				}
+				else {
+					if (document.webkitFullscreenEnabled)
+						document.addEventListener('webkitfullscreenchange', this.actionFullscreen.bind(this));
+					else if (document.fullscreenEnabled)
+						document.addEventListener('fullscreenchange', this.actionFullscreen.bind(this));
+					else if (document.mozFullScreenEnabled)
+						document.addEventListener('mozfullscreenchange', this.actionFullscreen.bind(this));
+					apijs.requestFullscreen(this.video.parentNode);
+				}
+
 			}.bind(this);
 
 		a.appendChild(b);

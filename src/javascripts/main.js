@@ -1,6 +1,6 @@
 /**
  * Created J/03/12/2009
- * Updated V/08/01/2021
+ * Updated L/24/05/2021
  *
  * Copyright 2008-2021 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
  * https://www.luigifab.fr/apijs
@@ -46,7 +46,7 @@ var apijs = new (function () {
 
 	"use strict";
 	this.core = {};
-	this.version = 660;
+	this.version = 670;
 
 	this.config = {
 		lang: 'auto',
@@ -123,7 +123,7 @@ var apijs = new (function () {
 		try {
 			str = new Intl.NumberFormat(this.config.lang, { minimumFractionDigits: dgt, maximumFractionDigits: dgt }).format(nb);
 		}
-		catch (e) {
+		catch (ignore) {
 			str = nb.toFixed(dgt);
 		}
 
@@ -135,6 +135,7 @@ var apijs = new (function () {
 
 		if (this.config.dialog.player === true) {
 			elem.videoPlayer = new this.core.player(elem, url);
+			elem.parentNode.classList.add('apijsvideoplayer');
 			return true;
 		}
 
@@ -191,15 +192,15 @@ var apijs = new (function () {
 		filter   = (typeof filter == 'string') ? filter : '';
 
 		// https://gomakethings.com/how-to-serialize-form-data-with-vanilla-js/
-		Array.prototype.forEach.call(form.elements, function (elem) {
+		Array.prototype.forEach.call(form.elements, function (elem, idx) {
 
 			if (!elem.name || elem.disabled || ['file', 'reset', 'submit', 'button'].has(elem.type) || (elem.name.indexOf(filter) !== 0))
 				return;
 
 			if (elem.type === 'select-multiple') {
-				for (var n = 0; n < elem.options.length; n++) {
-					if (elem.options[n].selected)
-						data.push(encodeURIComponent(elem.name) + '=' + encodeURIComponent(elem.options[n].value));
+				for (idx = 0; idx < elem.options.length; idx++) {
+					if (elem.options[idx].selected)
+						data.push(encodeURIComponent(elem.name) + '=' + encodeURIComponent(elem.options[idx].value));
 				}
 			}
 			else if (!['checkbox', 'radio'].has(elem.type) || elem.checked) {
