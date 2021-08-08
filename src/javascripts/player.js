@@ -1,6 +1,6 @@
 /**
  * Created D/11/01/2015
- * Updated L/24/05/2021
+ * Updated V/23/07/2021
  *
  * Copyright 2008-2021 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
  * https://www.luigifab.fr/apijs
@@ -79,7 +79,7 @@ apijs.core.player = function (video, url) {
 				}
 				else if ([0, 200].has(xhr.status)) {
 
-					var url, txt, nbv = 0, nbt = 0, data = xhr.responseText.trim().split("\n");
+					var url, txt = 0, nbv = 0, nbt = 0, data = xhr.responseText.trim().split("\n");
 					while (typeof (url = data.shift()) == 'string') {
 
 						// #APIJS#attr|name|value
@@ -305,7 +305,7 @@ apijs.core.player = function (video, url) {
 				while (elem = elem.offsetParent);
 
 				value = ((ev.clientX - value) * 100 / width) / 100;
-				value = (value <= 0.1) ? 0 : ((value > 0.92) ? 1 : value);
+				value = (value < 0.2) ? 0 : ((value > 0.92) ? 1 : value);
 
 				//if (self.getComputedStyle(this.html('svg.vol')).direction === 'rtl')
 				//	value = 1 - value;

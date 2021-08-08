@@ -1,6 +1,6 @@
 /**
  * Created L/13/04/2009
- * Updated V/18/06/2021
+ * Updated D/18/07/2021
  *
  * Copyright 2008-2021 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
  * https://www.luigifab.fr/apijs
@@ -91,10 +91,10 @@ apijs.core.upload = function () {
 
 	this.actionDrag = function (ev) {
 
-		if (ev.type == 'dragenter') {
+		if (ev.type === 'dragenter') {
 			apijs.dialog.add('drag');
 		}
-		else if (ev.type == 'dragleave') {
+		else if (ev.type === 'dragleave') {
 			apijs.dialog.remove('drag');
 		}
 		else if (ev.dataTransfer && ev.dataTransfer.files && (ev.dataTransfer.files.length > 0)) {
@@ -108,7 +108,7 @@ apijs.core.upload = function () {
 
 	this.actionChoose = function (elem) {
 
-		var html = [], size = 0, error = false, btn = apijs.html('button.confirm'), text;
+		var html = [], size = 0, btn = apijs.html('button.confirm');
 		this.files = [];
 
 		if (this.exts) {
@@ -116,29 +116,26 @@ apijs.core.upload = function () {
 			// 1048576 octet = 1 Mo
 			Array.prototype.forEach.call((this.allmax > 0) ? elem.files : Array.prototype.slice.call(elem.files, 0, 1), function (file, idx) {
 
-				text = file.size / 1048576;
-				text = apijs.formatNumber((text < 0.01) ? 0.01 : text);
-				text = ((this.allmax > 0) ? '<td class="nb">' + (idx + 1) + '</td>' : '') +
-					'<td class="name">' + file.name + '</td><td class="size">' + apijs.i18n.translate(166, text) + '</td>';
+				var txt = file.size / 1048576;
+				txt = apijs.formatNumber((txt < 0.01) ? 0.01 : txt);
+				txt = ((this.allmax > 0) ? '<td class="nb">' + (idx + 1) + '</td>' : '') +
+					'<td class="name">' + file.name + '</td><td class="size">' + apijs.i18n.translate(166, txt) + '</td>';
 
 				if ((this.exts.join() !== '*') && !this.exts.has(file.name.slice(file.name.lastIndexOf('.') + 1).toLowerCase())) {
-					text += '<td class="err">' + apijs.i18n.translate(167) + '</td>';
-					error = true;
+					txt += '<td class="err">' + apijs.i18n.translate(167) + '</td>';
 				}
 				else if (file.size > (this.onemax * 1048576)) {
-					text += '<td class="err">' + apijs.i18n.translate(168) + '</td>';
-					error = true;
+					txt += '<td class="err">' + apijs.i18n.translate(168) + '</td>';
 				}
 				else if (file.size <= 0) {
-					text += '<td class="err">' + apijs.i18n.translate(169) + '</td>';
-					error = true;
+					txt += '<td class="err">' + apijs.i18n.translate(169) + '</td>';
 				}
 				else {
-					text += '<td></td>';
+					txt += '<td></td>';
 					this.files.push(file);
 				}
 
-				html.push('<tr>' + text + '</tr>');
+				html.push('<tr>' + txt + '</tr>');
 				size += file.size / 1048576;
 
 			}, this); // pour que ci-dessus this = this
@@ -146,19 +143,17 @@ apijs.core.upload = function () {
 			// multiple
 			if ((this.allmax > 0) && (size >= this.allmax)) {
 				html.push('<tr class="tt"><td></td><td></td><td class="size">' + apijs.i18n.translate(166, apijs.formatNumber(size)) + '</td><td class="err">' + apijs.i18n.translate(168) + '</td></tr>');
-				error = true;
 			}
 
 			// ok ou ko
-			if (error) {
+			apijs.html('div.filenames').innerHTML = '<table>' + html.join('') + '</table>';
+			if (apijs.html('div.filenames .err')) {
 				btn.setAttribute('disabled', 'disabled');
 			}
 			else {
 				btn.removeAttribute('disabled');
 				btn.focus();
 			}
-
-			apijs.html('div.filenames').innerHTML = '<table>' + html.join('') + '</table>';
 		}
 	};
 
