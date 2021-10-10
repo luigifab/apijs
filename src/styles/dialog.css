@@ -1,6 +1,6 @@
 /**
  * Created V/08/05/2009
- * Updated V/18/06/2021
+ * Updated J/23/09/2021
  *
  * Copyright 2008-2021 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
  * https://www.luigifab.fr/apijs
@@ -172,7 +172,7 @@ div[id="apijsDialog"] * { margin:0; padding:0; }
 /* &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& clavier &&& */
 #apijsBox ul.kbd {
 	display:flex; justify-content:center; margin:0; text-align:center;
-	font-size:0.8em; white-space:nowrap; list-style:none; background-color:#666;
+	font-size:0.8em; white-space:nowrap; list-style:none; background-color:#777;
 }
 
 #apijsBox ul.kbd li { margin:0 0.5em; line-height:1.2rem; }

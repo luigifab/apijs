@@ -1,6 +1,6 @@
 /**
  * Created L/13/04/2009
- * Updated D/18/07/2021
+ * Updated J/23/09/2021
  *
  * Copyright 2008-2021 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
  * https://www.luigifab.fr/apijs
@@ -114,7 +114,8 @@ apijs.core.upload = function () {
 		if (this.exts) {
 
 			// 1048576 octet = 1 Mo
-			Array.prototype.forEach.call((this.allmax > 0) ? elem.files : Array.prototype.slice.call(elem.files, 0, 1), function (file, idx) {
+			//Array.prototype.forEach.call((this.allmax > 0) ? elem.files : Array.prototype.slice.call(elem.files, 0, 1), function (file, idx) {
+			Array.prototype.slice.call(elem.files, 0, (this.allmax > 0) ? 999 : 1).forEach(function (file, idx) {
 
 				var txt = file.size / 1048576;
 				txt = apijs.formatNumber((txt < 0.01) ? 0.01 : txt);

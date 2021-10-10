@@ -1,6 +1,6 @@
 /**
  * Created D/12/04/2009
- * Updated L/24/05/2021
+ * Updated J/23/09/2021
  *
  * Copyright 2008-2021 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
  * https://www.luigifab.fr/apijs
@@ -646,7 +646,12 @@ apijs.core.dialog = function () {
 		if (old) {
 			this.toggle('start', 'ready');
 			this.t1 = old;
-			this.t1.appendChild(this.t0.firstChild.firstChild);
+			// avant la vie était simple : this.t1.appendChild(this.t0.firstChild.firstChild);
+			// maintenant il peut y avoir un second élément en plus de la div id=apijsBox (p.drag)
+			// https://stackoverflow.com/a/24775765/2980105
+			Array.prototype.slice.call(this.t0.firstChild.childNodes).forEach(function (node) {
+				this.t1.appendChild(node);
+			}, this); // pour que ci-dessus this = this
 			this.t1.setAttribute('class', this.t2.getAttribute('class'));
 		}
 		else if (this.has('notransition')) {
