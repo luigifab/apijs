@@ -1,8 +1,8 @@
 /**
  * Created J/03/12/2009
- * Updated J/23/09/2021
+ * Updated V/22/10/2021
  *
- * Copyright 2008-2021 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
+ * Copyright 2008-2022 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
  * https://www.luigifab.fr/apijs
  *
  * This program is free software, you can redistribute it or modify
@@ -46,7 +46,7 @@ var apijs = new (function () {
 
 	"use strict";
 	this.core = {};
-	this.version = 681;
+	this.version = 682;
 
 	this.config = {
 		lang: 'auto',
@@ -147,8 +147,8 @@ var apijs = new (function () {
 		return false;
 	};
 
-	this.toArray = function (data) {
-		return Array.prototype.slice.call(data, 0);
+	this.toArray = function (data, max) {
+		return Array.prototype.slice.call(data, 0, max);
 	};
 
 	this.openTab = function (ev) {

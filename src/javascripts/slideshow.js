@@ -2,7 +2,7 @@
  * Created J/13/05/2010
  * Updated V/01/01/2021
  *
- * Copyright 2008-2021 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
+ * Copyright 2008-2022 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
  * https://www.luigifab.fr/apijs
  *
  * This program is free software, you can redistribute it or modify
