@@ -1,6 +1,6 @@
 /**
  * Created J/13/05/2010
- * Updated V/01/01/2021
+ * Updated M/05/07/2022
  *
  * Copyright 2008-2022 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
  * https://www.luigifab.fr/apijs
@@ -148,7 +148,7 @@ apijs.core.slideshow = function () {
 		// recherche des informations du média (4/4, url|type|styles)
 		// défini le type de dialogue à partir du mimetype du lien de la source si cela est possible
 		media.url    = source.getAttribute('href');
-		media.type   = source.getAttribute('type').substr(0, 5).replace('image', 'dialogPhoto').replace('video', 'dialogVideo');
+		media.type   = source.getAttribute('type').substring(0, 5).replace('image', 'dialogPhoto').replace('video', 'dialogVideo').replace('audio', 'dialogVideo');
 		media.type   = (media.type.indexOf('dialog') === 0) ? media.type : 'dialogPhoto';
 		media.styles = apijs.html(media.prefix, true).getAttribute('class').replace(/gallery|album/g, '').trim();
 

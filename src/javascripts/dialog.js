@@ -1,6 +1,6 @@
 /**
  * Created D/12/04/2009
- * Updated M/28/09/2021
+ * Updated S/02/07/2022
  *
  * Copyright 2008-2022 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
  * https://www.luigifab.fr/apijs
@@ -30,14 +30,15 @@ apijs.core.dialog = function () {
 	this.ti = 'a,area,button,input,textarea,select,object,iframe';
 	this.ns = 'http://www.w3.org/2000/svg';
 
+	this.swipe = false;
 	this.media = null;
 	this.t0 = null; // fragment
 	this.t1 = null; // div id=apijsDialog
 	this.t2 = null; // div/form id=apijsBox
+	this.t3 = null; // input file
 	this.a  = null;
 	this.b  = null;
 	this.c  = null;
-	this.d  = null;
 
 
 	// GÉNÉRATION DES BOÎTES DE DIALOGUE (public return boolean)
@@ -94,7 +95,7 @@ apijs.core.dialog = function () {
 			return this.init('upload', icon)
 				.htmlParent(action, 'apijs.upload.actionConfirm();', 'apijs.upload.actionDrag(event);')
 				.htmlContent(title, text)
-				.htmlUpload(input, (typeof multiple == 'boolean') ? multiple : false)
+				.htmlUpload(input, (typeof multiple == 'boolean') ? multiple : false, 'apijs.upload.actionChoose(this);')
 				.htmlBtnConfirm('submit')
 				.show('button.browse');
 		}
@@ -304,13 +305,10 @@ apijs.core.dialog = function () {
 
 	this.onResizeBrowser = function () {
 
-		var add, body = document.querySelector('body');
+		var width = document.querySelector('body').clientWidth;
 
-		add = body.clientWidth <= (apijs.dialog.has('photo', 'video') ? 900 : 460);
-		apijs.dialog[add ? 'add' : 'remove']('mobile');
-
-		add = body.clientWidth <= 300;
-		apijs.dialog[add ? 'add' : 'remove']('tiny');
+		apijs.dialog[(width <= (apijs.dialog.has('photo', 'video') ? 900 : 460)) ? 'add' : 'remove']('mobile');
+		apijs.dialog[(width <= 300) ? 'add' : 'remove']('tiny');
 	};
 
 	this.onScrollBrowser = function (ev) {
@@ -318,16 +316,19 @@ apijs.core.dialog = function () {
 		var that = apijs.dialog, elem = ev.target, brk = false;
 
 		// dialogues du diaporama (suivant/précédent)
-		if (that.has('slideshow') && !that.has('playing') &&
-		    !['OPTION', 'SELECT'].has(elem.nodeName) && ['DOMMouseScroll','mousewheel','panleft','panright'].has(ev.type)) {
-
+		// https://github.com/hammerjs/hammer.js
+		// https://github.com/john-doherty/swiped-events
+		if (
+			that.has('slideshow') && !that.has('playing') &&
+			!['OPTION', 'SELECT'].has(elem.nodeName) && ['DOMMouseScroll', 'mousewheel', 'swipeleft', 'swiperight', 'swipeup', 'swipedown', 'swiped-left', 'swiped-right', 'swiped-up', 'swiped-down'].has(ev.type)
+		) {
 			elem = new Date().getTime() / 1000;
-			if ((that.scroll < 1) || (elem > (1 + that.scroll))) {
+			if ((that.scroll < 1) || (elem > (that.scroll + 1))) {
 				that.scroll = elem;
 				// ev.detail     > 0 si vers le bas avec Firefox
 				// ev.wheelDelta < 0 si vers le bas avec Chromium/Opera/Edge...
 				brk = (ev.detail > 0) || (ev.wheelDelta < 0); // true si vers le bas
-				apijs.slideshow[((ev.type === 'panleft') || brk) ? 'actionNext' : 'actionPrev']();
+				apijs.slideshow[(['swipeleft', 'swipeup', 'swiped-left', 'swiped-up'].has(ev.type) || brk) ? 'actionNext' : 'actionPrev']();
 			}
 		}
 		// autorise éventuellement le défilement
@@ -346,11 +347,11 @@ apijs.core.dialog = function () {
 			}
 
 			// elem = select | textarea | scrollable
-			if (elem.nodeName !== 'HTML') {
+			if ((elem.scrollHeight > elem.offsetHeight) && (elem.nodeName !== 'HTML')) {
 				// ev.detail     > 0 si vers le bas avec Firefox
 				// ev.wheelDelta < 0 si vers le bas avec Chromium/Opera/Edge...
 				brk = (ev.detail > 0) || (ev.wheelDelta < 0); // true si vers le bas
-				if ((brk && (elem.scrollTop < (elem.scrollHeight - elem.offsetHeight))) || (!brk && (elem.scrollTop > 0)))
+				if ((brk && (elem.scrollTop < (elem.scrollHeight - elem.offsetHeight - 1))) || (!brk && (elem.scrollTop > 0)))
 					return;
 			}
 		}
@@ -372,8 +373,8 @@ apijs.core.dialog = function () {
 
 		// empèche le défilement (elem = iframe document)
 		if (
-			(brk && ((elem.defaultView.innerHeight + elem.defaultView.pageYOffset) >= (elem.body.offsetHeight - 1))) ||
-			(!brk && (elem.defaultView.pageYOffset <= 0))
+			(brk && ((elem.defaultView.innerHeight + elem.defaultView.scrollY) >= (elem.body.offsetHeight - 1))) ||
+			(!brk && (elem.defaultView.scrollY <= 0))
 		) {
 			ev.preventDefault();
 			ev.stopPropagation();
@@ -382,7 +383,7 @@ apijs.core.dialog = function () {
 
 	this.onKey = function (ev) {
 
-		var that = apijs.dialog, elem = that.media;
+		var that = apijs.dialog, elem = that.media, time;
 
 		// dialogues d'attente et de progresssion ou tout autre dialogue verrouillé
 		// ctrl + q | ctrl + w | ctrl + r | ctrl + f4 | ctrl + f5 // alt + f4 // échap | f5
@@ -434,9 +435,9 @@ apijs.core.dialog = function () {
 		if (that.has('video') && !that.has('videoiframe')) {
 
 			// espace | p
-			if ((ev.keyCode === 32) || (ev.keyCode === 80)) {
+			if ([32, 80].has(ev.keyCode)) {
 				ev.preventDefault();
-				if ([1,2].has(elem.networkState)) {
+				if ([1, 2].has(elem.networkState)) {
 					if (elem.ended || elem.paused)
 						elem.play();
 					else
@@ -444,27 +445,29 @@ apijs.core.dialog = function () {
 				}
 			}
 			// haut | page haut
-			else if ((ev.keyCode === 38) || (ev.keyCode === 33)) {
+			else if ([38, 33].has(ev.keyCode)) {
 				ev.preventDefault();
-				if (([1,2].has(elem.networkState)) && (elem.duration !== Infinity) && !isNaN(elem.duration)) {
-					if (elem.currentTime < (elem.duration - 10))
-						elem.currentTime += 10;
+				time = (ev.keyCode === 38) ? 10 : 60;
+				if (([1, 2].has(elem.networkState)) && (elem.duration !== Infinity) && !isNaN(elem.duration)) {
+					if (elem.currentTime > time)
+						elem.currentTime -= time;
+					else
+						elem.currentTime = 0;
 				}
 			}
 			// bas | page bas
-			else if ((ev.keyCode === 40) || (ev.keyCode === 34)) {
+			else if ([40, 34].has(ev.keyCode)) {
 				ev.preventDefault();
-				if (([1,2].has(elem.networkState)) && (elem.duration !== Infinity) && !isNaN(elem.duration)) {
-					if (elem.currentTime > 10)
-						elem.currentTime -= 10;
-					else
-						elem.currentTime = 0;
+				if (([1, 2].has(elem.networkState)) && (elem.duration !== Infinity) && !isNaN(elem.duration)) {
+					time = (ev.keyCode === 40) ? 10 : 60;
+					if (elem.currentTime < (elem.duration - time))
+						elem.currentTime += time;
 				}
 			}
 			// +
 			else if (ev.keyCode === 107) {
 				ev.preventDefault();
-				if ([1,2].has(elem.networkState)) {
+				if ([1, 2].has(elem.networkState)) {
 					if (elem.muted)
 						elem.muted = false;
 					if (elem.volume < 0.8)
@@ -476,7 +479,7 @@ apijs.core.dialog = function () {
 			// -
 			else if (ev.keyCode === 109) {
 				ev.preventDefault();
-				if ([1,2].has(elem.networkState)) {
+				if ([1, 2].has(elem.networkState)) {
 					if (elem.muted)
 						elem.muted = false;
 					if (elem.volume > 0.21)
@@ -488,7 +491,7 @@ apijs.core.dialog = function () {
 			// m
 			else if (ev.keyCode === 77) {
 				ev.preventDefault();
-				if ([1,2].has(elem.networkState)) {
+				if ([1, 2].has(elem.networkState)) {
 					elem.muted = !elem.muted; // inverse
 				}
 			}
@@ -555,6 +558,17 @@ apijs.core.dialog = function () {
 				}
 			}
 		}
+	};
+
+	this.onSlideshowSwipe = function (ev) {
+
+		apijs.dialog.swipe = true;
+		self.setTimeout(function () { apijs.dialog.swipe = false; }, 150);
+
+		if (['swiperight', 'swipedown', 'swiped-right', 'swiped-down'].has(ev.type))
+			apijs.slideshow.actionPrev();
+		else // swipeleft swipeup swiped-left swiped-up
+			apijs.slideshow.actionNext();
 	};
 
 	this.actionConfirm = function () { // todo
@@ -676,6 +690,10 @@ apijs.core.dialog = function () {
 			else if (document.mozFullScreenEnabled)
 				document.addEventListener('mozfullscreenchange', this.onFullscreen);
 		}
+		// copier coller
+		else if (this.has('upload')) {
+			window.addEventListener('paste', apijs.upload.actionDrag);
+		}
 
 		// auto-focus
 		if (focus === true)
@@ -691,6 +709,11 @@ apijs.core.dialog = function () {
 		if (isAll && this.xhr) {
 			this.callback = null; // très important
 			this.xhr.abort();
+		}
+
+		if (this.hammer) { // (depuis htmlBtnNavigation)
+			this.hammer.off('swiperight swipedown swipeleft swipeup', apijs.dialog.onSlideshowSwipe).destroy();
+			delete this.hammer;
 		}
 
 		// surveillance des touches et du navigateur (depuis initDialog)
@@ -735,8 +758,12 @@ apijs.core.dialog = function () {
 			else if (document.mozFullScreenEnabled)
 				document.removeEventListener('mozfullscreenchange', this.onFullscreen);
 		}
-		// mémorise la hauteur du dialogue
 		else {
+			// copier coller
+			if (this.has('upload'))
+				window.removeEventListener('paste', apijs.upload.actionDrag);
+
+			// mémorise la hauteur du dialogue
 			this.height = parseFloat(self.getComputedStyle(this.t2).height);
 		}
 
@@ -750,7 +777,7 @@ apijs.core.dialog = function () {
 				this.t1.firstChild.remove();
 		}
 
-		// réinitialise toutes les variables (sauf ft/ti/ns)
+		// réinitialise toutes les variables (sauf ft/ti/ns et swipe)
 		this.klass = [];
 		if (isAll) {
 			this.height   = 0;
@@ -763,10 +790,10 @@ apijs.core.dialog = function () {
 		this.t0 = null; // fragment
 		this.t1 = null; // div id=apijsDialog
 		this.t2 = null; // div/form id=apijsBox
+		this.t3 = null; // input file
 		this.a  = null;
 		this.b  = null;
 		this.c  = null;
-		this.d  = null;
 
 		return true;
 	};
@@ -785,11 +812,15 @@ apijs.core.dialog = function () {
 			this.t1.setAttribute('ondragleave', drag);
 			this.t1.setAttribute('ondragover', drag);
 			this.t1.setAttribute('ondrop', drag);
+			this.t1.setAttribute('onpaste', drag); // Firefox
 
 			this.a = document.createElement('p');
 			this.a.setAttribute('class', 'drag');
 			this.a.appendChild(apijs.i18n.translateNode(127));
 			this.t1.appendChild(this.a);
+		}
+		else {
+			this.t1.setAttribute('ondragstart', 'return false;');
 		}
 
 		if (typeof action == 'string') {
@@ -918,6 +949,12 @@ apijs.core.dialog = function () {
 		this.a.appendChild(this.b);
 		this.t2.appendChild(this.a);
 
+		if (typeof Hammer == 'function') {
+			this.hammer = new Hammer(this.t2);
+			this.hammer.get('swipe').set({ direction: Hammer.DIRECTION_ALL });
+			this.hammer.on('swiperight swipedown swipeleft swipeup', apijs.dialog.onSlideshowSwipe);
+		}
+
 		return this;
 	};
 
@@ -926,7 +963,7 @@ apijs.core.dialog = function () {
 		if (close !== false) {
 
 			this.a = document.createElement('div');
-			this.a.setAttribute('class', 'close noplaying');
+			this.a.setAttribute('class', 'close nofullplaying');
 
 				this.b = document.createElement('button');
 				this.b.setAttribute('type', 'button');
@@ -945,19 +982,19 @@ apijs.core.dialog = function () {
 		return this;
 	};
 
-	this.htmlUpload = function (input, isMultiple) {
+	this.htmlUpload = function (input, isMultiple, change) {
 
 		this.a = document.createElement('div');
 		this.a.setAttribute('class', 'btns upload');
 
-			this.b = document.createElement('input');
-			this.b.setAttribute('type', 'file');
-			this.b.setAttribute('name', input);
-			this.b.setAttribute('id', 'apijsFile');
-			if (isMultiple) this.b.setAttribute('multiple', 'multiple');
-			this.b.setAttribute('onchange', 'apijs.upload.actionChoose(this);');
+			this.t3 = document.createElement('input');
+			this.t3.setAttribute('type', 'file');
+			this.t3.setAttribute('name', isMultiple ? input + '[]' : input);
+			this.t3.setAttribute('id', 'apijsFile');
+			if (isMultiple) this.t3.setAttribute('multiple', 'multiple');
+			this.t3.setAttribute('onchange', change);
 
-		this.a.appendChild(this.b);
+		this.a.appendChild(this.t3);
 
 			this.b = document.createElement('button');
 			this.b.setAttribute('type', 'button');
@@ -1061,7 +1098,7 @@ apijs.core.dialog = function () {
 		this.a.appendChild(this.b);
 
 			this.b = document.createElement('dd');
-			this.b.setAttribute('class', 'nomobile noplaying');
+			this.b.setAttribute('class', 'nofullplaying');
 
 			if ((name !== 'false') || (date !== 'false')) {
 
@@ -1125,10 +1162,14 @@ apijs.core.dialog = function () {
 
 	this.htmlHelp = function (isSlideshow, isVideo) {
 
+		// pas d'aide en mobile car pas de clavier
+		if (('ontouchstart' in window) && (navigator.userAgent.toLowerCase().indexOf('mobi') > 0))
+			return this;
+
 		var items, item, keys = [
 			isSlideshow ? ['start', 149, 141] : [], // début/fin
 			isSlideshow ? ['left', 'right', 142] : [],
-			isVideo ? ['bottom', 'topk', 144] : [],
+			isVideo ? ['topk', 'bottom', 144] : [],
 			isVideo ? ['minus', 'plus', 145] : [],
 			isVideo ? ['M', 146] : [],
 			isVideo ? ['P', 143] : [],
@@ -1137,7 +1178,7 @@ apijs.core.dialog = function () {
 		];
 
 		this.a = document.createElement('ul');
-		this.a.setAttribute('class', 'kbd nomobile nofullscreen');
+		this.a.setAttribute('class', 'kbd nofullscreen');
 
 		while (items = keys.shift()) {
 

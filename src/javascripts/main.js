@@ -1,6 +1,6 @@
 /**
  * Created J/03/12/2009
- * Updated V/22/10/2021
+ * Updated M/15/02/2022
  *
  * Copyright 2008-2022 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
  * https://www.luigifab.fr/apijs
@@ -46,7 +46,7 @@ var apijs = new (function () {
 
 	"use strict";
 	this.core = {};
-	this.version = 682;
+	this.version = 690;
 
 	this.config = {
 		lang: 'auto',

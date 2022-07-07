@@ -1,6 +1,6 @@
 /**
  * Created V/08/05/2009
- * Updated V/22/10/2021
+ * Updated S/02/07/2022
  *
  * Copyright 2008-2022 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
  * https://www.luigifab.fr/apijs
@@ -18,15 +18,18 @@
 
 /* &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& conteneurs &&& */
 div[id="apijsDialog"] * { margin:0; padding:0; }
+
 #apijsDialog button, #apijsDialog label { cursor:pointer; }
+#apijsDialog button:disabled { cursor:default; }
 
 #apijsDialog {
 	position:fixed; top:0; right:0; bottom:0; left:0; width:100%; height:100%; text-align:center; direction:ltr; z-index:99000;
+	user-select:none; -moz-user-select:none; -ms-user-select:none; -webkit-user-select:none;
 	transition:background-color 0.5s, opacity 0.25s; opacity:0;
-	user-select:none; -ms-user-select:none; -moz-user-select:none; -webkit-user-select:none;
 }
 
 #apijsDialog.ready { background-color:rgba(0, 0, 0, 0.65); opacity:1; }
+#apijsDialog.fullscreen .nofullscreen { display:none !important; }
 #apijsDialog.progress, #apijsDialog.waiting, #apijsDialog.loading { cursor:progress; }
 #apijsDialog.reduce, #apijsDialog.reduce * { transition:none !important; }
 
@@ -46,7 +49,7 @@ div[id="apijsDialog"] * { margin:0; padding:0; }
 #apijsBox.options, #apijsBox.upload, #apijsBox.progress { min-height:15em; }
 #apijsBox.iframe, #apijsBox.ajax { padding:2.5em 0.8em 1em; }
 
-#apijsBox.mobile:not(.photo):not(.video) { position:absolute; top:1.5em; left:0.5em; right:0.5em; width:auto; min-height:inherit; }
+#apijsBox.mobile:not(.photo):not(.video) { position:absolute; top:1.5em; right:0.5em; left:0.5em; width:auto; min-height:inherit; }
 #apijsBox.tiny div.navigation button { padding:0 1em; }
 
 /* &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& glisser/déposer &&& */
@@ -58,13 +61,15 @@ div[id="apijsDialog"] * { margin:0; padding:0; }
 #apijsDialog p.drag { position:absolute; right:0; bottom:0; margin:1.5em; font-size:1.3em; color:white; }
 
 /* &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& texte &&& */
-#apijsBox div.bbcode { user-select:text; -ms-user-select:text; -moz-user-select:text; -webkit-user-select:text; }
+#apijsBox div.bbcode { user-select:text; -moz-user-select:text; -ms-user-select:text; -webkit-user-select:text; }
 
 #apijsBox h1  { margin:0.15em 0 0.7em; height:32px; line-height:32px; font-size:1.49em; font-weight:700; }
 #apijsBox pre { margin:1em auto; line-height:1.42857143; font-size:0.7rem; white-space:pre-wrap; }
 #apijsBox p   { margin:1em auto; line-height:1.42857143; font-size:1em; }
 #apijsBox ul  { margin:-0.4em auto 1em; }
+
 #apijsBox iframe { display:block; width:100%; border:0; }
+#apijsBox iframe.loading { pointer-events:none; }
 
 #apijsBox.progress p.anim:before {
 	content:attr(data-old);
@@ -115,7 +120,7 @@ div[id="apijsDialog"] * { margin:0; padding:0; }
 #apijsBox div.btns.upload div.filenames { max-height:11em; overflow-y:auto; }
 #apijsBox div.btns.upload table { border-spacing:0; }
 #apijsBox div.btns.upload td + td { padding-left:0.6em; }
-#apijsBox div.btns.upload td.nb   { font-size:0.85em; color:#676767; }
+#apijsBox div.btns.upload td.nb   { font-size:0.85em; color:#676767; vertical-align:bottom; }
 #apijsBox div.btns.upload td.size { white-space:nowrap; color:#676767; }
 #apijsBox div.btns.upload td.err  { color:#E41101; }
 
@@ -128,17 +133,18 @@ div[id="apijsDialog"] * { margin:0; padding:0; }
 #apijsBox div.btns button.cancel { float:left; margin:0 0.5em; }
 #apijsBox div.btns button.browse { display:inline-block; margin:0.5em 0; }
 
-#apijsBox div.btns button:hover, #apijsBox div.btns button:active,
-#apijsBox div.btns button:focus { border-color:#555; background-color:#F4F4F4; }
+#apijsBox div.btns button:hover:not(:disabled), #apijsBox div.btns button:active:not(:disabled),
+#apijsBox div.btns button:focus:not(:disabled) { border-color:#555; background-color:#F4F4F4; }
 #apijsBox div.btns button:focus:not(:hover) { -webkit-animation:apijsFocus 1s infinite; animation:apijsFocus 1s infinite; }
 
 /* &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& dialogues photo et vidéo &&& */
 #apijsBox dl.media { display:flex; flex-direction:column-reverse; flex:1; overflow:hidden; color:white; }
 
-#apijsBox dl.media dt { display:flex; flex-direction:column; flex:1; overflow:hidden; }
+#apijsBox dl.media dt { position:relative; display:flex; flex-direction:column; flex:1; overflow:hidden; }
 #apijsBox dl.media dt img, #apijsBox dl.media dt video, #apijsBox dl.media dt iframe { flex:1 1 auto; height:100%; visibility:hidden; }
 #apijsBox dl.media dt img { image-rendering:optimizeQuality; image-rendering:-moz-crisp-edges; object-fit:scale-down; }
-#apijsBox dl.media dt video { z-index:50; outline:0; cursor:pointer; }
+#apijsBox dl.media dt video { outline:0; cursor:pointer; }
+#apijsBox dl.media dt div.apijsplayer { position:absolute; right:0; bottom:0; left:0; }
 
 #apijsBox dl.media dd { line-height:1.5rem; font-size:0.85em; background-color:#666; }
 #apijsBox dl.media dd span { margin:0 0.6em; font-size:0.9em; font-style:italic; }
@@ -149,13 +155,11 @@ div[id="apijsDialog"] * { margin:0; padding:0; }
 #apijsBox div.close button {
 	padding:0 1.4em; line-height:2.6em;
 	font-size:0.8em; font-weight:700; text-transform:uppercase;
-	color:white; border:2px solid white; border-radius:0 0 0 0.8em; background-color:black; opacity:0.8;
+	color:white; border:2px solid white; border-radius:0 0 0 0.8em; background-color:black;
 }
 
-#apijsBox div.close button:hover, #apijsBox div.close button:active, #apijsBox div.close button:focus { opacity:1; }
-
 /* &&&&&&&&&&&&&&&&&& boutons de navigation &&& */
-#apijsBox div.navigation button { position:absolute; top:20%; bottom:20%; padding:0 2em; background-color:transparent; opacity:0.5; }
+#apijsBox div.navigation button { position:absolute; top:5rem; bottom:5rem; background-color:transparent; opacity:0.5; }
 #apijsBox div.navigation button:hover, #apijsBox div.navigation button:active, #apijsBox div.navigation button:focus { opacity:1; }
 #apijsBox div.navigation button:disabled { opacity:0; cursor:default; }
 
@@ -164,9 +168,9 @@ div[id="apijsDialog"] * { margin:0; padding:0; }
 	border-top:2px solid white; border-left:2px solid white;
 }
 
-#apijsBox div.navigation button.prev { left:0; }
+#apijsBox div.navigation button.prev { left:0; padding:0 20% 0 2em; }
 #apijsBox div.navigation button.prev span { transform:rotate(-45deg); -webkit-transform:rotate(-45deg); }
-#apijsBox div.navigation button.next { right:0; }
+#apijsBox div.navigation button.next { right:0; padding:0 2em 0 20%; }
 #apijsBox div.navigation button.next span { transform:rotate(-225deg); -webkit-transform:rotate(-225deg); }
 
 /* &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& clavier &&& */

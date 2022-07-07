@@ -1,6 +1,6 @@
 /**
  * Created L/13/04/2009
- * Updated M/28/09/2021
+ * Updated V/24/06/2022
  *
  * Copyright 2008-2022 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
  * https://www.luigifab.fr/apijs
@@ -29,7 +29,6 @@ apijs.core.upload = function () {
 	this.args     = null;
 	this.icon     = null;
 
-	this.files = [];
 	this.start = 0; // time
 	this.end   = 0; // time
 
@@ -46,7 +45,6 @@ apijs.core.upload = function () {
 
 	this.sendFiles = function (title, action, input, onemax, allmax, exts, callback, args, icon) {
 
-		this.files = [];
 		if (title !== true) {
 			this.title    = title;
 			this.action   = action;
@@ -91,25 +89,54 @@ apijs.core.upload = function () {
 
 	this.actionDrag = function (ev) {
 
+		var elem = apijs.dialog.t3, stop = true;
+
 		if (ev.type === 'dragenter') {
 			apijs.dialog.add('drag');
 		}
 		else if (ev.type === 'dragleave') {
 			apijs.dialog.remove('drag');
 		}
+		// drag and drop
 		else if (ev.dataTransfer && ev.dataTransfer.files && (ev.dataTransfer.files.length > 0)) {
-			this.actionChoose(ev.dataTransfer);
+
+			try {
+				elem.files = ev.dataTransfer.files; // Firefox 57+
+				apijs.upload.actionChoose(elem);
+			}
+			catch (e) {
+				console.error(e);
+				apijs.html('.drag').remove();
+			}
+
 			apijs.dialog.remove('drag');
 		}
+		// copy and paste
+		else if (ev.clipboardData && ev.clipboardData.files && (ev.clipboardData.files.length > 0)) {
 
-		ev.stopPropagation();
-		ev.preventDefault();
+			// Firefox 22+, Chrome 58+, Opera 45+, Safari 10.1+
+			try {
+				elem.files = ev.clipboardData.files; // Firefox 57+
+				apijs.upload.actionChoose(elem, true);
+			}
+			catch (e) {
+				console.error(e);
+				apijs.html('.drag').remove();
+			}
+		}
+		else if (ev.clipboardData) {
+			stop = false;
+		}
+
+		if (stop) {
+			ev.stopPropagation();
+			ev.preventDefault();
+		}
 	};
 
-	this.actionChoose = function (elem) {
+	this.actionChoose = function (elem, paste) {
 
 		var html = [], size = 0, btn = apijs.html('button.confirm');
-		this.files = [];
 
 		if (this.exts) {
 
@@ -119,8 +146,10 @@ apijs.core.upload = function () {
 
 				var txt = file.size / 1048576;
 				txt = apijs.formatNumber((txt < 0.01) ? 0.01 : txt);
-				txt = ((this.allmax > 0) ? '<td class="nb">' + (idx + 1) + '</td>' : '') +
-					'<td class="name">' + file.name + '</td><td class="size">' + apijs.i18n.translate(166, txt) + '</td>';
+				txt = ((paste || (this.allmax > 0)) ?
+					'<td class="nb">' + (paste ? (new Date()).toTimeString().substring(0, 8) : idx + 1) + '</td>' : '') +
+					'<td class="name">' + file.name + '</td>' +
+					'<td class="size">' + apijs.i18n.translate(166, txt) + '</td>';
 
 				if ((this.exts.join() !== '*') && !this.exts.has(file.name.slice(file.name.lastIndexOf('.') + 1).toLowerCase())) {
 					txt += '<td class="err">' + apijs.i18n.translate(167) + '</td>';
@@ -133,7 +162,6 @@ apijs.core.upload = function () {
 				}
 				else {
 					txt += '<td></td>';
-					this.files.push(file);
 				}
 
 				html.push('<tr>' + txt + '</tr>');
@@ -156,13 +184,16 @@ apijs.core.upload = function () {
 				btn.focus();
 			}
 		}
+		else {
+			btn.setAttribute('disabled', 'disabled');
+		}
 	};
 
 	this.actionConfirm = function () {
 
-		if (this.files.length > 0) {
+		if (apijs.dialog.t3.files.length > 0) {
 
-			var form = new FormData(), xhr = new XMLHttpRequest(), tmp;
+			var form = new FormData(apijs.dialog.t2), xhr = new XMLHttpRequest();
 			xhr.open('POST', this.action + ((this.action.indexOf('?') > 0) ? '&isAjax=true' : '?isAjax=true'), true);
 
 			// token
@@ -170,20 +201,6 @@ apijs.core.upload = function () {
 				xhr.setRequestHeader(apijs.config.upload.tokenName, apijs.config.upload.tokenValue);
 				form.append(apijs.config.upload.tokenName, apijs.config.upload.tokenValue);
 			}
-
-			// champs supplémentaires
-			tmp = apijs.serialize(apijs.dialog.t2);
-			if (tmp.length > 3) {
-				tmp.split('&').forEach(function (data) {
-					data = data.split('=');
-					form.append(data[0], data[1]);
-				});
-			}
-
-			// fichier(s)
-			this.files.forEach(function (file, idx, files) {
-				form.append(((files.length > 1) && (this.input.indexOf('[') < 0)) ? this.input + '_' + idx : this.input, file);
-			}, this); // pour que ci-dessus this = this
 
 			// https://bugzilla.mozilla.org/show_bug.cgi?id=637002
 			// https://stackoverflow.com/a/15491086

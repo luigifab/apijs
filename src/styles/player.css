@@ -1,6 +1,6 @@
 /**
  * Created V/01/01/2021
- * Updated V/18/06/2021
+ * Updated S/02/07/2022
  *
  * Copyright 2008-2022 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
  * https://www.luigifab.fr/apijs
@@ -19,13 +19,17 @@
 /* &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& player &&& */
 div.apijsvideoplayer { background-color:black; }
 div.apijsvideoplayer.fullscreen { margin:0 !important; padding:0 !important; height:100vh !important; }
+div.apijsvideoplayer.fullscreen.playing video { cursor:none !important; }
 
 div.apijsvideoplayer.fullscreen .nofullscreen { display:none !important; }
-div.apijsvideoplayer.fullscreen.playing video { cursor:none; }
 
-div.apijsvideoplayer.mobile .nomobile { display:none !important; }
-div.apijsvideoplayer.mobile.playing .noplaying, div.apijsvideoplayer.fullscreen.playing .noplaying { transition:opacity 0.5s; opacity:0; }
-div.apijsvideoplayer.mobile.playing .noplaying:hover, div.apijsvideoplayer.fullscreen.playing .noplaying:hover { opacity:1 !important; }
+div.apijsvideoplayer.playing.fullscreen .nofullplaying,
+div.apijsvideoplayer.fullscreen.playing .noplaying,
+div.apijsvideoplayer.playing .noplaying { transition:opacity 0.5s; opacity:0; }
+
+div.apijsvideoplayer.playing.fullscreen .nofullplaying:hover,
+div.apijsvideoplayer.fullscreen.playing .noplaying:hover,
+div.apijsvideoplayer.playing .noplaying:hover { opacity:1 !important; }
 
 div.apijsvideoplayer.tiny label { position:initial; }
 div.apijsvideoplayer.tiny label select { left:0; right:0; width:100%; }
@@ -37,7 +41,7 @@ div.apijsplayer * { margin:0; padding:0; }
 
 div.apijsplayer {
 	position:relative; display:flex; align-items:center; z-index:99600;
-	margin-top:-10vh; padding-top:10vh; height:1.8rem; line-height:1.8rem;
+	margin-top:-9vh; padding-top:9vh; height:1.8rem; line-height:1.8rem;
 	font-size:0.85em; color:white; text-align:center; direction:ltr;
 }
 
@@ -55,6 +59,7 @@ div.apijsplayer label em { padding-left:0.25em; font-style:normal; }
 div.apijsplayer label select {
 	display:none; position:absolute; right:0; bottom:1.8rem; min-width:20em; overflow-y:scroll;
 	color:black; outline:0; border:0; background:white; appearance:none; -moz-appearance:none; -webkit-appearance:none;
+	overscroll-behavior:none;
 }
 
 div.apijsplayer label:hover, div.apijsplayer span.btn:hover { color:black; background-color:white; }

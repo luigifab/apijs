@@ -1,6 +1,6 @@
 /**
  * Created D/11/01/2015
- * Updated V/23/07/2021
+ * Updated S/02/07/2022
  *
  * Copyright 2008-2022 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
  * https://www.luigifab.fr/apijs
@@ -95,7 +95,7 @@ apijs.core.player = function (video, url) {
 						}
 						// #EXTINF: Text
 						else if (url.indexOf('#EXTINF') === 0) {
-							txt = url.replace(/#EXTINF:[0-9]+,/, '');
+							txt = url.replace(/#EXTINF:\d+,/, '');
 						}
 						// http
 						else if ((url.length > 5) && (url[0] !== '#')) {
@@ -283,6 +283,10 @@ apijs.core.player = function (video, url) {
 
 		var video = this.video;
 
+		// ignore le clic du swipe en mode slideshow
+		if (apijs.dialog.swipe)
+			return false;
+
 		// NETWORK_IDLE, NETWORK_LOADING
 		if ([1,2].has(video.networkState)) {
 			if (video.ended || video.paused)
@@ -447,7 +451,7 @@ apijs.core.player = function (video, url) {
 		a.appendChild(b);
 
 			b = document.createElement('span');
-			b.setAttribute('class', 'svg vol nomobile');
+			b.setAttribute('class', 'svg vol');
 
 				c = document.createElement('svg');
 				c.setAttribute('class', 'vol');
@@ -467,7 +471,6 @@ apijs.core.player = function (video, url) {
 			b.appendChild(apijs.i18n.translateNode(133));
 
 				c = document.createElement('em');
-				c.setAttribute('class', 'nomobile');
 
 			b.appendChild(c);
 
@@ -485,7 +488,6 @@ apijs.core.player = function (video, url) {
 			b.appendChild(apijs.i18n.translateNode(132));
 
 				c = document.createElement('em');
-				c.setAttribute('class', 'nomobile');
 
 			b.appendChild(c);
 
@@ -503,7 +505,6 @@ apijs.core.player = function (video, url) {
 			b.appendChild(apijs.i18n.translateNode(131));
 
 				c = document.createElement('em');
-				c.setAttribute('class', 'nomobile');
 
 			b.appendChild(c);
 
@@ -521,7 +522,6 @@ apijs.core.player = function (video, url) {
 			b.appendChild(apijs.i18n.translateNode(134));
 
 				c = document.createElement('em');
-				c.setAttribute('class', 'nomobile');
 
 			b.appendChild(c);
 
@@ -539,7 +539,7 @@ apijs.core.player = function (video, url) {
 		a.appendChild(b);
 
 			b = document.createElement('span');
-			b.setAttribute('class', 'btn full fnt nomobile');
+			b.setAttribute('class', 'btn full fnt');
 			b.appendChild(document.createTextNode('\uE80F'));
 			b.onclick = function () {
 				// via un dialogue ou en direct

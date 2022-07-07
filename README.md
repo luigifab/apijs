@@ -1,3 +1,5 @@
+Stop russian war. **🇺🇦 Free Ukraine!**
+
 # apijs
 
 JavaScript pop-ups and slideshow.
@@ -6,7 +8,7 @@ For more information, go to https://www.luigifab.fr/apijs (IPv6 is required, it'
 
 This repository is a releases mirror. To install it, please read the documentation.
 
-- Current version: 6.8.2 (01/01/2022)
+- Current version: 6.9.0 (07/07/2022)
 - Client compatibility: Firefox 36+, Chrome 32+, Opera 19+, Edge 16+, Safari 9+
 - Translations: English (en), French (fr-FR/fr-CA), German (de), Italian (it), Portuguese (pt-PT/pt-BR), Spanish (es) / Chinese (zh), Czech (cs), Dutch (nl), Greek (el), Hungarian (hu), Japanese (ja), Polish (pl), Romanian (ro), Russian (ru), Slovak (sk), Turkish (tr), Ukrainian (uk)
 - License: GNU GPL 2+
