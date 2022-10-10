@@ -1,6 +1,6 @@
 /**
  * Created J/13/05/2010
- * Updated M/05/07/2022
+ * Updated J/11/08/2022
  *
  * Copyright 2008-2022 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
  * https://www.luigifab.fr/apijs
@@ -120,7 +120,7 @@ apijs.core.slideshow = function () {
 				source = (media.gallery.hasAttribute('class')) ? media.gallery.getAttribute('class') : media.prefix + '.0';
 				source = apijs.html(source, true);
 				media.number = parseInt(source.getAttribute('id').split('.')[2], 10);
-				media.id     = media.id.replace(99999, media.number);
+				media.id     = media.id.replace('99999', media.number);
 			}
 
 			media.config = source.querySelector('input').getAttribute('value').split('|');
