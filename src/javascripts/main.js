@@ -1,9 +1,9 @@
 /**
  * Created J/03/12/2009
- * Updated M/30/08/2022
+ * Updated L/10/10/2022
  *
- * Copyright 2008-2022 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
- * https://www.luigifab.fr/apijs
+ * Copyright 2008-2023 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
+ * https://github.com/luigifab/apijs
  *
  * This program is free software, you can redistribute it or modify
  * it under the terms of the GNU General Public License (GPL) as published
@@ -46,7 +46,7 @@ var apijs = new (function () {
 
 	"use strict";
 	this.core = {};
-	this.version = 692;
+	this.version = 693;
 
 	this.config = {
 		lang: 'auto',
