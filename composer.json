@@ -1,0 +1,32 @@
+{
+    "name": "luigifab/apijs",
+    "description": "JavaScript pop-ups and slideshow.",
+    "homepage": "https://github.com/luigifab/apijs",
+    "license": "GPL-2.0-or-later",
+    "authors": [
+        {
+            "name": "Fabrice Creuzot (luigifab)",
+            "homepage": "https://www.luigifab.fr",
+            "email": "code@luigifab.fr"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/luigifab/apijs/issues",
+        "docs": "https://www.luigifab.fr/apijs"
+    },
+    "funding": [
+        {
+            "type": "other",
+            "url": "https://gandi.link/f/4b904048"
+        },
+        {
+            "type": "other",
+            "url": "https://fr.tipeee.com/luigifab"
+        },
+        {
+            "type": "other",
+            "url": "https://ekwateur.fr/?parrain=EKW001147103"
+        }
+    ],
+    "minimum-stability": "dev"
+}

@@ -1,6 +1,6 @@
 /**
  * Created D/12/04/2009
- * Updated S/02/07/2022
+ * Updated S/14/01/2023
  *
  * Copyright 2008-2023 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
  * https://github.com/luigifab/apijs
@@ -1163,7 +1163,7 @@ apijs.core.dialog = function () {
 	this.htmlHelp = function (isSlideshow, isVideo) {
 
 		// pas d'aide en mobile car pas de clavier
-		if (('ontouchstart' in window) && (navigator.userAgent.toLowerCase().indexOf('mobi') > 0))
+		if (('ontouchstart' in window) && navigator.userAgent.match(/mobi/i))
 			return this;
 
 		var items, item, keys = [
