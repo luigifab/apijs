@@ -1,6 +1,6 @@
 /**
  * Created J/20/06/2013
- * Updated L/08/07/2019
+ * Updated L/02/10/2023
  *
  * Copyright 2008-2023 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
  * https://github.com/luigifab/apijs
@@ -26,7 +26,7 @@ div.gallery a { display:inline-block; text-decoration:none; }
 div.gallery ul { margin:0; padding:0; list-style:none; }
 div.gallery li { display:inline-block; margin:0; padding:0; vertical-align:middle; }
 div.gallery li a { display:block; margin:0.2em; }
-div.gallery li a.current { border-color:gray; }
+div.gallery li a.current { border-color:#808080; }
 
 div.album { text-align:center; }
 div.album dl { display:inline-block; margin:0.5em 0.4em; vertical-align:top; }

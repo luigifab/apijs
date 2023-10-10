@@ -14,19 +14,5 @@
         "issues": "https://github.com/luigifab/apijs/issues",
         "docs": "https://www.luigifab.fr/apijs"
     },
-    "funding": [
-        {
-            "type": "other",
-            "url": "https://gandi.link/f/4b904048"
-        },
-        {
-            "type": "other",
-            "url": "https://fr.tipeee.com/luigifab"
-        },
-        {
-            "type": "other",
-            "url": "https://ekwateur.fr/?parrain=EKW001147103"
-        }
-    ],
     "minimum-stability": "dev"
 }

@@ -1,6 +1,6 @@
 /**
  * Created V/08/05/2009
- * Updated S/02/07/2022
+ * Updated L/02/10/2023
  *
  * Copyright 2008-2023 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
  * https://github.com/luigifab/apijs
@@ -95,7 +95,7 @@ div[id="apijsDialog"] * { margin:0; padding:0; }
 /* &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& image d'attente &&& **
  * (loading) waiting photo video iframe ajax */
 #apijsBox svg.loader { position:absolute; display:none; margin:auto; width:128px; height:128px; pointer-events:none; }
-#apijsBox svg.loader path { fill:gray; }
+#apijsBox svg.loader path { fill:#808080; }
 
 #apijsBox.loading svg.loader, #apijsBox.waiting svg.loader {
 	display:block; right:-40px; bottom:-40px;
