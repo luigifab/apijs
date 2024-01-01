@@ -1,8 +1,8 @@
 /**
  * Created D/12/04/2009
- * Updated S/14/01/2023
+ * Updated D/03/12/2023
  *
- * Copyright 2008-2023 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
+ * Copyright 2008-2024 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
  * https://github.com/luigifab/apijs
  *
  * This program is free software, you can redistribute it or modify
@@ -316,8 +316,8 @@ apijs.core.dialog = function () {
 		var that = apijs.dialog, elem = ev.target, brk = false;
 
 		// dialogues du diaporama (suivant/précédent)
-		// https://github.com/hammerjs/hammer.js
-		// https://github.com/john-doherty/swiped-events
+		// @see https://github.com/hammerjs/hammer.js
+		// @see https://github.com/john-doherty/swiped-events
 		if (
 			that.has('slideshow') && !that.has('playing') &&
 			!['OPTION', 'SELECT'].has(elem.nodeName) && ['DOMMouseScroll', 'mousewheel', 'swipeleft', 'swiperight', 'swipeup', 'swipedown', 'swiped-left', 'swiped-right', 'swiped-up', 'swiped-down'].has(ev.type)
@@ -661,7 +661,7 @@ apijs.core.dialog = function () {
 			this.toggle('start', 'ready');
 			this.t1 = old;
 			// this.t1.appendChild(this.t0.firstChild.firstChild);
-			// https://stackoverflow.com/a/24775765/2980105
+			// @see https://stackoverflow.com/a/24775765/2980105
 			apijs.toArray(this.t0.firstChild.childNodes).forEach(function (node) {
 				this.t1.appendChild(node);
 			}, this); // pour que ci-dessus this = this

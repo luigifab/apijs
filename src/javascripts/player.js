@@ -1,8 +1,8 @@
 /**
  * Created D/11/01/2015
- * Updated S/02/07/2022
+ * Updated D/03/12/2023
  *
- * Copyright 2008-2023 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
+ * Copyright 2008-2024 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
  * https://github.com/luigifab/apijs
  *
  * This program is free software, you can redistribute it or modify
@@ -33,7 +33,7 @@ apijs.core.player = function (video, url) {
 		video.removeAttribute('controls');
 		video.classList.add('apijsplayer');
 
-		// https://developer.mozilla.org/fr/docs/Web/Guide/DOM/Events/evenement_medias
+		// @see https://developer.mozilla.org/fr/docs/Web/Guide/DOM/Events/evenement_medias
 		video.onloadedmetadata = function (ev) {
 			this.stalled = false;
 			this.onTimeupdate(ev);
@@ -147,7 +147,7 @@ apijs.core.player = function (video, url) {
 		if (typeof tracks == 'object') {
 
 			// si la vidéo contient plusieurs pistes vidéo
-			// https://developer.mozilla.org/en-US/docs/Web/API/VideoTrack
+			// @see https://developer.mozilla.org/en-US/docs/Web/API/VideoTrack
 			if (tracks.length > 1) {
 				for (idx = 0; idx < tracks.length; idx++) {
 					if (tracks[idx].language && (tracks[idx].language.toLowerCase().replace(/[-_]/g, '').indexOf(lang) == 0))
@@ -171,7 +171,7 @@ apijs.core.player = function (video, url) {
 		if (typeof tracks == 'object') {
 
 			// si la vidéo contient plusieurs pistes audio
-			// https://developer.mozilla.org/en-US/docs/Web/API/AudioTrack
+			// @see https://developer.mozilla.org/en-US/docs/Web/API/AudioTrack
 			if (tracks.length > 1) {
 				for (idx = 0; idx < tracks.length; idx++) {
 					if (tracks[idx].language && (tracks[idx].language.toLowerCase().replace(/[-_]/g, '').indexOf(lang) == 0))

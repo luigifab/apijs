@@ -1,8 +1,8 @@
 /**
  * Created S/05/06/2010
- * Updated S/03/07/2021
+ * Updated D/03/12/2023
  *
- * Copyright 2008-2023 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
+ * Copyright 2008-2024 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
  * https://github.com/luigifab/apijs
  *
  * This program is free software, you can redistribute it or modify
@@ -20,7 +20,7 @@ apijs.core.i18n = function () {
 
 	"use strict";
 	this.data = {
-		// https://docs.google.com/spreadsheets/d/1UUpKZ-YAAlcfvGHYwt6aUM9io390j0-fIL0vMRh1pW0/edit?usp=sharing
+		// @see https://docs.google.com/spreadsheets/d/1UUpKZ-YAAlcfvGHYwt6aUM9io390j0-fIL0vMRh1pW0/edit?usp=sharing
 		// auto start
 		cs: {
 			103: "Zrušit",

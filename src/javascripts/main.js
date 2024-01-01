@@ -1,8 +1,8 @@
 /**
  * Created J/03/12/2009
- * Updated J/21/09/2023
+ * Updated S/23/12/2023
  *
- * Copyright 2008-2023 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
+ * Copyright 2008-2024 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
  * https://github.com/luigifab/apijs
  *
  * This program is free software, you can redistribute it or modify
@@ -46,7 +46,7 @@ var apijs = new (function () {
 
 	"use strict";
 	this.core = {};
-	this.version = 695;
+	this.version = 696;
 
 	this.config = {
 		lang: 'auto',
@@ -123,7 +123,7 @@ var apijs = new (function () {
 		try {
 			str = new Intl.NumberFormat(this.config.lang, { minimumFractionDigits: dgt, maximumFractionDigits: dgt }).format(nb);
 		}
-		catch (ignore) {
+		catch (e) {
 			str = nb.toFixed(dgt);
 		}
 
@@ -191,7 +191,7 @@ var apijs = new (function () {
 		var data = [];
 		filter   = (typeof filter == 'string') ? filter : '';
 
-		// https://gomakethings.com/how-to-serialize-form-data-with-vanilla-js/
+		// @see https://gomakethings.com/how-to-serialize-form-data-with-vanilla-js/
 		Array.prototype.forEach.call(form.elements, function (elem, idx) {
 
 			if (!elem.name || elem.disabled || ['file', 'reset', 'submit', 'button'].has(elem.type) || (elem.name.indexOf(filter) !== 0))

@@ -1,8 +1,8 @@
 /**
  * Created J/13/05/2010
- * Updated J/11/08/2022
+ * Updated S/04/11/2023
  *
- * Copyright 2008-2023 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
+ * Copyright 2008-2024 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
  * https://github.com/luigifab/apijs
  *
  * This program is free software, you can redistribute it or modify
@@ -150,7 +150,8 @@ apijs.core.slideshow = function () {
 		media.url    = source.getAttribute('href');
 		media.type   = source.getAttribute('type').substring(0, 5).replace('image', 'dialogPhoto').replace('video', 'dialogVideo').replace('audio', 'dialogVideo');
 		media.type   = (media.type.indexOf('dialog') === 0) ? media.type : 'dialogPhoto';
-		media.styles = apijs.html(media.prefix, true).getAttribute('class').replace(/gallery|album/g, '').trim();
+		media.styles = apijs.html(media.prefix, true);
+		media.styles = media.styles.hasAttribute('class') ? media.styles.getAttribute('class').replace(/gallery|album/g, '').trim() : '';
 
 		// demande l'affichage du dialogue
 		// lors d'un clic sur l'image principale du mode gallery

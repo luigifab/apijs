@@ -1,8 +1,8 @@
 /**
  * Created L/13/04/2009
- * Updated V/24/06/2022
+ * Updated D/03/12/2023
  *
- * Copyright 2008-2023 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
+ * Copyright 2008-2024 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
  * https://github.com/luigifab/apijs
  *
  * This program is free software, you can redistribute it or modify
@@ -141,7 +141,7 @@ apijs.core.upload = function () {
 		if (this.exts) {
 
 			// 1048576 octet = 1 Mo
-			// https://stackoverflow.com/a/24775765/2980105
+			// @see https://stackoverflow.com/a/24775765/2980105
 			apijs.toArray(elem.files, (this.allmax > 0) ? 999 : 1).forEach(function (file, idx) {
 
 				var txt = file.size / 1048576;
@@ -202,8 +202,8 @@ apijs.core.upload = function () {
 				form.append(apijs.config.upload.tokenName, apijs.config.upload.tokenValue);
 			}
 
-			// https://bugzilla.mozilla.org/show_bug.cgi?id=637002
-			// https://stackoverflow.com/a/15491086
+			// @see https://bugzilla.mozilla.org/show_bug.cgi?id=637002
+			// @see https://stackoverflow.com/a/15491086
 			// loadstart - When the request starts
 			//  progress - While sending and loading data
 			//      load - When the request has successfully completed even if the server hasn't responded that it finished

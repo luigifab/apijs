@@ -1,8 +1,8 @@
 /**
  * Created V/08/05/2009
- * Updated L/02/10/2023
+ * Updated V/17/10/2023
  *
- * Copyright 2008-2023 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
+ * Copyright 2008-2024 | Fabrice Creuzot (luigifab) <code~luigifab~fr>
  * https://github.com/luigifab/apijs
  *
  * This program is free software, you can redistribute it or modify
@@ -19,13 +19,10 @@
 /* &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& conteneurs &&& */
 div[id="apijsDialog"] * { margin:0; padding:0; }
 
-#apijsDialog button, #apijsDialog label { cursor:pointer; }
-#apijsDialog button:disabled { cursor:default; }
-
 #apijsDialog {
-	position:fixed; top:0; right:0; bottom:0; left:0; width:100%; height:100%; text-align:center; direction:ltr; z-index:99000;
-	user-select:none; -moz-user-select:none; -ms-user-select:none; -webkit-user-select:none;
-	transition:background-color 0.5s, opacity 0.25s; opacity:0;
+	position:fixed; top:0; right:0; bottom:0; left:0; width:100%; height:100%; margin:0; padding:0; text-align:center; z-index:99000;
+	direction:ltr; user-select:none; -moz-user-select:none; -ms-user-select:none; -webkit-user-select:none;
+	border:0; transition:background-color 0.5s, opacity 0.25s; opacity:0;
 }
 
 #apijsDialog.ready { background-color:rgba(0, 0, 0, 0.65); opacity:1; }
@@ -33,9 +30,12 @@ div[id="apijsDialog"] * { margin:0; padding:0; }
 #apijsDialog.progress, #apijsDialog.waiting, #apijsDialog.loading { cursor:progress; }
 #apijsDialog.reduce, #apijsDialog.reduce * { transition:none !important; }
 
+#apijsDialog button, #apijsDialog label { cursor:pointer; }
+#apijsDialog button:disabled { cursor:default; }
+
 #apijsBox {
 	position:relative; top:21%; display:inline-block; padding:0.6em 0.8em 2.4em; width:26rem; max-width:26rem; min-height:9em; overflow:hidden;
-	text-align:left; color:black; border-radius:0.8em; background-color:white; box-shadow:0 0 2.5em #111;
+	text-align:left; color:black; border:0; border-radius:0.8em; background-color:white; box-shadow:0 0 2.5em #111;
 }
 
 #apijsBox.photo, #apijsBox.video {
